@@ -1074,7 +1074,11 @@
 
         // ===== STUDIO =====
         function openStudio() {
-            window.open('cake-studio.html', '_blank', 'width=1400,height=900');
+            // GitHub Pages için tam path
+            const currentPath = window.location.pathname;
+            const repoName = currentPath.split('/')[1]; // 'pasta-pazaryeri'
+            const studioPath = `/${repoName}/cake-studio.html`;
+            window.open(studioPath, '_blank', 'width=1400,height=900');
         }
 
         // ===== AUTH =====
