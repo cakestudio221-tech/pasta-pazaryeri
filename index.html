@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saray Patisserie | Professional Cake Studio</title>
+    <title>Saray Patisserie | Luxury Cake Marketplace</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
+
     <style>
         :root {
             --black: #0F0E0C;
@@ -17,75 +16,92 @@
             --white: #F5F5F5;
             --dark-gray: #1a1a1a;
             --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(212, 175, 55, 0.3);
         }
 
-        * { box-sizing: border-box; outline: none; }
+        * { box-sizing: border-box; outline: none; transition: all 0.3s ease; }
         body { margin: 0; background-color: var(--black); color: var(--white); font-family: 'Montserrat', sans-serif; overflow: hidden; }
 
-        /* Header */
+        /* --- Header & Navigation --- */
         header {
             height: 70px;
-            padding: 0 40px;
+            padding: 0 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom: 1px solid var(--border);
             background: rgba(15, 14, 12, 0.98);
+            position: relative;
             z-index: 1000;
         }
 
-        .logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gold); letter-spacing: 3px; }
-        .btn-auth { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold); letter-spacing: 4px; cursor: pointer; }
+        .nav-right { display: flex; gap: 30px; align-items: center; }
+        .location-badge { font-size: 11px; color: var(--gold); border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; font-weight: 600; }
+        .btn-auth { background: var(--gold); color: var(--black); border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 700; }
 
-        /* Layout */
-        .studio-wrapper {
+        /* --- Layout Grid --- */
+        .app-container {
             display: grid;
-            grid-template-columns: 320px 1fr 320px;
+            grid-template-columns: 350px 1fr 350px;
             height: calc(100vh - 70px);
         }
 
-        /* Sidebars */
-        .sidebar {
+        /* --- Left Sidebar: Editor --- */
+        .sidebar-editor {
             background: var(--dark-gray);
-            border-right: 0.5px solid rgba(255,255,255,0.1);
-            padding: 25px;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            padding: 30px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            overflow-y: auto;
+            gap: 25px;
         }
 
-        .tool-title { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 18px; margin-bottom: 15px; border-left: 3px solid var(--gold); padding-left: 10px; }
-        .input-group { display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 11px; text-transform: uppercase; color: #888; }
+        .section-title { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 18px; margin-bottom: 5px; }
+        .input-item { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 10px; text-transform: uppercase; color: #888; letter-spacing: 1px; }
         
         input[type="text"], select {
-            background: #252525; border: 1px solid #444; color: white; padding: 12px; border-radius: 4px;
+            background: #252525; border: 1px solid #444; color: white; padding: 14px; border-radius: 4px; font-size: 13px;
         }
 
-        .btn-action { background: var(--gold); color: var(--black); border: none; padding: 14px; border-radius: 4px; font-weight: 700; cursor: pointer; }
+        .btn-upload { background: var(--glass); border: 1px dashed var(--gold); color: var(--gold); padding: 15px; border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; }
 
-        /* Main Area */
+        /* --- Center: Canvas Stage --- */
         .main-stage {
             position: relative;
-            background: radial-gradient(circle, #222 0%, #0f0e0c 100%);
+            background: radial-gradient(circle, #252525 0%, #0f0e0c 100%);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
 
-        #canvas-holder {
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
-            border: 2px solid var(--gold);
+        #canvas-wrapper {
+            width: 500px;
+            height: 500px;
             border-radius: 50%;
             overflow: hidden;
-            width: 450px;
-            height: 450px;
-            background: #fff;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            border: 4px solid var(--gold);
+            position: relative;
         }
 
-        /* 3D Overlay */
-        #three-preview {
+        .view-toggle {
+            margin-top: 40px;
+            background: var(--white);
+            color: var(--black);
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+
+        /* --- 3D Overlay --- */
+        #three-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black);
@@ -93,27 +109,26 @@
             z-index: 100;
         }
 
-        .btn-preview-toggle {
+        .close-3d {
             position: absolute;
-            bottom: 40px;
-            background: #fff;
-            color: #000;
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            z-index: 200;
-            border: none;
+            top: 40px; right: 40px;
+            background: var(--gold);
+            color: var(--black);
+            border: none; padding: 10px 25px;
+            font-weight: 700; cursor: pointer; z-index: 110;
         }
 
-        /* Right Summary */
-        .summary-bar {
+        /* --- Right Sidebar: Summary --- */
+        .sidebar-summary {
             background: var(--dark-gray);
-            border-left: 0.5px solid rgba(255,255,255,0.1);
-            padding: 25px;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            padding: 30px;
         }
 
-        .price { font-size: 36px; color: var(--gold); margin: 20px 0; font-family: 'Playfair Display', serif; }
+        .price-display { font-size: 42px; color: var(--gold); margin: 25px 0; font-family: 'Playfair Display', serif; }
+        .vendor-card { background: var(--glass); padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
+        .badge { display: inline-block; background: #4caf50; color: white; font-size: 9px; padding: 2px 8px; border-radius: 10px; vertical-align: middle; }
+
     </style>
 </head>
 <body>
@@ -121,114 +136,191 @@
 <header>
     <div class="logo">SARAY PATISSERIE</div>
     <div class="nav-right">
-        <span style="font-size: 12px; color: var(--gold); margin-right: 20px;">📍 BURSA</span>
-        <button class="btn-auth">GİRİŞ YAP</button>
+        <div class="location-badge">📍 BURSA / NİLÜFER</div>
+        <button class="btn-auth">ÜYE GİRİŞİ</button>
     </div>
 </header>
 
-<main class="studio-wrapper">
-    <aside class="sidebar">
-        <div class="tool-title">EDİTÖR</div>
-        <div class="input-group">
-            <label>Pasta Mesajı</label>
-            <input type="text" id="cake-input" placeholder="İsim yazın..." onkeyup="updateText(this.value)">
+<div class="app-container">
+    <aside class="sidebar-editor">
+        <div class="section-title">Pasta Tasarımı</div>
+        
+        <div class="input-item">
+            <label>Üst Yazı Mesajı</label>
+            <input type="text" id="cakeText" placeholder="Örn: İyi ki Doğdun!" onkeyup="updateCanvasText(this.value)">
         </div>
-        <div class="input-group">
+
+        <div class="input-item">
             <label>Font Seçimi</label>
-            <select id="font-family" onchange="updateFont(this.value)">
-                <option value="Playfair Display">Lüks Klasik</option>
+            <select id="fontFamily" onchange="updateCanvasFont(this.value)">
+                <option value="Playfair Display">Lüks Klasik (Serif)</option>
                 <option value="Dancing Script">Zarif El Yazısı</option>
                 <option value="Montserrat">Modern Minimal</option>
             </select>
         </div>
-        <div class="input-group">
-            <label>Görsel Yükle</label>
-            <input type="file" id="img-loader" accept="image/*">
+
+        <div class="input-item">
+            <label>Görsel/Fotoğraf Yükle</label>
+            <input type="file" id="imageLoader" accept="image/*" style="display: none;">
+            <div class="btn-upload" onclick="document.getElementById('imageLoader').click()">
+                📷 FOTOĞRAF EKLE (Şekerli Baskı)
+            </div>
+        </div>
+
+        <div class="input-item" style="margin-top: auto;">
+            <p style="font-size: 10px; color: #666; line-height: 1.5;">
+                * Tasarımınız butik şeflerimiz tarafından el işçiliği ile gerçeğe dönüştürülür.
+            </p>
         </div>
     </aside>
 
-    <section class="main-stage">
-        <div id="canvas-holder">
-            <canvas id="main-canvas" width="450" height="450"></canvas>
+    <main class="main-stage">
+        <div id="canvas-wrapper">
+            <canvas id="cakeCanvas" width="500" height="500"></canvas>
         </div>
-        <button class="btn-preview-toggle" onclick="toggle3D()">👁️ 360° ÖNİZLEME</button>
-        <div id="three-preview">
-            <button onclick="toggle3D()" style="position:absolute; top:30px; right:30px; z-index:200; background:var(--gold); border:none; padding:10px 20px; cursor:pointer;">← GERİ DÖN</button>
-        </div>
-    </section>
 
-    <aside class="summary-bar">
-        <div class="tool-title">ÖZET</div>
-        <p style="font-size: 12px; color: #888;">Satıcı: Saray Bursa</p>
-        <div class="price">₺3.450</div>
-        <button class="btn-action" style="width:100%" onclick="alert('Sepete Eklendi!')">SEPETE EKLE</button>
+        <button class="view-toggle" onclick="show3DView()">👁️ 360° GERÇEKÇİ ÖNİZLEME</button>
+
+        <div id="three-container">
+            <button class="close-3d" onclick="hide3DView()">← TASARIMA DÖN</button>
+        </div>
+    </main>
+
+    <aside class="sidebar-summary">
+        <div class="section-title">Sipariş Özeti</div>
+        <div class="vendor-card">
+            <p style="font-size: 11px; color: #888; margin: 0;">SATIŞ NOKTASI</p>
+            <p style="font-weight: 600; margin: 5px 0;">Saray Bursa Nilüfer Şubesi <span class="badge">ONAYLI</span></p>
+            <hr style="border: 0.1px solid rgba(212,175,55,0.2); margin: 15px 0;">
+            <p style="font-size: 12px; color: #aaa;">• Belçika Çikolatalı Özel Seri<br>• 8-10 Kişilik VIP Boy</p>
+        </div>
+
+        <div class="price-display">₺3.750</div>
+        
+        <button class="btn-auth" style="width: 100%; padding: 18px;" onclick="saveAndComplete()">SEPETE EKLE</button>
     </aside>
-</main>
+</div>
 
 <script>
-    // 2D Tasarım (Fabric.js)
-    const canvas = new fabric.Canvas('main-canvas');
-    let cakeText;
+    // --- 2D FABRIC.JS LOGIC ---
+    const canvas = new fabric.Canvas('cakeCanvas');
+    let dynamicText;
 
-    // Gerçekçi Pasta Fotoğrafı (Top-View)
-    fabric.Image.fromURL('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=500&h=500&auto=format&fit=crop', function(img) {
+    // Gerçekçi Üstten Görünüm Fotoğrafı Yükle
+    fabric.Image.fromURL('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600&h=600&auto=format&fit=crop', function(img) {
         img.set({ selectable: false, evented: false });
         canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-        cakeText = new fabric.IText('İsim Yazın', {
-            left: 225, top: 225, fontFamily: 'Playfair Display', fill: '#D4AF37', fontSize: 40, originX: 'center', originY: 'center'
+        
+        // Başlangıç Yazısı
+        dynamicText = new fabric.IText('İsim Yazın', {
+            left: 250, top: 250,
+            fontFamily: 'Playfair Display',
+            fill: '#D4AF37',
+            fontSize: 45,
+            originX: 'center', originY: 'center',
+            textAlign: 'center',
+            shadow: 'rgba(0,0,0,0.6) 2px 2px 10px'
         });
-        canvas.add(cakeText);
+        canvas.add(dynamicText);
+        canvas.setActiveObject(dynamicText);
     });
 
-    function updateText(val) { if(cakeText) { cakeText.set('text', val || 'İsim Yazın'); canvas.renderAll(); } }
-    function updateFont(font) { if(cakeText) { cakeText.set('fontFamily', font); canvas.renderAll(); } }
+    function updateCanvasText(val) {
+        if(dynamicText) {
+            dynamicText.set('text', val || 'İsim Yazın');
+            canvas.renderAll();
+        }
+    }
 
-    document.getElementById('img-loader').onchange = function(e) {
+    function updateCanvasFont(font) {
+        if(dynamicText) {
+            dynamicText.set('fontFamily', font);
+            canvas.renderAll();
+        }
+    }
+
+    document.getElementById('imageLoader').onchange = function(e) {
         const reader = new FileReader();
-        reader.onload = function(event) {
-            fabric.Image.fromURL(event.target.result, function(img) {
-                img.scaleToWidth(120);
+        reader.onload = function(f) {
+            fabric.Image.fromURL(f.target.result, function(img) {
+                img.scaleToWidth(150);
                 canvas.add(img);
                 canvas.centerObject(img);
+                canvas.setActiveObject(img);
             });
-        }
+        };
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    // 3D Önizleme (Three.js)
+    // --- 3D THREE.JS LOGIC ---
     let scene, camera, renderer, cake3D;
-    let is3D = false;
 
     function init3D() {
+        const container = document.getElementById('three-container');
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(45, (window.innerWidth - 640) / (window.innerHeight - 70), 0.1, 1000);
+        camera = new THREE.PerspectiveCamera(45, container.offsetWidth / container.offsetHeight, 0.1, 1000);
+        
         renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth - 640, window.innerHeight - 70);
-        document.getElementById('three-preview').appendChild(renderer.domElement);
+        renderer.setSize(container.offsetWidth, container.offsetHeight);
+        renderer.setClearColor(0x0f0e0c);
+        container.appendChild(renderer.domElement);
 
-        const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+        // Işıklandırma
+        const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
         scene.add(light);
+        const spotLight = new THREE.SpotLight(0xffffff, 1);
+        spotLight.position.set(5, 10, 5);
+        scene.add(spotLight);
 
-        const geometry = new THREE.CylinderGeometry(2, 2, 1.2, 64);
-        const material = new THREE.MeshPhysicalMaterial({ color: 0x2b1d0e, roughness: 0.2, clearcoat: 1.0 });
+        // Pasta Geometrisi (Yumuşak PBR Material)
+        const geometry = new THREE.CylinderGeometry(2, 2, 1.2, 128);
+        const material = new THREE.MeshPhysicalMaterial({
+            color: 0x2b1d0e,
+            roughness: 0.15,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.1
+        });
+        
         cake3D = new THREE.Mesh(geometry, material);
         scene.add(cake3D);
-        camera.position.set(0, 3, 5); camera.lookAt(0,0,0);
-        animate();
+        camera.position.set(0, 3, 6);
+        camera.lookAt(0, 0, 0);
+
+        animate3D();
     }
 
-    function animate() { requestAnimationFrame(animate); if(cake3D) cake3D.rotation.y += 0.005; renderer.render(scene, camera); }
+    function animate3D() {
+        requestAnimationFrame(animate3D);
+        if(cake3D) cake3D.rotation.y += 0.005;
+        renderer.render(scene, camera);
+    }
 
-    function toggle3D() {
-        const preview = document.getElementById('three-preview');
-        is3D = !is3D;
-        if(is3D) {
-            preview.style.display = 'block';
-            if(!scene) init3D();
-            const texture = new THREE.CanvasTexture(canvas.getElement());
-            cake3D.material.map = texture; cake3D.material.needsUpdate = true;
-        } else { preview.style.display = 'none'; }
+    function show3DView() {
+        const container = document.getElementById('three-container');
+        container.style.display = 'block';
+        if(!scene) init3D();
+        
+        // 2D Tasarımı 3D'ye Giydir (The Magic Step)
+        const canvasTexture = new THREE.CanvasTexture(canvas.getElement());
+        cake3D.material.map = canvasTexture;
+        cake3D.material.needsUpdate = true;
+    }
+
+    function hide3DView() {
+        document.getElementById('three-container').style.display = 'none';
+    }
+
+    function saveAndComplete() {
+        const orderJSON = {
+            vendor: "Bursa_Nilufer_Saray",
+            price: 3750,
+            custom_text: dynamicText.text,
+            design_snapshot: canvas.toDataURL({ format: 'png', quality: 1.0 })
+        };
+        console.log("Sipariş Reçetesi (JSON):", orderJSON);
+        alert("Siparişiniz sepete eklendi! Satıcıya giden üretim reçetesi oluşturuldu.");
     }
 </script>
+
 </body>
 </html>
