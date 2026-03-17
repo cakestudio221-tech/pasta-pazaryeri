@@ -6,7 +6,7 @@
     <title>SARAY PATİSSERİE — Türkiye'nin Elite Pasta Marketi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     
@@ -379,266 +379,6 @@
             font-weight: 600;
         }
 
-        /* ===== MODALS ===== */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--black);
-            border: var(--border);
-            border-radius: 24px;
-            padding: 32px 24px;
-            max-width: 420px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .modal-title {
-            font-size: 24px;
-            font-weight: 800;
-        }
-
-        .btn-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--glass);
-            border: var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            opacity: 0.9;
-        }
-
-        .form-input {
-            width: 100%;
-            background: var(--glass);
-            border: var(--border);
-            color: var(--white);
-            padding: 14px 16px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .form-input::placeholder {
-            color: rgba(252, 251, 248, 0.4);
-        }
-
-        .btn-primary {
-            width: 100%;
-            background: var(--gold);
-            color: var(--black);
-            border: none;
-            padding: 16px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .modal-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            opacity: 0.7;
-        }
-
-        .link-text {
-            color: var(--gold);
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* ===== STUDIO CANVAS ===== */
-        .studio-container {
-            padding: 20px;
-        }
-
-        .studio-header {
-            margin-bottom: 20px;
-        }
-
-        .studio-tabs {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .studio-tab {
-            flex: 1;
-            background: var(--glass);
-            border: var(--border);
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .studio-tab.active {
-            background: var(--gold);
-            color: var(--black);
-        }
-
-        .canvas-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1;
-            background: var(--glass);
-            border: var(--border);
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        #designCanvas {
-            width: 100%;
-            height: 100%;
-            background: #fff;
-        }
-
-        #threeDPreview {
-            width: 100%;
-            height: 100%;
-            display: none;
-        }
-
-        .studio-tools {
-            display: grid;
-            gap: 16px;
-        }
-
-        .tool-section {
-            background: var(--glass);
-            border: var(--border);
-            border-radius: 16px;
-            padding: 16px;
-        }
-
-        .tool-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            opacity: 0.9;
-        }
-
-        .base-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .base-option {
-            aspect-ratio: 1;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            cursor: pointer;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-
-        .base-option img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .base-option.active {
-            border-color: var(--gold);
-            transform: scale(1.05);
-        }
-
-        .size-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-
-        .size-btn {
-            background: var(--glass);
-            border: var(--border);
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .size-btn.active {
-            background: var(--gold);
-            color: var(--black);
-        }
-
-        .text-controls {
-            display: grid;
-            gap: 12px;
-        }
-
-        .color-picker-wrapper {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .color-option {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .color-option.active {
-            border-color: var(--gold);
-            transform: scale(1.1);
-        }
-
         /* ===== CART DRAWER ===== */
         .cart-drawer {
             position: fixed;
@@ -665,6 +405,24 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .btn-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
         }
 
         .cart-item {
@@ -713,6 +471,23 @@
             color: var(--gold);
         }
 
+        .btn-primary {
+            width: 100%;
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (min-width: 768px) {
             .products-grid {
@@ -736,7 +511,7 @@
     <div class="top-nav">
         <div class="logo">SARAY</div>
         <div class="top-icons">
-            <div class="icon-btn" onclick="openAuth()">
+            <div class="icon-btn" onclick="alert('👤 Giriş özelliği yakında!')">
                 <span id="authIcon">👤</span>
             </div>
             <div class="icon-btn" onclick="toggleCart()">
@@ -768,7 +543,7 @@
         <div class="hero-banner">
             <h1>Türkiye'nin <span style="color: var(--gold)">En Elite</span> Pasta Deneyimi</h1>
             <p>81 ilden seçkin pastaneler, 4 kişiden başlayan özel tasarımlar</p>
-            <button class="btn-hero" onclick="openStudio()">🎨 Pastanı Sen Tasarla</button>
+            <button class="btn-hero" onclick="openCakeStudio()">🎨 Pastanı Sen Tasarla</button>
         </div>
 
         <!-- CATEGORIES -->
@@ -793,7 +568,7 @@
             <div class="nav-icon">🔍</div>
             <div class="nav-label">Keşfet</div>
         </div>
-        <div class="nav-item" onclick="openStudio()">
+        <div class="nav-item" onclick="openCakeStudio()">
             <div class="nav-icon">🎨</div>
             <div class="nav-label">Tasarla</div>
         </div>
@@ -801,123 +576,9 @@
             <div class="nav-icon">📦</div>
             <div class="nav-label">Siparişler</div>
         </div>
-        <div class="nav-item" onclick="openAuth()">
+        <div class="nav-item" onclick="alert('👤 Hesap özelliği yakında!')">
             <div class="nav-icon">👤</div>
             <div class="nav-label">Hesap</div>
-        </div>
-    </div>
-
-    <!-- AUTH MODAL -->
-    <div class="modal" id="authModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="authTitle">Giriş Yap</h2>
-                <div class="btn-close" onclick="closeModal('authModal')">✕</div>
-            </div>
-            <form id="authForm">
-                <div class="form-group">
-                    <label class="form-label">E-posta</label>
-                    <input type="email" class="form-input" placeholder="ornek@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Şifre</label>
-                    <input type="password" class="form-input" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="btn-primary">Devam Et</button>
-            </form>
-            <div class="modal-footer">
-                Hesabınız yok mu? <span class="link-text" onclick="toggleAuthMode()">Kayıt Ol</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- STUDIO MODAL -->
-    <div class="modal" id="studioModal">
-        <div class="modal-content" style="max-width: 900px;">
-            <div class="modal-header">
-                <h2 class="modal-title">🎨 Pastanı Tasarla</h2>
-                <div class="btn-close" onclick="closeModal('studioModal')">✕</div>
-            </div>
-            
-            <div class="studio-container">
-                <div class="studio-tabs">
-                    <div class="studio-tab active" onclick="switchStudioMode('2d')">2D Tasarım</div>
-                    <div class="studio-tab" onclick="switchStudioMode('3d')">3D Önizleme</div>
-                </div>
-
-                <div class="canvas-wrapper">
-                    <canvas id="designCanvas"></canvas>
-                    <div id="threeDPreview"></div>
-                </div>
-
-                <div class="studio-tools">
-                    <!-- BASE SELECTOR -->
-                    <div class="tool-section">
-                        <div class="tool-title">1️⃣ Pasta Tabanı Seç</div>
-                        <div class="base-selector">
-                            <div class="base-option active" onclick="selectBase('chocolate')" data-base="chocolate">
-                                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&q=80" alt="Çikolata">
-                            </div>
-                            <div class="base-option" onclick="selectBase('vanilla')" data-base="vanilla">
-                                <img src="https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=400&q=80" alt="Vanilya">
-                            </div>
-                            <div class="base-option" onclick="selectBase('redvelvet')" data-base="redvelvet">
-                                <img src="https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=400&q=80" alt="Red Velvet">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SIZE SELECTOR -->
-                    <div class="tool-section">
-                        <div class="tool-title">2️⃣ Kişi Sayısı (Min. 4)</div>
-                        <div class="size-selector">
-                            <div class="size-btn active" onclick="selectSize(4)">4 Kişi</div>
-                            <div class="size-btn" onclick="selectSize(6)">6 Kişi</div>
-                            <div class="size-btn" onclick="selectSize(8)">8 Kişi</div>
-                            <div class="size-btn" onclick="selectSize(10)">10 Kişi</div>
-                            <div class="size-btn" onclick="selectSize(12)">12 Kişi</div>
-                            <div class="size-btn" onclick="selectSize(15)">15+ Kişi</div>
-                        </div>
-                    </div>
-
-                    <!-- TEXT CUSTOMIZATION -->
-                    <div class="tool-section">
-                        <div class="tool-title">3️⃣ Özel Yazı Ekle</div>
-                        <div class="text-controls">
-                            <input type="text" class="form-input" id="customText" placeholder="İyi ki doğdun..." maxlength="30">
-                            <select class="form-input" id="fontSelect">
-                                <option value="cursive">Cursive (El Yazısı)</option>
-                                <option value="serif">Serif (Klasik)</option>
-                                <option value="luxury">Luxury (Zarif)</option>
-                            </select>
-                            <div class="color-picker-wrapper">
-                                <div class="color-option active" style="background: #D4AF37;" onclick="selectColor('#D4AF37')"></div>
-                                <div class="color-option" style="background: #8B4513;" onclick="selectColor('#8B4513')"></div>
-                                <div class="color-option" style="background: #FF69B4;" onclick="selectColor('#FF69B4')"></div>
-                                <div class="color-option" style="background: #000000;" onclick="selectColor('#000000')"></div>
-                                <div class="color-option" style="background: #FFFFFF; border: 1px solid #ccc;" onclick="selectColor('#FFFFFF')"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- IMAGE UPLOAD -->
-                    <div class="tool-section">
-                        <div class="tool-title">4️⃣ Fotoğraf Ekle (İsteğe Bağlı)</div>
-                        <input type="file" class="form-input" accept="image/*" onchange="uploadImage(event)">
-                    </div>
-
-                    <!-- PRICING -->
-                    <div class="tool-section" style="background: rgba(212, 175, 55, 0.1);">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-size: 14px; opacity: 0.8; margin-bottom: 4px;">Toplam Tutar</div>
-                                <div style="font-size: 28px; font-weight: 800; color: var(--gold);" id="totalPrice">₺1.950</div>
-                            </div>
-                            <button class="btn-primary" style="width: auto; padding: 14px 32px;" onclick="addCustomCakeToCart()">Sepete Ekle</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -938,7 +599,7 @@
                 <span id="deliveryFee">₺50</span>
             </div>
             <div class="total-row grand">
-                <span>Toplam</span>
+                <span>TOPLAM</span>
                 <span id="grandTotal">₺0</span>
             </div>
             <button class="btn-primary" onclick="checkout()">Ödeme Yap</button>
@@ -948,21 +609,10 @@
     <script>
         // ===== STATE MANAGEMENT =====
         const state = {
-            user: null,
             cart: [],
             selectedCity: '',
             selectedDistrict: '',
-            currentCategory: 'all',
-            studioMode: '2d',
-            customCake: {
-                base: 'chocolate',
-                size: 4,
-                text: '',
-                font: 'cursive',
-                color: '#D4AF37',
-                image: null,
-                basePrice: 1950
-            }
+            currentCategory: 'all'
         };
 
         // ===== PRODUCT DATABASE =====
@@ -977,7 +627,7 @@
                 district: 'kadikoy',
                 price: 2850, 
                 category: 'chocolate', 
-                features: ['24K Altın', 'Belçika Çikolata', 'Premium'], 
+                features: ['24K Altın', 'Belçika Çikolata'], 
                 delivery: '90 dk', 
                 image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80',
                 minPerson: 4
@@ -1072,7 +722,6 @@
         // ===== INITIALIZATION =====
         window.addEventListener('DOMContentLoaded', () => {
             renderProducts();
-            initializeCanvas();
         });
 
         // ===== PRODUCT RENDERING =====
@@ -1089,7 +738,7 @@
             }
 
             grid.innerHTML = filtered.map(p => `
-                <div class="product-card" onclick="viewProduct(${p.id})">
+                <div class="product-card">
                     <div class="product-image">
                         <img src="${p.image}" alt="${p.name}" loading="lazy">
                         <div class="product-badge">HAZIR TESLİMAT</div>
@@ -1108,7 +757,7 @@
                                 <div class="product-price">₺${p.price.toLocaleString('tr-TR')}</div>
                                 <div class="delivery-time">⏱ ${p.delivery}</div>
                             </div>
-                            <button class="btn-add" onclick="event.stopPropagation(); quickAdd(${p.id})">Ekle</button>
+                            <button class="btn-add" onclick="quickAdd(${p.id})">Ekle</button>
                         </div>
                     </div>
                 </div>
@@ -1157,25 +806,6 @@
             showNotification('✅ Sepete eklendi!');
         }
 
-        function addCustomCakeToCart() {
-            const customProduct = {
-                id: 'custom_' + Date.now(),
-                name: 'Özel Tasarım Pasta',
-                vendor: 'Seçili Pastane',
-                vendorId: 'TBD',
-                price: calculateCustomPrice(),
-                image: captureCanvasImage(),
-                category: 'custom',
-                quantity: 1,
-                customizations: { ...state.customCake }
-            };
-
-            state.cart.push(customProduct);
-            updateCart();
-            closeModal('studioModal');
-            showNotification('🎨 Özel tasarımınız sepete eklendi!');
-        }
-
         function updateCart() {
             const badge = document.getElementById('cartBadge');
             const itemsContainer = document.getElementById('cartItems');
@@ -1221,188 +851,10 @@
             drawer.classList.toggle('open');
         }
 
-        // ===== STUDIO FUNCTIONS =====
-        function openStudio() {
-            document.getElementById('studioModal').classList.add('show');
-            setTimeout(() => initializeCanvas(), 100);
-        }
-
-        function initializeCanvas() {
-            const canvas = document.getElementById('designCanvas');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            canvas.width = 800;
-            canvas.height = 800;
-
-            // Draw base cake image
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-                ctx.drawImage(img, 0, 0, 800, 800);
-                drawCustomText(ctx);
-            };
-            img.src = 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80';
-        }
-
-        function drawCustomText(ctx) {
-            const text = document.getElementById('customText')?.value || '';
-            if (!text) return;
-
-            const fontMap = {
-                cursive: '48px cursive',
-                serif: '48px serif',
-                luxury: '48px "Playfair Display"'
-            };
-
-            ctx.font = fontMap[state.customCake.font] || fontMap.cursive;
-            ctx.fillStyle = state.customCake.color;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(text, 400, 400);
-        }
-
-        function selectBase(base) {
-            state.customCake.base = base;
-            document.querySelectorAll('.base-option').forEach(opt => opt.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            const imageMap = {
-                chocolate: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80',
-                vanilla: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=800&q=80',
-                redvelvet: 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=800&q=80'
-            };
-
-            const canvas = document.getElementById('designCanvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-                ctx.clearRect(0, 0, 800, 800);
-                ctx.drawImage(img, 0, 0, 800, 800);
-                drawCustomText(ctx);
-            };
-            img.src = imageMap[base];
-        }
-
-        function selectSize(size) {
-            state.customCake.size = size;
-            document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            updatePricing();
-        }
-
-        function selectColor(color) {
-            state.customCake.color = color;
-            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
-            event.target.classList.add('active');
-            initializeCanvas();
-        }
-
-        function uploadImage(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                state.customCake.image = e.target.result;
-                const canvas = document.getElementById('designCanvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                img.onload = () => {
-                    ctx.drawImage(img, 200, 200, 400, 400);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function calculateCustomPrice() {
-            const basePrice = state.customCake.basePrice;
-            const sizeMultiplier = state.customCake.size / 4;
-            return Math.round(basePrice * sizeMultiplier);
-        }
-
-        function updatePricing() {
-            const price = calculateCustomPrice();
-            document.getElementById('totalPrice').textContent = `₺${price.toLocaleString('tr-TR')}`;
-        }
-
-        function captureCanvasImage() {
-            const canvas = document.getElementById('designCanvas');
-            return canvas.toDataURL('image/png');
-        }
-
-        function switchStudioMode(mode) {
-            state.studioMode = mode;
-            document.querySelectorAll('.studio-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if (mode === '3d') {
-                document.getElementById('designCanvas').style.display = 'none';
-                document.getElementById('threeDPreview').style.display = 'block';
-                init3DPreview();
-            } else {
-                document.getElementById('designCanvas').style.display = 'block';
-                document.getElementById('threeDPreview').style.display = 'none';
-            }
-        }
-
-        function init3DPreview() {
-            const container = document.getElementById('threeDPreview');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            
-            renderer.setSize(container.offsetWidth, container.offsetHeight);
-            container.innerHTML = '';
-            container.appendChild(renderer.domElement);
-
-            // Create cake geometry
-            const geometry = new THREE.CylinderGeometry(2, 2, 1, 32);
-            const texture = new THREE.CanvasTexture(document.getElementById('designCanvas'));
-            const material = new THREE.MeshPhysicalMaterial({
-                map: texture,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.1,
-                metalness: 0.1,
-                roughness: 0.1
-            });
-
-            const cake = new THREE.Mesh(geometry, material);
-            scene.add(cake);
-
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 5, 5);
-            scene.add(directionalLight);
-
-            camera.position.z = 5;
-
-            // Animation
-            function animate() {
-                requestAnimationFrame(animate);
-                cake.rotation.y += 0.01;
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
-
-        // ===== MODAL HANDLING =====
-        function openAuth() {
-            document.getElementById('authModal').classList.add('show');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        }
-
-        function toggleAuthMode() {
-            const title = document.getElementById('authTitle');
-            const isLogin = title.textContent === 'Giriş Yap';
-            title.textContent = isLogin ? 'Kayıt Ol' : 'Giriş Yap';
+        // ===== OPEN CAKE STUDIO =====
+        function openCakeStudio() {
+            const studioURL = 'https://saraypatisserie16-oss.github.io/saray-patisserie-web/cake-studio.html';
+            window.open(studioURL, '_blank', 'width=1400,height=900');
         }
 
         // ===== NOTIFICATIONS =====
@@ -1435,7 +887,6 @@
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             event.currentTarget.classList.add('active');
             
-            // Tab-specific logic here
             if (tab === 'home') {
                 renderProducts();
             }
@@ -1448,32 +899,14 @@
                 return;
             }
 
-            if (!state.user) {
-                toggleCart();
-                openAuth();
-                showNotification('🔐 Önce giriş yapmalısınız');
-                return;
-            }
-
-            // Generate order JSON
             const orderData = {
                 orderId: 'ORD_' + Date.now(),
-                customerId: state.user?.id || 'GUEST',
                 items: state.cart.map(item => ({
                     productId: item.id,
                     vendorId: item.vendorId,
                     name: item.name,
-                    basePrice: item.price,
-                    quantity: item.quantity,
-                    customizations: item.customizations ? {
-                        baseType: item.customizations.base,
-                        personCount: item.customizations.size,
-                        customText: item.customizations.text,
-                        fontStyle: item.customizations.font,
-                        textColor: item.customizations.color,
-                        imageUrl: item.customizations.image,
-                        designSnapshot: item.image
-                    } : null
+                    price: item.price,
+                    quantity: item.quantity
                 })),
                 deliveryAddress: {
                     city: state.selectedCity,
@@ -1491,25 +924,6 @@
             updateCart();
             toggleCart();
         }
-
-        // ===== TEXT INPUT LIVE UPDATE =====
-        document.addEventListener('DOMContentLoaded', () => {
-            const textInput = document.getElementById('customText');
-            if (textInput) {
-                textInput.addEventListener('input', () => {
-                    state.customCake.text = textInput.value;
-                    initializeCanvas();
-                });
-            }
-
-            const fontSelect = document.getElementById('fontSelect');
-            if (fontSelect) {
-                fontSelect.addEventListener('change', () => {
-                    state.customCake.font = fontSelect.value;
-                    initializeCanvas();
-                });
-            }
-        });
     </script>
 </body>
 </html>
