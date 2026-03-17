@@ -2,11 +2,13 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>🎨 Cake Studio — SARAY PATİSSERİE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>🎨 Professional Cake Studio — SARAY PATİSSERİE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Alex+Brush&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     
     <style>
         * {
@@ -28,15 +30,17 @@
             font-family: 'Montserrat', sans-serif;
             background: var(--black);
             color: var(--white);
-            overflow-x: hidden;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
         }
 
         h1, h2, h3 {
             font-family: 'Playfair Display', serif;
         }
 
-        /* ===== HEADER ===== */
-        .studio-header {
+        /* ===== TOP BAR ===== */
+        .top-bar {
             position: fixed;
             top: 0;
             left: 0;
@@ -48,40 +52,19 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 24px;
+            padding: 0 32px;
             z-index: 1000;
         }
 
-        .header-left {
+        .logo-section {
             display: flex;
             align-items: center;
-            gap: 20px;
-        }
-
-        .btn-back {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--glass);
-            border: var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            color: var(--white);
-        }
-
-        .btn-back:hover {
-            background: rgba(212, 175, 55, 0.15);
-            transform: scale(1.05);
+            gap: 24px;
         }
 
         .studio-logo {
             font-family: 'Playfair Display', serif;
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
             background: linear-gradient(135deg, #D4AF37, #F4E5A1);
             -webkit-background-clip: text;
@@ -89,78 +72,111 @@
             letter-spacing: 3px;
         }
 
-        .header-right {
+        .mode-indicator {
+            background: var(--glass);
+            border: var(--border);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mode-indicator.design-mode {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .mode-indicator.preview-mode {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .top-actions {
             display: flex;
             gap: 12px;
         }
 
-        .btn-save {
-            background: var(--glass);
-            border: var(--border);
+        .btn-top {
             padding: 12px 24px;
             border-radius: 50px;
             font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
+            border: none;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .btn-save:hover {
+        .btn-secondary {
+            background: var(--glass);
+            color: var(--white);
+            border: var(--border);
+        }
+
+        .btn-secondary:hover {
             background: rgba(212, 175, 55, 0.15);
         }
 
-        .btn-order {
+        .btn-primary {
             background: var(--gold);
             color: var(--black);
-            border: none;
-            padding: 12px 28px;
-            border-radius: 50px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .btn-order:hover {
+        .btn-primary:hover {
             transform: scale(1.05);
         }
 
-        /* ===== MAIN LAYOUT ===== */
-        .studio-container {
-            display: grid;
-            grid-template-columns: 400px 1fr 380px;
-            gap: 0;
-            height: 100vh;
-            padding-top: 70px;
+        .btn-preview {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
         }
 
-        /* ===== LEFT SIDEBAR - TABS ===== */
-        .left-sidebar {
+        /* ===== MAIN LAYOUT ===== */
+        .studio-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr 360px;
+            height: calc(100vh - 70px);
+            margin-top: 70px;
+        }
+
+        /* ===== LEFT PANEL ===== */
+        .left-panel {
             background: var(--black);
             border-right: var(--border);
             overflow-y: auto;
         }
 
+        .panel-header {
+            padding: 24px;
+            border-bottom: var(--border);
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
         .tab-nav {
             display: flex;
             flex-direction: column;
-            padding: 12px;
+            padding: 16px;
             gap: 8px;
-            border-bottom: var(--border);
         }
 
         .tab-btn {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 14px 16px;
+            padding: 16px;
             background: var(--glass);
             border: var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
@@ -168,16 +184,12 @@
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05));
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.05));
             border-color: var(--gold);
         }
 
-        .tab-btn:hover {
-            background: rgba(212, 175, 55, 0.1);
-        }
-
         .tab-icon {
-            font-size: 20px;
+            font-size: 22px;
         }
 
         .tab-content {
@@ -189,13 +201,12 @@
             display: block;
         }
 
-        /* ===== SECTION STYLING ===== */
         .section {
             margin-bottom: 32px;
         }
 
         .section-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
             margin-bottom: 16px;
             color: var(--gold);
@@ -217,8 +228,8 @@
         .option-btn {
             background: var(--glass);
             border: 1.5px solid rgba(212, 175, 55, 0.2);
-            padding: 14px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 14px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
@@ -233,11 +244,18 @@
             transform: scale(1.05);
         }
 
-        .option-btn:hover {
-            border-color: var(--gold);
+        .tier-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 16px;
         }
 
-        /* ===== FORM CONTROLS ===== */
+        .tier-icon {
+            font-size: 32px;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -261,60 +279,6 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .form-select option {
-            background: var(--black);
-            color: var(--white);
-        }
-
-        /* ===== SLIDERS ===== */
-        .slider-group {
-            margin-bottom: 20px;
-        }
-
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .slider-value {
-            color: var(--gold);
-            font-weight: 800;
-        }
-
-        .slider {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(212, 175, 55, 0.2);
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--gold);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        /* ===== COLOR PICKER ===== */
         .color-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -331,28 +295,71 @@
             position: relative;
         }
 
-        .color-option.active {
-            border-color: var(--gold);
-            transform: scale(1.1);
-        }
-
-        .color-option::after {
+        .color-option.active::after {
             content: '✓';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 800;
-            opacity: 0;
-            transition: opacity 0.3s;
+            color: var(--white);
+            text-shadow: 0 0 4px rgba(0,0,0,0.8);
         }
 
-        .color-option.active::after {
-            opacity: 1;
+        .slider-group {
+            margin-bottom: 20px;
         }
 
-        /* ===== DECORATION CHIPS ===== */
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(212, 175, 55, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--gold);
+            cursor: pointer;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--glass);
+        }
+
+        .upload-area:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .preview-image {
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 12px;
+            max-height: 200px;
+            object-fit: cover;
+        }
+
         .decoration-chips {
             display: flex;
             flex-wrap: wrap;
@@ -362,75 +369,82 @@
         .chip {
             background: var(--glass);
             border: var(--border);
-            padding: 8px 16px;
+            padding: 10px 18px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .chip.active {
             background: var(--gold);
             color: var(--black);
-            border-color: var(--gold);
         }
 
-        /* ===== CENTER - 3D VIEWER ===== */
-        .center-viewer {
-            background: linear-gradient(135deg, #1a1918 0%, #0F0E0C 100%);
+        /* ===== CENTER CANVAS ===== */
+        .center-canvas {
             position: relative;
+            background: linear-gradient(135deg, #1a1918 0%, #0F0E0C 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
         }
 
-        .viewer-container {
+        /* 2D DESIGN VIEW */
+        #canvas2D {
             width: 100%;
             height: 100%;
-            position: relative;
+            background: #fff;
+            display: block;
         }
 
-        #sketchfabEmbed {
+        /* 3D PREVIEW */
+        #canvas3D {
             width: 100%;
             height: 100%;
-            border: none;
+            display: none;
         }
 
-        .viewer-overlay {
+        .canvas-overlay {
             position: absolute;
-            bottom: 24px;
+            bottom: 32px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(15, 14, 12, 0.95);
             backdrop-filter: blur(20px);
             border: var(--border);
-            padding: 16px 24px;
+            padding: 16px 32px;
             border-radius: 50px;
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-
-        .viewer-tip {
             font-size: 13px;
             font-weight: 600;
             opacity: 0.8;
         }
 
-        /* ===== RIGHT SIDEBAR - SUMMARY ===== */
-        .right-sidebar {
+        /* ===== RIGHT PANEL ===== */
+        .right-panel {
             background: var(--black);
             border-left: var(--border);
             overflow-y: auto;
             padding: 24px;
         }
 
-        .summary-section {
+        .ai-assistant {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .ai-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .summary-card {
             background: var(--glass);
             border: var(--border);
             border-radius: 16px;
@@ -438,27 +452,16 @@
             margin-bottom: 20px;
         }
 
-        .summary-title {
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            color: var(--gold);
-        }
-
         .summary-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 0.5px solid rgba(212, 175, 55, 0.15);
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .summary-item:last-child {
             border-bottom: none;
-        }
-
-        .summary-label {
-            opacity: 0.8;
         }
 
         .summary-value {
@@ -466,12 +469,11 @@
             color: var(--gold);
         }
 
-        .price-breakdown {
+        .price-card {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
             border: 1px solid var(--gold);
             border-radius: 16px;
             padding: 24px;
-            margin-top: 20px;
         }
 
         .price-row {
@@ -485,179 +487,70 @@
             margin-top: 16px;
             padding-top: 16px;
             border-top: 1px solid rgba(212, 175, 55, 0.3);
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--gold);
         }
 
-        /* ===== FILE UPLOAD ===== */
-        .upload-area {
-            border: 2px dashed rgba(212, 175, 55, 0.3);
-            border-radius: 16px;
-            padding: 32px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: var(--glass);
-        }
-
-        .upload-area:hover {
-            border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .upload-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .upload-text {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .upload-hint {
-            font-size: 12px;
-            opacity: 0.6;
-        }
-
-        .preview-image {
-            width: 100%;
-            border-radius: 12px;
-            margin-top: 12px;
-            max-height: 200px;
-            object-fit: cover;
-        }
-
-        /* ===== MODAL ===== */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--black);
-            border: var(--border);
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .modal-title {
-            font-size: 24px;
-            font-weight: 800;
-        }
-
-        .btn-close {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--glass);
-            border: var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 20px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            background: var(--gold);
-            color: var(--black);
-            border: none;
-            padding: 16px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-        }
-
-        .btn-primary:hover {
-            transform: scale(1.02);
-        }
-
         /* ===== RESPONSIVE ===== */
-        @media (max-width: 1200px) {
-            .studio-container {
+        @media (max-width: 1400px) {
+            .studio-layout {
+                grid-template-columns: 340px 1fr 320px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .studio-layout {
                 grid-template-columns: 1fr;
             }
-
-            .left-sidebar, .right-sidebar {
-                display: none;
-            }
-
-            .mobile-controls {
-                display: block;
+            .left-panel, .right-panel {
                 position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(15, 14, 12, 0.98);
-                backdrop-filter: blur(20px);
-                border-top: var(--border);
-                padding: 16px;
-                z-index: 999;
+                height: calc(100vh - 70px);
+                z-index: 900;
             }
         }
     </style>
 </head>
 <body>
-    <!-- HEADER -->
-    <div class="studio-header">
-        <div class="header-left">
-            <a href="#" class="btn-back" onclick="window.close()">←</a>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="logo-section">
             <div class="studio-logo">SARAY</div>
-            <span style="font-size: 14px; opacity: 0.7; font-weight: 600;">Cake Studio</span>
+            <div class="mode-indicator design-mode" id="modeIndicator">
+                🎨 Tasarım Modu
+            </div>
         </div>
-        <div class="header-right">
-            <button class="btn-save" onclick="saveDesign()">📸 Kaydet</button>
-            <button class="btn-order" onclick="openOrderModal()">🛍 Sipariş Ver</button>
+        <div class="top-actions">
+            <button class="btn-top btn-secondary" onclick="resetDesign()">🔄 Sıfırla</button>
+            <button class="btn-top btn-preview" id="toggleModeBtn" onclick="toggleMode()">
+                👁️ 3D Önizleme
+            </button>
+            <button class="btn-top btn-primary" onclick="completeOrder()">
+                🛍 Sipariş Ver — <span id="topPrice">₺450</span>
+            </button>
         </div>
     </div>
 
-    <!-- MAIN CONTAINER -->
-    <div class="studio-container">
-        <!-- LEFT SIDEBAR - CONTROLS -->
-        <div class="left-sidebar">
+    <!-- MAIN LAYOUT -->
+    <div class="studio-layout">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <div class="panel-header">
+                <div class="panel-title">⚙️ Pasta Tasarımı</div>
+            </div>
+
             <div class="tab-nav">
-                <div class="tab-btn active" onclick="switchTab('cake')">
+                <div class="tab-btn active" onclick="switchTab('base')">
                     <span class="tab-icon">🎂</span>
-                    <span>Pasta Seç</span>
+                    <span>Pasta Tabanı</span>
                 </div>
                 <div class="tab-btn" onclick="switchTab('text')">
                     <span class="tab-icon">✍️</span>
-                    <span>Yazı Ekle</span>
+                    <span>Yazı & Font</span>
                 </div>
                 <div class="tab-btn" onclick="switchTab('image')">
-                    <span class="tab-icon">🖼</span>
-                    <span>Görsel</span>
+                    <span class="tab-icon">🖼️</span>
+                    <span>Görsel Ekle</span>
                 </div>
                 <div class="tab-btn" onclick="switchTab('decoration')">
                     <span class="tab-icon">🌹</span>
@@ -665,80 +558,66 @@
                 </div>
             </div>
 
-            <!-- TAB: CAKE -->
-            <div class="tab-content active" id="tab-cake">
-                <!-- THEME PRESET -->
+            <!-- TAB: BASE -->
+            <div class="tab-content active" id="tab-base">
                 <div class="section">
-                    <div class="section-title">💍 Hazır Temalar</div>
-                    <div class="option-grid">
-                        <div class="option-btn" onclick="applyTheme('wedding')">💍 Düğün</div>
-                        <div class="option-btn" onclick="applyTheme('birthday')">🎂 Doğum Günü</div>
-                        <div class="option-btn" onclick="applyTheme('baby')">👶 Baby Shower</div>
-                        <div class="option-btn" onclick="applyTheme('anniversary')">💕 Yıldönümü</div>
-                        <div class="option-btn" onclick="applyTheme('graduation')">🎓 Mezuniyet</div>
-                        <div class="option-btn" onclick="applyTheme('special')">✨ Özel</div>
-                    </div>
-                </div>
-
-                <!-- SIZE -->
-                <div class="section">
-                    <div class="section-title">👥 Kişi Sayısı</div>
+                    <div class="section-title">🎂 Pasta Katları</div>
                     <div class="option-grid triple">
-                        <div class="option-btn active" onclick="selectSize(4)">4 Kişi</div>
-                        <div class="option-btn" onclick="selectSize(6)">6 Kişi</div>
-                        <div class="option-btn" onclick="selectSize(10)">10 Kişi</div>
-                        <div class="option-btn" onclick="selectSize(16)">16 Kişi</div>
-                        <div class="option-btn" onclick="selectSize(24)">24 Kişi</div>
-                        <div class="option-btn" onclick="selectSize(35)">35 Kişi</div>
-                        <div class="option-btn" onclick="selectSize(50)">50+ Kişi</div>
+                        <div class="option-btn active tier-option" onclick="selectTiers(1)">
+                            <div class="tier-icon">🎂</div>
+                            <div>1 Kat</div>
+                        </div>
+                        <div class="option-btn tier-option" onclick="selectTiers(2)">
+                            <div class="tier-icon">🎂<br>🎂</div>
+                            <div>2 Kat</div>
+                        </div>
+                        <div class="option-btn tier-option" onclick="selectTiers(3)">
+                            <div class="tier-icon">🎂<br>🎂<br>🎂</div>
+                            <div>3 Kat</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- SHAPE -->
                 <div class="section">
-                    <div class="section-title">📐 Pasta Şekli</div>
-                    <div class="option-grid">
-                        <div class="option-btn active" onclick="selectShape('round')">⭕ Yuvarlak</div>
-                        <div class="option-btn" onclick="selectShape('heart')">❤️ Kalp</div>
-                        <div class="option-btn" onclick="selectShape('square')">⬛ Kare</div>
-                        <div class="option-btn" onclick="selectShape('rectangle')">▬ Dikdörtgen</div>
+                    <div class="section-title">👥 Kişi Sayısı (Min. 4)</div>
+                    <div class="option-grid triple">
+                        <div class="option-btn active" onclick="selectSize(4)">4</div>
+                        <div class="option-btn" onclick="selectSize(6)">6</div>
+                        <div class="option-btn" onclick="selectSize(8)">8</div>
+                        <div class="option-btn" onclick="selectSize(10)">10</div>
+                        <div class="option-btn" onclick="selectSize(12)">12</div>
+                        <div class="option-btn" onclick="selectSize(16)">16</div>
+                        <div class="option-btn" onclick="selectSize(20)">20</div>
+                        <div class="option-btn" onclick="selectSize(30)">30+</div>
                     </div>
                 </div>
 
-                <!-- COATING COLOR -->
                 <div class="section">
                     <div class="section-title">🎨 Kaplama Rengi</div>
                     <div class="color-grid">
-                        <div class="color-option active" style="background: #FFB6C1;" onclick="selectCoating('#FFB6C1')"></div>
-                        <div class="color-option" style="background: #FFFFFF; border: 1px solid #ccc;" onclick="selectCoating('#FFFFFF')"></div>
-                        <div class="color-option" style="background: #D4AF37;" onclick="selectCoating('#D4AF37')"></div>
-                        <div class="color-option" style="background: #8B4513;" onclick="selectCoating('#8B4513')"></div>
-                        <div class="color-option" style="background: #FFE4E1;" onclick="selectCoating('#FFE4E1')"></div>
-                        <div class="color-option" style="background: #E6E6FA;" onclick="selectCoating('#E6E6FA')"></div>
-                        <div class="color-option" style="background: #F0E68C;" onclick="selectCoating('#F0E68C')"></div>
-                        <div class="color-option" style="background: #98FB98;" onclick="selectCoating('#98FB98')"></div>
-                        <div class="color-option" style="background: #87CEEB;" onclick="selectCoating('#87CEEB')"></div>
-                        <div class="color-option" style="background: #000000;" onclick="selectCoating('#000000')"></div>
+                        <div class="color-option active" style="background: #FFB6C1;" onclick="selectColor('#FFB6C1')"></div>
+                        <div class="color-option" style="background: #FFFFFF; border: 1px solid #ccc;" onclick="selectColor('#FFFFFF')"></div>
+                        <div class="color-option" style="background: #D4AF37;" onclick="selectColor('#D4AF37')"></div>
+                        <div class="color-option" style="background: #8B4513;" onclick="selectColor('#8B4513')"></div>
+                        <div class="color-option" style="background: #FFE4E1;" onclick="selectColor('#FFE4E1')"></div>
+                        <div class="color-option" style="background: #E6E6FA;" onclick="selectColor('#E6E6FA')"></div>
+                        <div class="color-option" style="background: #F0E68C;" onclick="selectColor('#F0E68C')"></div>
+                        <div class="color-option" style="background: #98FB98;" onclick="selectColor('#98FB98')"></div>
+                        <div class="color-option" style="background: #87CEEB;" onclick="selectColor('#87CEEB')"></div>
+                        <div class="color-option" style="background: #000000;" onclick="selectColor('#000000')"></div>
                     </div>
                 </div>
 
-                <!-- FLAVOR -->
                 <div class="section">
-                    <div class="section-title">😋 Lezzet Seçimi</div>
-                    <div class="form-group">
-                        <select class="form-select" id="flavorSelect" onchange="updateSummary()">
-                            <option value="vanilla">🤍 Vanilya</option>
-                            <option value="chocolate">🍫 Çikolata</option>
-                            <option value="strawberry">🍓 Çilek</option>
-                            <option value="pistachio">🌿 Antep Fıstığı</option>
-                            <option value="lemon">🍋 Limon</option>
-                            <option value="redvelvet">❤️ Red Velvet</option>
-                            <option value="caramel">🍮 Karamel</option>
-                            <option value="hazelnut">🌰 Fındık</option>
-                            <option value="coconut">🥥 Hindistan Cevizi</option>
-                            <option value="mango">🥭 Mango</option>
-                        </select>
-                    </div>
+                    <div class="section-title">😋 Lezzet</div>
+                    <select class="form-select" id="flavorSelect" onchange="updateDesign()">
+                        <option value="vanilla">🤍 Vanilya</option>
+                        <option value="chocolate">🍫 Çikolata</option>
+                        <option value="strawberry">🍓 Çilek</option>
+                        <option value="pistachio">🌿 Antep Fıstığı</option>
+                        <option value="redvelvet">❤️ Red Velvet</option>
+                        <option value="caramel">🍮 Karamel</option>
+                    </select>
                 </div>
             </div>
 
@@ -746,21 +625,18 @@
             <div class="tab-content" id="tab-text">
                 <div class="section">
                     <div class="section-title">✍️ Pasta Yazısı</div>
-                    <div class="form-group">
-                        <input type="text" class="form-input" id="cakeText" placeholder="Mesajınız buraya..." maxlength="40" oninput="updateTextPreview()">
-                    </div>
+                    <input type="text" class="form-input" id="cakeText" placeholder="İyi ki doğdun..." maxlength="50" oninput="updateText()">
                 </div>
 
                 <div class="section">
-                    <div class="section-title">🔤 Font Seçimi</div>
-                    <div class="form-group">
-                        <select class="form-select" id="fontSelect" onchange="updateTextPreview()">
-                            <option value="Dancing Script" style="font-family: 'Dancing Script'">Dancing Script</option>
-                            <option value="Great Vibes" style="font-family: 'Great Vibes'">Great Vibes</option>
-                            <option value="Pacifico" style="font-family: 'Pacifico'">Pacifico</option>
-                            <option value="Playfair Display" style="font-family: 'Playfair Display'">Playfair Display</option>
-                        </select>
-                    </div>
+                    <div class="section-title">🔤 Font Stili</div>
+                    <select class="form-select" id="fontSelect" onchange="updateText()">
+                        <option value="Dancing Script">Dancing Script</option>
+                        <option value="Great Vibes">Great Vibes</option>
+                        <option value="Pacifico">Pacifico</option>
+                        <option value="Alex Brush">Alex Brush</option>
+                        <option value="Playfair Display">Playfair Display</option>
+                    </select>
                 </div>
 
                 <div class="section">
@@ -772,8 +648,6 @@
                         <div class="color-option" style="background: #FF69B4;" onclick="selectTextColor('#FF69B4')"></div>
                         <div class="color-option" style="background: #000000;" onclick="selectTextColor('#000000')"></div>
                         <div class="color-option" style="background: #FFFFFF; border: 1px solid #ccc;" onclick="selectTextColor('#FFFFFF')"></div>
-                        <div class="color-option" style="background: #FF0000;" onclick="selectTextColor('#FF0000')"></div>
-                        <div class="color-option" style="background: #0000FF;" onclick="selectTextColor('#0000FF')"></div>
                     </div>
                 </div>
 
@@ -781,9 +655,9 @@
                     <div class="slider-group">
                         <div class="slider-label">
                             <span>Yazı Boyutu</span>
-                            <span class="slider-value" id="textSizeValue">46px</span>
+                            <span class="slider-value" id="textSizeValue">48px</span>
                         </div>
-                        <input type="range" class="slider" min="20" max="80" value="46" id="textSize" oninput="updateTextSize()">
+                        <input type="range" class="slider" min="24" max="96" value="48" id="textSize" oninput="updateTextSize()">
                     </div>
                 </div>
             </div>
@@ -791,12 +665,12 @@
             <!-- TAB: IMAGE -->
             <div class="tab-content" id="tab-image">
                 <div class="section">
-                    <div class="section-title">🖼️ Pasta Görseli</div>
+                    <div class="section-title">🖼️ Görsel Yükle</div>
                     <div class="upload-area" onclick="document.getElementById('imageUpload').click()">
-                        <div class="upload-icon">🖼️</div>
-                        <div class="upload-text">Fotoğraf veya Görsel Yükle</div>
-                        <div class="upload-hint">Düğün fotoğrafı, logo, bebek resmi...</div>
-                        <div class="upload-hint">PNG, JPG desteklenir (Max 5MB)</div>
+                        <div style="font-size: 48px; margin-bottom: 12px;">📸</div>
+                        <div style="font-weight: 700; margin-bottom: 8px;">Fotoğraf Yükle</div>
+                        <div style="font-size: 12px; opacity: 0.7;">Logo, fotoğraf, tasarım...</div>
+                        <div style="font-size: 11px; opacity: 0.5; margin-top: 8px;">PNG, JPG (Max 5MB)</div>
                     </div>
                     <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
                     <img id="previewImage" class="preview-image" style="display: none;">
@@ -806,17 +680,17 @@
                     <div class="slider-group">
                         <div class="slider-label">
                             <span>Görsel Boyutu</span>
-                            <span class="slider-value" id="imageSizeValue">60%</span>
+                            <span class="slider-value" id="imageSizeValue">50%</span>
                         </div>
-                        <input type="range" class="slider" min="20" max="100" value="60" id="imageSize" oninput="updateImageSize()">
+                        <input type="range" class="slider" min="10" max="100" value="50" id="imageSize" oninput="updateImageSize()">
                     </div>
 
                     <div class="slider-group">
                         <div class="slider-label">
                             <span>Şeffaflık</span>
-                            <span class="slider-value" id="imageOpacityValue">85%</span>
+                            <span class="slider-value" id="imageOpacityValue">100%</span>
                         </div>
-                        <input type="range" class="slider" min="0" max="100" value="85" id="imageOpacity" oninput="updateImageOpacity()">
+                        <input type="range" class="slider" min="0" max="100" value="100" id="imageOpacity" oninput="updateImageOpacity()">
                     </div>
                 </div>
             </div>
@@ -827,193 +701,341 @@
                     <div class="section-title">🌹 Süsleme Seç</div>
                     <div class="decoration-chips">
                         <div class="chip active" onclick="toggleDecoration('roses')">🌹 Güller</div>
-                        <div class="chip" onclick="toggleDecoration('fruits')">🫐 Meyveler</div>
-                        <div class="chip" onclick="toggleDecoration('gold')">✨ Altın Varak</div>
-                        <div class="chip" onclick="toggleDecoration('candles')">🕯️ Mumlar</div>
-                        <div class="chip" onclick="toggleDecoration('macarons')">🍬 Makaronlar</div>
                         <div class="chip" onclick="toggleDecoration('flowers')">🌸 Çiçekler</div>
+                        <div class="chip" onclick="toggleDecoration('fruits')">🍓 Meyveler</div>
+                        <div class="chip" onclick="toggleDecoration('gold')">✨ Altın</div>
                         <div class="chip" onclick="toggleDecoration('pearls')">⚪ İnciler</div>
-                        <div class="chip" onclick="toggleDecoration('butterflies')">🦋 Kelebekler</div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">📏 Süs Yoğunluğu</div>
-                    <div class="option-grid triple">
-                        <div class="option-btn" onclick="setDensity('low')">Az</div>
-                        <div class="option-btn active" onclick="setDensity('medium')">Orta</div>
-                        <div class="option-btn" onclick="setDensity('high')">Çok</div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">🎀 Kenar Süslemesi</div>
-                    <div class="option-grid">
-                        <div class="option-btn active" onclick="setBorder('none')">Yok</div>
-                        <div class="option-btn" onclick="setBorder('pearl')">İnci Şerit</div>
-                        <div class="option-btn" onclick="setBorder('gold')">Altın Şerit</div>
-                        <div class="option-btn" onclick="setBorder('flower')">Çiçek Şerit</div>
+                        <div class="chip" onclick="toggleDecoration('candles')">🕯️ Mumlar</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- CENTER - 3D VIEWER -->
-        <div class="center-viewer">
-            <div class="viewer-container">
-                <iframe id="sketchfabEmbed" src="https://sketchfab.com/models/69be5c0c0d404113a227d9ba19d78447/embed?autostart=1&preload=1&ui_theme=dark&ui_stop=0" frameborder="0" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share allowfullscreen></iframe>
-            </div>
-            <div class="viewer-overlay">
-                <span class="viewer-tip">🖱️ Sürükle & Döndür</span>
-                <span class="viewer-tip">|</span>
-                <span class="viewer-tip">🔍 Yakınlaştır</span>
+        <!-- CENTER CANVAS -->
+        <div class="center-canvas">
+            <!-- 2D DESIGN MODE -->
+            <canvas id="canvas2D"></canvas>
+
+            <!-- 3D PREVIEW MODE -->
+            <canvas id="canvas3D"></canvas>
+
+            <div class="canvas-overlay" id="canvasOverlay">
+                🎨 Üstten görünüm — Tasarımınızı yapın
             </div>
         </div>
 
-        <!-- RIGHT SIDEBAR - SUMMARY -->
-        <div class="right-sidebar">
-            <div class="summary-section">
-                <div class="summary-title">🎂 Sipariş Özeti</div>
-                <div class="summary-item">
-                    <span class="summary-label">Tema</span>
-                    <span class="summary-value" id="sum-theme">Seçilmedi</span>
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <!-- AI ASSISTANT -->
+            <div class="ai-assistant">
+                <div class="ai-title">🤖 AI Asistan</div>
+                <div style="font-size: 13px; line-height: 1.6; opacity: 0.9;" id="aiSuggestion">
+                    💡 Pembe fondanlı pastanıza altın yazı ve güller harika yakışacak!
+                </div>
+            </div>
+
+            <!-- SUMMARY -->
+            <div class="summary-card">
+                <div style="font-size: 16px; font-weight: 800; margin-bottom: 16px; color: var(--gold);">
+                    📋 Tasarım Özeti
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Kişi Sayısı</span>
+                    <span>Kat Sayısı</span>
+                    <span class="summary-value" id="sum-tiers">1 Kat</span>
+                </div>
+                <div class="summary-item">
+                    <span>Kişi Sayısı</span>
                     <span class="summary-value" id="sum-size">4 Kişi</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Şekil</span>
-                    <span class="summary-value" id="sum-shape">Yuvarlak</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">Lezzet</span>
+                    <span>Lezzet</span>
                     <span class="summary-value" id="sum-flavor">Vanilya</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Yazı</span>
+                    <span>Yazı</span>
                     <span class="summary-value" id="sum-text">—</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Görsel</span>
+                    <span>Görsel</span>
                     <span class="summary-value" id="sum-image">Yok</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Süsleme</span>
-                    <span class="summary-value" id="sum-decoration">Güller</span>
+                    <span>Süsleme</span>
+                    <span class="summary-value" id="sum-decoration">1 Çeşit</span>
                 </div>
             </div>
 
-            <div class="price-breakdown">
+            <!-- PRICE -->
+            <div class="price-card">
                 <div class="price-row">
                     <span>Temel Pasta</span>
                     <span id="price-base">₺450</span>
                 </div>
                 <div class="price-row">
+                    <span>Ek Katlar</span>
+                    <span id="price-tiers">₺0</span>
+                </div>
+                <div class="price-row">
                     <span>Özel Tasarım</span>
-                    <span id="price-custom">₺150</span>
+                    <span id="price-custom">₺0</span>
                 </div>
                 <div class="price-row">
                     <span>Süsleme</span>
                     <span id="price-decoration">₺100</span>
                 </div>
-                <div class="price-row">
-                    <span>Görsel Baskı</span>
-                    <span id="price-image">₺0</span>
-                </div>
                 <div class="price-row total">
                     <span>TOPLAM</span>
-                    <span id="total-price">₺700</span>
+                    <span id="total-price">₺550</span>
                 </div>
             </div>
-
-            <div style="margin-top: 24px; padding: 20px; background: var(--glass); border: var(--border); border-radius: 16px;">
-                <div style="font-size: 13px; opacity: 0.8; margin-bottom: 8px;">💡 İpucu</div>
-                <div style="font-size: 12px; line-height: 1.6; opacity: 0.7;">
-                    3D modeli fareyle sürükleyerek döndürün. Tasarımınızı kaydetmeyi unutmayın!
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ORDER MODAL -->
-    <div class="modal" id="orderModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">🎂 Sipariş Ver</h2>
-                <div class="btn-close" onclick="closeOrderModal()">✕</div>
-            </div>
-
-            <form id="orderForm">
-                <div class="form-group">
-                    <label class="form-label">Ad Soyad</label>
-                    <input type="text" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Telefon</label>
-                    <input type="tel" class="form-input" placeholder="0555 555 55 55" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">E-posta</label>
-                    <input type="email" class="form-input" placeholder="ornek@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Teslim Tarihi</label>
-                    <input type="date" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Teslim Saati</label>
-                    <select class="form-select" required>
-                        <option value="">Saat Seçin</option>
-                        <option value="10:00">10:00 - 11:00</option>
-                        <option value="11:00">11:00 - 12:00</option>
-                        <option value="12:00">12:00 - 13:00</option>
-                        <option value="13:00">13:00 - 14:00</option>
-                        <option value="14:00">14:00 - 15:00</option>
-                        <option value="15:00">15:00 - 16:00</option>
-                        <option value="16:00">16:00 - 17:00</option>
-                        <option value="17:00">17:00 - 18:00</option>
-                        <option value="18:00">18:00 - 19:00</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Teslimat Adresi</label>
-                    <textarea class="form-input" rows="3" placeholder="Tam adresinizi yazın..." required></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Ödeme Yöntemi</label>
-                    <select class="form-select" required>
-                        <option value="whatsapp">📱 WhatsApp Onayı</option>
-                        <option value="card">💳 Kredi Kartı</option>
-                        <option value="transfer">🏦 Havale/EFT</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-primary">✅ Siparişi Onayla</button>
-            </form>
         </div>
     </div>
 
     <script>
         // ===== STATE =====
         const state = {
-            theme: null,
+            mode: '2d', // '2d' or '3d'
+            tiers: 1,
             size: 4,
-            shape: 'round',
-            coating: '#FFB6C1',
+            coatingColor: '#FFB6C1',
             flavor: 'vanilla',
             text: '',
             textColor: '#D4AF37',
-            textSize: 46,
+            textSize: 48,
             font: 'Dancing Script',
             image: null,
-            imageSize: 60,
-            imageOpacity: 85,
-            decorations: ['roses'],
-            density: 'medium',
-            border: 'none'
+            imageSize: 50,
+            imageOpacity: 100,
+            decorations: ['roses']
         };
 
-        // ===== TAB SWITCHING =====
+        let scene, camera, renderer, controls, cake;
+        let canvas2D, ctx2D, canvas3D;
+
+        // ===== CAKE BASE IMAGES =====
+        const cakeImages = {
+            1: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1200&q=90', // Chocolate
+            2: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=1200&q=90', // Vanilla
+            3: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=1200&q=90'  // Berry
+        };
+
+        // ===== INITIALIZATION =====
+        window.addEventListener('DOMContentLoaded', () => {
+            canvas2D = document.getElementById('canvas2D');
+            canvas3D = document.getElementById('canvas3D');
+            ctx2D = canvas2D.getContext('2d');
+            
+            init2DCanvas();
+            init3D();
+            updateSummary();
+        });
+
+        // ===== 2D CANVAS =====
+        function init2DCanvas() {
+            const container = canvas2D.parentElement;
+            canvas2D.width = container.clientWidth;
+            canvas2D.height = container.clientHeight;
+            draw2D();
+        }
+
+        function draw2D() {
+            if (state.mode !== '2d') return;
+
+            ctx2D.clearRect(0, 0, canvas2D.width, canvas2D.height);
+
+            // Draw cake base image
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const size = Math.min(canvas2D.width, canvas2D.height) * 0.7;
+                const x = (canvas2D.width - size) / 2;
+                const y = (canvas2D.height - size) / 2;
+
+                // Draw cake with coating color overlay
+                ctx2D.save();
+                ctx2D.drawImage(img, x, y, size, size);
+                ctx2D.globalCompositeOperation = 'multiply';
+                ctx2D.fillStyle = state.coatingColor;
+                ctx2D.globalAlpha = 0.3;
+                ctx2D.fillRect(x, y, size, size);
+                ctx2D.restore();
+
+                // Draw uploaded image
+                if (state.image) {
+                    const uploadedImg = new Image();
+                    uploadedImg.src = state.image;
+                    uploadedImg.onload = () => {
+                        const imgSize = size * (state.imageSize / 100);
+                        const imgX = canvas2D.width / 2 - imgSize / 2;
+                        const imgY = canvas2D.height / 2 - imgSize / 2;
+                        ctx2D.globalAlpha = state.imageOpacity / 100;
+                        ctx2D.drawImage(uploadedImg, imgX, imgY, imgSize, imgSize);
+                        ctx2D.globalAlpha = 1;
+                        drawText();
+                    };
+                } else {
+                    drawText();
+                }
+            };
+            img.src = cakeImages[state.tiers] || cakeImages[1];
+        }
+
+        function drawText() {
+            if (!state.text) return;
+
+            ctx2D.save();
+            ctx2D.font = `${state.textSize}px ${state.font}`;
+            ctx2D.fillStyle = state.textColor;
+            ctx2D.textAlign = 'center';
+            ctx2D.textBaseline = 'middle';
+            ctx2D.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx2D.shadowBlur = 4;
+            ctx2D.fillText(state.text, canvas2D.width / 2, canvas2D.height / 2);
+            ctx2D.restore();
+        }
+
+        // ===== 3D ENGINE =====
+        function init3D() {
+            const container = canvas3D.parentElement;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0F0E0C);
+
+            camera = new THREE.PerspectiveCamera(
+                45,
+                container.clientWidth / container.clientHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 6, 10);
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas3D, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // LIGHTING
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            mainLight.position.set(5, 10, 5);
+            mainLight.castShadow = true;
+            scene.add(mainLight);
+
+            // GROUND
+            const groundGeometry = new THREE.PlaneGeometry(20, 20);
+            const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -0.5;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            animate3D();
+        }
+
+        function create3DCake() {
+            if (cake) scene.remove(cake);
+
+            cake = new THREE.Group();
+
+            const tierHeights = {
+                1: [1.0],
+                2: [0.8, 0.6],
+                3: [0.8, 0.6, 0.5]
+            };
+
+            const tierSizes = {
+                1: [2.5],
+                2: [2.5, 1.8],
+                3: [2.5, 1.8, 1.2]
+            };
+
+            const heights = tierHeights[state.tiers] || tierHeights[1];
+            const sizes = tierSizes[state.tiers] || tierSizes[1];
+
+            let yPosition = 0;
+
+            heights.forEach((height, index) => {
+                const radius = sizes[index];
+                const geometry = new THREE.CylinderGeometry(radius, radius, height, 32);
+                const material = new THREE.MeshPhysicalMaterial({
+                    color: new THREE.Color(state.coatingColor),
+                    clearcoat: 0.5,
+                    clearcoatRoughness: 0.3,
+                    metalness: 0.1,
+                    roughness: 0.4
+                });
+
+                const tier = new THREE.Mesh(geometry, material);
+                tier.castShadow = true;
+                tier.receiveShadow = true;
+                tier.position.y = yPosition + height / 2;
+                cake.add(tier);
+
+                yPosition += height;
+            });
+
+            scene.add(cake);
+
+            // Add text sprite
+            if (state.text) {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = 512;
+                canvas.height = 512;
+
+                context.fillStyle = state.textColor;
+                context.font = `bold ${state.textSize}px ${state.font}`;
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillText(state.text, 256, 256);
+
+                const texture = new THREE.CanvasTexture(canvas);
+                const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+                const textSprite = new THREE.Sprite(spriteMaterial);
+                textSprite.position.y = yPosition + 0.5;
+                textSprite.scale.set(4, 4, 1);
+                cake.add(textSprite);
+            }
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            if (state.mode === '3d') {
+                controls.update();
+                renderer.render(scene, camera);
+            }
+        }
+
+        // ===== MODE TOGGLE =====
+        function toggleMode() {
+            if (state.mode === '2d') {
+                state.mode = '3d';
+                canvas2D.style.display = 'none';
+                canvas3D.style.display = 'block';
+                document.getElementById('modeIndicator').textContent = '👁️ 3D Önizleme';
+                document.getElementById('modeIndicator').className = 'mode-indicator preview-mode';
+                document.getElementById('toggleModeBtn').innerHTML = '🎨 Tasarım Modu';
+                document.getElementById('canvasOverlay').textContent = '🖱️ Sürükle & Döndür — Scroll ile Yakınlaştır';
+                create3DCake();
+            } else {
+                state.mode = '2d';
+                canvas2D.style.display = 'block';
+                canvas3D.style.display = 'none';
+                document.getElementById('modeIndicator').textContent = '🎨 Tasarım Modu';
+                document.getElementById('modeIndicator').className = 'mode-indicator design-mode';
+                document.getElementById('toggleModeBtn').innerHTML = '👁️ 3D Önizleme';
+                document.getElementById('canvasOverlay').textContent = '🎨 Üstten görünüm — Tasarımınızı yapın';
+                draw2D();
+            }
+        }
+
+        // ===== UI CONTROLS =====
         function switchTab(tabName) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
@@ -1022,71 +1044,52 @@
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
-        // ===== CAKE SETTINGS =====
-        function applyTheme(theme) {
-            state.theme = theme;
-            document.querySelectorAll('#tab-cake .option-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+        function selectTiers(tiers) {
+            state.tiers = tiers;
+            document.querySelectorAll('.tier-option').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
-
-            const themePresets = {
-                wedding: { coating: '#FFFFFF', decorations: ['roses', 'pearls'], border: 'pearl' },
-                birthday: { coating: '#FFB6C1', decorations: ['candles', 'flowers'], border: 'gold' },
-                baby: { coating: '#E6E6FA', decorations: ['butterflies', 'flowers'], border: 'none' },
-                anniversary: { coating: '#FF69B4', decorations: ['roses', 'gold'], border: 'gold' },
-                graduation: { coating: '#000000', decorations: ['gold'], border: 'gold' },
-                special: { coating: '#D4AF37', decorations: ['roses', 'gold', 'pearls'], border: 'gold' }
-            };
-
-            if (themePresets[theme]) {
-                const preset = themePresets[theme];
-                state.coating = preset.coating;
-                state.decorations = preset.decorations;
-                state.border = preset.border;
-            }
-
-            updateSummary();
+            updateDesign();
         }
 
         function selectSize(size) {
             state.size = size;
-            document.querySelectorAll('#tab-cake .option-grid.triple .option-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('#tab-base .option-grid.triple .option-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
             event.currentTarget.classList.add('active');
             updateSummary();
         }
 
-        function selectShape(shape) {
-            state.shape = shape;
-            updateSummary();
-        }
-
-        function selectCoating(color) {
-            state.coating = color;
-            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+        function selectColor(color) {
+            state.coatingColor = color;
+            document.querySelectorAll('#tab-base .color-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
             event.currentTarget.classList.add('active');
-            updateSummary();
-        }
-
-        // ===== TEXT SETTINGS =====
-        function updateTextPreview() {
-            state.text = document.getElementById('cakeText').value;
-            state.font = document.getElementById('fontSelect').value;
-            updateSummary();
+            updateDesign();
         }
 
         function selectTextColor(color) {
             state.textColor = color;
-            document.querySelectorAll('#tab-text .color-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelectorAll('#tab-text .color-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
             event.currentTarget.classList.add('active');
+            updateDesign();
+        }
+
+        function updateText() {
+            state.text = document.getElementById('cakeText').value;
+            state.font = document.getElementById('fontSelect').value;
+            updateDesign();
         }
 
         function updateTextSize() {
-            state.textSize = document.getElementById('textSize').value;
+            state.textSize = parseInt(document.getElementById('textSize').value);
             document.getElementById('textSizeValue').textContent = state.textSize + 'px';
+            updateDesign();
         }
 
-        // ===== IMAGE HANDLING =====
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1097,22 +1100,23 @@
                 document.getElementById('previewImage').src = e.target.result;
                 document.getElementById('previewImage').style.display = 'block';
                 document.getElementById('imageControls').style.display = 'block';
-                updateSummary();
+                updateDesign();
             };
             reader.readAsDataURL(file);
         }
 
         function updateImageSize() {
-            state.imageSize = document.getElementById('imageSize').value;
+            state.imageSize = parseInt(document.getElementById('imageSize').value);
             document.getElementById('imageSizeValue').textContent = state.imageSize + '%';
+            updateDesign();
         }
 
         function updateImageOpacity() {
-            state.imageOpacity = document.getElementById('imageOpacity').value;
+            state.imageOpacity = parseInt(document.getElementById('imageOpacity').value);
             document.getElementById('imageOpacityValue').textContent = state.imageOpacity + '%';
+            updateDesign();
         }
 
-        // ===== DECORATION =====
         function toggleDecoration(deco) {
             const index = state.decorations.indexOf(deco);
             if (index > -1) {
@@ -1125,150 +1129,73 @@
             updateSummary();
         }
 
-        function setDensity(density) {
-            state.density = density;
-            document.querySelectorAll('#tab-decoration .option-grid.triple .option-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+        function updateDesign() {
+            if (state.mode === '2d') {
+                draw2D();
+            } else {
+                create3DCake();
+            }
+            updateSummary();
         }
 
-        function setBorder(border) {
-            state.border = border;
-        }
-
-        // ===== SUMMARY UPDATE =====
         function updateSummary() {
-            const themeNames = {
-                wedding: 'Düğün',
-                birthday: 'Doğum Günü',
-                baby: 'Baby Shower',
-                anniversary: 'Yıldönümü',
-                graduation: 'Mezuniyet',
-                special: 'Özel'
-            };
-
-            const shapeNames = {
-                round: 'Yuvarlak',
-                heart: 'Kalp',
-                square: 'Kare',
-                rectangle: 'Dikdörtgen'
-            };
-
-            const flavorNames = {
-                vanilla: 'Vanilya',
-                chocolate: 'Çikolata',
-                strawberry: 'Çilek',
-                pistachio: 'Antep Fıstığı',
-                lemon: 'Limon',
-                redvelvet: 'Red Velvet',
-                caramel: 'Karamel',
-                hazelnut: 'Fındık',
-                coconut: 'Hindistan Cevizi',
-                mango: 'Mango'
-            };
-
-            document.getElementById('sum-theme').textContent = state.theme ? themeNames[state.theme] : 'Seçilmedi';
+            document.getElementById('sum-tiers').textContent = state.tiers + ' Kat';
             document.getElementById('sum-size').textContent = state.size + ' Kişi';
-            document.getElementById('sum-shape').textContent = shapeNames[state.shape];
-            document.getElementById('sum-flavor').textContent = flavorNames[document.getElementById('flavorSelect')?.value || 'vanilla'];
+            document.getElementById('sum-flavor').textContent = document.getElementById('flavorSelect')?.value || 'Vanilya';
             document.getElementById('sum-text').textContent = state.text || '—';
             document.getElementById('sum-image').textContent = state.image ? 'Eklendi ✓' : 'Yok';
-            document.getElementById('sum-decoration').textContent = state.decorations.length + ' Adet';
+            document.getElementById('sum-decoration').textContent = state.decorations.length + ' Çeşit';
 
-            // PRICE CALCULATION
+            calculatePrice();
+        }
+
+        function calculatePrice() {
             const basePrice = 450;
+            const tierPrice = (state.tiers - 1) * 200; // Her ek kat +200₺
             const sizeMultiplier = state.size / 4;
             const customPrice = (state.text || state.image) ? 150 : 0;
             const decorationPrice = state.decorations.length * 50;
-            const imagePrice = state.image ? 75 : 0;
 
             const totalBase = Math.round(basePrice * sizeMultiplier);
-            const total = totalBase + customPrice + decorationPrice + imagePrice;
+            const total = totalBase + tierPrice + customPrice + decorationPrice;
 
             document.getElementById('price-base').textContent = '₺' + totalBase;
+            document.getElementById('price-tiers').textContent = '₺' + tierPrice;
             document.getElementById('price-custom').textContent = '₺' + customPrice;
             document.getElementById('price-decoration').textContent = '₺' + decorationPrice;
-            document.getElementById('price-image').textContent = '₺' + imagePrice;
             document.getElementById('total-price').textContent = '₺' + total;
+            document.getElementById('topPrice').textContent = '₺' + total;
         }
 
-        // ===== SAVE DESIGN =====
-        function saveDesign() {
-            const designData = {
-                ...state,
-                timestamp: new Date().toISOString()
-            };
-
-            localStorage.setItem('saray_cake_design', JSON.stringify(designData));
-            
-            // Show notification
-            const notification = document.createElement('div');
-            notification.style = `
-                position: fixed;
-                top: 90px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: var(--gold);
-                color: var(--black);
-                padding: 16px 32px;
-                border-radius: 50px;
-                font-weight: 800;
-                z-index: 3000;
-                animation: slideDown 0.3s;
-            `;
-            notification.textContent = '✅ Tasarımınız kaydedildi!';
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.remove();
-            }, 2000);
+        function resetDesign() {
+            if (confirm('🔄 Tüm tasarımı sıfırlamak istediğinize emin misiniz?')) {
+                location.reload();
+            }
         }
 
-        // ===== ORDER MODAL =====
-        function openOrderModal() {
-            document.getElementById('orderModal').classList.add('show');
-        }
-
-        function closeOrderModal() {
-            document.getElementById('orderModal').classList.remove('show');
-        }
-
-        document.getElementById('orderForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
+        function completeOrder() {
             const orderData = {
                 design: state,
-                customer: {
-                    name: e.target[0].value,
-                    phone: e.target[1].value,
-                    email: e.target[2].value
-                },
-                delivery: {
-                    date: e.target[3].value,
-                    time: e.target[4].value,
-                    address: e.target[5].value
-                },
-                payment: e.target[6].value,
                 orderId: 'SARAY_' + Date.now(),
-                createdAt: new Date().toISOString()
+                timestamp: new Date().toISOString()
             };
+            console.log('📦 ORDER:', JSON.stringify(orderData, null, 2));
+            alert('🎉 Sipariş formu hazırlanıyor! Konsola bakın.');
+        }
 
-            console.log('📦 ORDER PLACED:', JSON.stringify(orderData, null, 2));
+        // ===== RESIZE HANDLER =====
+        window.addEventListener('resize', () => {
+            const container = canvas2D.parentElement;
             
-            alert('🎉 Siparişiniz alındı! WhatsApp üzerinden onay bekleyin.');
-            closeOrderModal();
-        });
+            // 2D Canvas
+            canvas2D.width = container.clientWidth;
+            canvas2D.height = container.clientHeight;
+            if (state.mode === '2d') draw2D();
 
-        // ===== INITIALIZE =====
-        window.addEventListener('DOMContentLoaded', () => {
-            updateSummary();
-            
-            // Load saved design if exists
-            const saved = localStorage.getItem('saray_cake_design');
-            if (saved) {
-                const data = JSON.parse(saved);
-                Object.assign(state, data);
-                updateSummary();
-            }
+            // 3D Canvas
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
         });
     </script>
 </body>
