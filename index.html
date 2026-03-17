@@ -3,324 +3,1422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saray Patisserie | Luxury Cake Marketplace</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <title>Saray Patisserie - Türkiye'nin Lüks Pasta Pazaryeri</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
     <style>
-        :root {
-            --black: #0F0E0C;
-            --gold: #D4AF37;
-            --white: #F5F5F5;
-            --dark-gray: #1a1a1a;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(212, 175, 55, 0.3);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        * { box-sizing: border-box; outline: none; transition: all 0.3s ease; }
-        body { margin: 0; background-color: var(--black); color: var(--white); font-family: 'Montserrat', sans-serif; overflow: hidden; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F5F5F5;
+            color: #333;
+        }
 
-        /* --- Header & Navigation --- */
-        header {
-            height: 70px;
-            padding: 0 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            background: rgba(15, 14, 12, 0.98);
-            position: relative;
+        /* Header - Trendyol Style */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
             z-index: 1000;
         }
 
-        .logo { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold); letter-spacing: 4px; cursor: pointer; }
-        .nav-right { display: flex; gap: 30px; align-items: center; }
-        .location-badge { font-size: 11px; color: var(--gold); border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; font-weight: 600; }
-        .btn-auth { background: var(--gold); color: var(--black); border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 700; }
-
-        /* --- Layout Grid --- */
-        .app-container {
-            display: grid;
-            grid-template-columns: 350px 1fr 350px;
-            height: calc(100vh - 70px);
+        .header-top {
+            background: linear-gradient(135deg, #2C1810 0%, #3D2415 100%);
+            padding: 8px 0;
+            text-align: center;
+            color: #FFD700;
+            font-size: 13px;
+            font-weight: 500;
         }
 
-        /* --- Left Sidebar: Editor --- */
-        .sidebar-editor {
-            background: var(--dark-gray);
-            border-right: 1px solid rgba(255,255,255,0.05);
-            padding: 30px;
+        .header-main {
             display: flex;
-            flex-direction: column;
-            gap: 25px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .section-title { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 18px; margin-bottom: 5px; }
-        .input-item { display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 10px; text-transform: uppercase; color: #888; letter-spacing: 1px; }
-        
-        input[type="text"], select {
-            background: #252525; border: 1px solid #444; color: white; padding: 14px; border-radius: 4px; font-size: 13px;
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #D4AF37, #F4D03F);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
         }
 
-        .btn-upload { background: var(--glass); border: 1px dashed var(--gold); color: var(--gold); padding: 15px; border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; }
-
-        /* --- Center: Canvas Stage --- */
-        .main-stage {
+        .search-box {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 40px;
             position: relative;
-            background: radial-gradient(circle, #252525 0%, #0f0e0c 100%);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 50px 12px 20px;
+            border: 2px solid #E0E0E0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #D4AF37;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .header-actions {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            gap: 24px;
             align-items: center;
         }
 
-        #canvas-wrapper {
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
-            border: 4px solid var(--gold);
+        .header-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .cart-btn {
+            background: #D4AF37;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
             position: relative;
         }
 
-        .view-toggle {
-            margin-top: 40px;
-            background: var(--white);
-            color: var(--black);
-            padding: 16px 40px;
-            border-radius: 50px;
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #E74C3C;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
             font-weight: 700;
-            border: none;
+        }
+
+        /* Location Selector */
+        .location-bar {
+            background: #FFF9E6;
+            padding: 12px 5%;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #FFE5B4;
+        }
+
+        .location-bar select {
+            padding: 8px 16px;
+            border: 2px solid #D4AF37;
+            border-radius: 6px;
+            font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            z-index: 10;
+            font-weight: 500;
+            background: white;
         }
 
-        /* --- 3D Overlay --- */
-        #three-container {
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, #2C1810 0%, #5D4037 100%);
+            padding: 60px 5%;
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 32px;
+            color: #FFE5B4;
+        }
+
+        .cta-design {
+            background: #D4AF37;
+            color: #2C1810;
+            padding: 16px 48px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cta-design:hover {
+            background: #F4D03F;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Categories - Trendyol Style */
+        .categories {
+            background: white;
+            padding: 24px 5%;
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .category-chip {
+            padding: 10px 24px;
+            border: 2px solid #E0E0E0;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .category-chip.active {
+            background: #D4AF37;
+            border-color: #D4AF37;
+            color: white;
+        }
+
+        .category-chip:hover:not(.active) {
+            border-color: #D4AF37;
+            color: #D4AF37;
+        }
+
+        /* Products Section */
+        .products-container {
+            padding: 40px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #2C1810;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .product-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #FAF8F5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-tag {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--black);
+            top: 12px;
+            left: 12px;
+            background: #E74C3C;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .product-tag.ready {
+            background: #27AE60;
+        }
+
+        .product-info {
+            padding: 16px;
+        }
+
+        .vendor-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .vendor-icon {
+            width: 20px;
+            height: 20px;
+            background: #D4AF37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .stars {
+            color: #FFC107;
+        }
+
+        .product-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #D4AF37;
+        }
+
+        .add-cart-btn {
+            background: #2C1810;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .add-cart-btn:hover {
+            background: #3D2415;
+            transform: scale(1.05);
+        }
+
+        /* Design Studio Modal - Full Screen */
+        .studio-modal {
             display: none;
-            z-index: 100;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            overflow-y: auto;
         }
 
-        .close-3d {
+        .studio-modal.active {
+            display: block;
+        }
+
+        .studio-header {
+            background: white;
+            padding: 20px 5%;
+            border-bottom: 2px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .studio-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2C1810;
+        }
+
+        .close-studio {
+            background: #E0E0E0;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-studio:hover {
+            background: #D0D0D0;
+        }
+
+        /* Steps Progress */
+        .steps-progress {
+            background: #FFF9E6;
+            padding: 24px 5%;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #999;
+        }
+
+        .progress-step.active {
+            color: #2C1810;
+        }
+
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #E0E0E0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .progress-step.active .step-circle {
+            background: #D4AF37;
+            color: white;
+        }
+
+        .progress-step.completed .step-circle {
+            background: #27AE60;
+            color: white;
+        }
+
+        /* Studio Content */
+        .studio-content {
+            padding: 40px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .design-workspace {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 32px;
+        }
+
+        /* 2D Canvas Area */
+        .canvas-area {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .canvas-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #2C1810;
+        }
+
+        .cake-canvas-2d {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: #FFF8F0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid #D4AF37;
+        }
+
+        .cake-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .design-overlay {
             position: absolute;
-            top: 40px; right: 40px;
-            background: var(--gold);
-            color: var(--black);
-            border: none; padding: 10px 25px;
-            font-weight: 700; cursor: pointer; z-index: 110;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
 
-        /* --- Right Sidebar: Summary --- */
-        .sidebar-summary {
-            background: var(--dark-gray);
-            border-left: 1px solid rgba(255,255,255,0.05);
-            padding: 30px;
+        .text-on-cake {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 52px;
+            font-weight: 700;
+            color: #D4AF37;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-family: 'Poppins', sans-serif;
+            white-space: nowrap;
         }
 
-        .price-display { font-size: 42px; color: var(--gold); margin: 25px 0; font-family: 'Playfair Display', serif; }
-        .vendor-card { background: var(--glass); padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
-        .badge { display: inline-block; background: #4caf50; color: white; font-size: 9px; padding: 2px 8px; border-radius: 10px; vertical-align: middle; }
+        .uploaded-logo {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 30%;
+            border-radius: 8px;
+        }
 
+        /* Controls Panel */
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .control-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #2C1810;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-card input,
+        .control-card select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E0E0E0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .control-card input:focus,
+        .control-card select:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+
+        .upload-area {
+            border: 2px dashed #D4AF37;
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            background: #FFF9E6;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            background: #FFF3CC;
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* 3D Preview */
+        .preview-3d-area {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .canvas-3d {
+            width: 100%;
+            height: 600px;
+            background: linear-gradient(135deg, #F5F5F5 0%, #E8E8E8 100%);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .rotation-controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .rotate-btn {
+            background: #2C1810;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .rotate-btn:hover {
+            background: #3D2415;
+            transform: scale(1.05);
+        }
+
+        /* Summary Panel */
+        .summary-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .summary-total {
+            background: #FFF9E6;
+            padding: 24px;
+            border-radius: 8px;
+            margin-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2C1810;
+        }
+
+        .total-price {
+            font-size: 36px;
+            font-weight: 700;
+            color: #D4AF37;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 32px 5%;
+            border-top: 2px solid #F0F0F0;
+            background: white;
+        }
+
+        .nav-btn {
+            padding: 14px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-btn.back {
+            background: #E0E0E0;
+            border: none;
+            color: #666;
+        }
+
+        .nav-btn.back:hover {
+            background: #D0D0D0;
+        }
+
+        .nav-btn.next {
+            background: #D4AF37;
+            border: none;
+            color: white;
+        }
+
+        .nav-btn.next:hover {
+            background: #F4D03F;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Cart Sidebar - Trendyol Style */
+        .cart-sidebar {
+            position: fixed;
+            right: -450px;
+            top: 0;
+            width: 450px;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            transition: right 0.4s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 20px;
+            border-bottom: 2px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #F5F5F5;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-vendor {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .cart-item-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #D4AF37;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            border-top: 2px solid #F0F0F0;
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .cart-total-row .total {
+            color: #D4AF37;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: #D4AF37;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background: #F4D03F;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: #27AE60;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 99999;
+            animation: slideInRight 0.4s;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .design-workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                display: none;
+            }
+
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .header-actions {
+                gap: 12px;
+            }
+
+            .header-btn span {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            ⭐ Türkiye'nin ilk lüks pasta marketplace'i • 81 ilde teslimat • 24 ayar yenilebilir altın
+        </div>
+        <div class="header-main">
+            <div class="logo">SARAY</div>
+            <div class="search-box">
+                <input type="text" placeholder="Çikolatalı pasta, doğum günü pastası...">
+                <button class="search-btn">Ara</button>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn">
+                    <span>👤</span>
+                    <span>Giriş Yap</span>
+                </button>
+                <button class="header-btn cart-btn" onclick="toggleCart()">
+                    <span>🛒</span>
+                    <span>Sepetim</span>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
 
-<header>
-    <div class="logo">SARAY PATISSERIE</div>
-    <div class="nav-right">
-        <div class="location-badge">📍 BURSA / NİLÜFER</div>
-        <button class="btn-auth">ÜYE GİRİŞİ</button>
+    <!-- Location Bar -->
+    <div class="location-bar">
+        <span>📍 Konumunuz:</span>
+        <select id="citySelector" onchange="filterByCity()">
+            <option value="all">Tüm Türkiye</option>
+            <option value="istanbul">İstanbul</option>
+            <option value="ankara">Ankara</option>
+            <option value="izmir">İzmir</option>
+            <option value="bursa">Bursa</option>
+            <option value="antalya">Antalya</option>
+            <option value="adana">Adana</option>
+        </select>
     </div>
-</header>
 
-<div class="app-container">
-    <aside class="sidebar-editor">
-        <div class="section-title">Pasta Tasarımı</div>
-        
-        <div class="input-item">
-            <label>Üst Yazı Mesajı</label>
-            <input type="text" id="cakeText" placeholder="Örn: İyi ki Doğdun!" onkeyup="updateCanvasText(this.value)">
+    <!-- Hero -->
+    <section class="hero">
+        <h1>🎂 Hayalinizdeki Pastayı 3D ile Tasarlayın</h1>
+        <p>Türkiye'nin en seçkin pastanelerinden premium pastalar • 3D tasarım teknolojisi</p>
+        <button class="cta-design" onclick="openStudio()">🎨 Hemen Tasarlamaya Başla</button>
+    </section>
+
+    <!-- Categories -->
+    <div class="categories">
+        <button class="category-chip active" onclick="filterCategory('all')">Tümü</button>
+        <button class="category-chip" onclick="filterCategory('chocolate')">🍫 Çikolatalı</button>
+        <button class="category-chip" onclick="filterCategory('fruit')">🍓 Meyveli</button>
+        <button class="category-chip" onclick="filterCategory('classic')">🎂 Klasik</button>
+        <button class="category-chip" onclick="filterCategory('premium')">⭐ Premium</button>
+    </div>
+
+    <!-- Products -->
+    <div class="products-container">
+        <h2 class="section-title">🔥 Hemen Teslim Pastaları</h2>
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+    <!-- Design Studio Modal -->
+    <div class="studio-modal" id="studioModal">
+        <div class="studio-header">
+            <h2>🎨 3D Pasta Tasarım Stüdyosu</h2>
+            <button class="close-studio" onclick="closeStudio()">×</button>
         </div>
 
-        <div class="input-item">
-            <label>Font Seçimi</label>
-            <select id="fontFamily" onchange="updateCanvasFont(this.value)">
-                <option value="Playfair Display">Lüks Klasik (Serif)</option>
-                <option value="Dancing Script">Zarif El Yazısı</option>
-                <option value="Montserrat">Modern Minimal</option>
-            </select>
-        </div>
-
-        <div class="input-item">
-            <label>Görsel/Fotoğraf Yükle</label>
-            <input type="file" id="imageLoader" accept="image/*" style="display: none;">
-            <div class="btn-upload" onclick="document.getElementById('imageLoader').click()">
-                📷 FOTOĞRAF EKLE (Şekerli Baskı)
+        <div class="steps-progress">
+            <div class="progress-step active">
+                <div class="step-circle">1</div>
+                <span>2D Tasarla</span>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">2</div>
+                <span>3D Önizle</span>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">3</div>
+                <span>Tamamla</span>
             </div>
         </div>
 
-        <div class="input-item" style="margin-top: auto;">
-            <p style="font-size: 10px; color: #666; line-height: 1.5;">
-                * Tasarımınız butik şeflerimiz tarafından el işçiliği ile gerçeğe dönüştürülür.
-            </p>
+        <div class="studio-content">
+            <!-- Step 1: 2D Design -->
+            <div class="step-content active" id="step1">
+                <div class="design-workspace">
+                    <div class="canvas-area">
+                        <h3 class="canvas-title">📸 Pastanızı Üstten Görünümde Tasarlayın</h3>
+                        <div class="cake-canvas-2d">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800'%3E%3Cdefs%3E%3CradialGradient id='cake'%3E%3Cstop offset='0%25' stop-color='%23FFFAF0'/%3E%3Cstop offset='70%25' stop-color='%23FFF8DC'/%3E%3Cstop offset='100%25' stop-color='%23F5E6D3'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect fill='%23FFF8F0' width='800' height='800'/%3E%3Ccircle cx='400' cy='400' r='360' fill='url(%23cake)'/%3E%3Ccircle cx='400' cy='400' r='340' fill='%23FFFFFF' opacity='0.6'/%3E%3Ccircle cx='400' cy='400' r='320' fill='%23FFF8DC' opacity='0.8'/%3E%3C/svg%3E" class="cake-photo" alt="Pasta Üst Görünüm">
+                            <div class="design-overlay">
+                                <img id="uploadedLogo" class="uploaded-logo" style="display: none;">
+                                <div class="text-on-cake" id="cakeText">İyi ki Doğdun</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controls-panel">
+                        <div class="control-card">
+                            <h4>✏️ Pasta Üzerine Yazı</h4>
+                            <input type="text" id="textInput" value="İyi ki Doğdun" oninput="updateText()" placeholder="Yazınızı girin">
+                        </div>
+
+                        <div class="control-card">
+                            <h4>🎨 Yazı Rengi</h4>
+                            <select id="colorSelect" onchange="updateColor()">
+                                <option value="#D4AF37">✨ Altın</option>
+                                <option value="#2C1810">⚫ Siyah</option>
+                                <option value="#FFFFFF">⚪ Beyaz</option>
+                                <option value="#E74C3C">🔴 Kırmızı</option>
+                            </select>
+                        </div>
+
+                        <div class="control-card">
+                            <h4>📷 Logo / Fotoğraf Yükle</h4>
+                            <div class="upload-area" onclick="document.getElementById('logoUpload').click()">
+                                <div class="upload-icon">📸</div>
+                                <div>Logonuzu veya fotoğrafınızı yükleyin</div>
+                                <input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: 3D Preview -->
+            <div class="step-content" id="step2" style="display: none;">
+                <div class="preview-3d-area">
+                    <h3 class="canvas-title">🎯 3D Gerçekçi Önizleme - 360° Döndürün</h3>
+                    <div class="canvas-3d" id="canvas3D"></div>
+                    <div class="rotation-controls">
+                        <button class="rotate-btn" onclick="rotate3D('left')">⬅️ Sola Döndür</button>
+                        <button class="rotate-btn" onclick="rotate3D('reset')">🔄 Sıfırla</button>
+                        <button class="rotate-btn" onclick="rotate3D('right')">➡️ Sağa Döndür</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Summary -->
+            <div class="step-content" id="step3" style="display: none;">
+                <div class="summary-panel">
+                    <h3 class="canvas-title">📋 Sipariş Detayları</h3>
+                    <div class="summary-row">
+                        <span class="summary-label">🎂 Pasta Boyutu</span>
+                        <select id="sizeSelect" onchange="updatePrice()">
+                            <option value="2200">Orta (10-12 kişilik) - ₺2.200</option>
+                            <option value="3200">Büyük (15-20 kişilik) - ₺3.200</option>
+                            <option value="4500">XL (25-30 kişilik) - ₺4.500</option>
+                        </select>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">📍 Teslimat Şehri</span>
+                        <select id="deliveryCity">
+                            <option value="istanbul">İstanbul</option>
+                            <option value="ankara">Ankara</option>
+                            <option value="izmir">İzmir</option>
+                            <option value="bursa">Bursa</option>
+                        </select>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">📅 Teslimat Tarihi</span>
+                        <input type="date" id="deliveryDate" style="padding: 8px; border: 2px solid #E0E0E0; border-radius: 6px;">
+                    </div>
+                    <div class="summary-total">
+                        <span class="total-label">💰 Toplam Tutar</span>
+                        <span class="total-price" id="totalPrice">₺2.200</span>
+                    </div>
+                </div>
+            </div>
         </div>
-    </aside>
 
-    <main class="main-stage">
-        <div id="canvas-wrapper">
-            <canvas id="cakeCanvas" width="500" height="500"></canvas>
+        <div class="nav-buttons">
+            <button class="nav-btn back" onclick="prevStep()" id="btnPrev" disabled>⬅️ Geri</button>
+            <button class="nav-btn next" onclick="nextStep()" id="btnNext">İleri ➡️</button>
         </div>
+    </div>
 
-        <button class="view-toggle" onclick="show3DView()">👁️ 360° GERÇEKÇİ ÖNİZLEME</button>
-
-        <div id="three-container">
-            <button class="close-3d" onclick="hide3DView()">← TASARIMA DÖN</button>
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>🛒 Sepetim</h3>
+            <button class="close-studio" onclick="toggleCart()">×</button>
         </div>
-    </main>
-
-    <aside class="sidebar-summary">
-        <div class="section-title">Sipariş Özeti</div>
-        <div class="vendor-card">
-            <p style="font-size: 11px; color: #888; margin: 0;">SATIŞ NOKTASI</p>
-            <p style="font-weight: 600; margin: 5px 0;">Saray Bursa Nilüfer Şubesi <span class="badge">ONAYLI</span></p>
-            <hr style="border: 0.1px solid rgba(212,175,55,0.2); margin: 15px 0;">
-            <p style="font-size: 12px; color: #aaa;">• Belçika Çikolatalı Özel Seri<br>• 8-10 Kişilik VIP Boy</p>
+        <div class="cart-body" id="cartBody">
+            <p style="text-align: center; color: #999; padding: 60px 20px;">Sepetiniz boş</p>
         </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Toplam:</span>
+                <span class="total" id="cartTotal">₺0</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">🎉 Siparişi Tamamla</button>
+        </div>
+    </div>
 
-        <div class="price-display">₺3.750</div>
-        
-        <button class="btn-auth" style="width: 100%; padding: 18px;" onclick="saveAndComplete()">SEPETE EKLE</button>
-    </aside>
-</div>
+    <script>
+        let currentStep = 1;
+        let cart = [];
+        let scene, camera, renderer, cakeModel;
+        let designData = {
+            text: 'İyi ki Doğdun',
+            color: '#D4AF37',
+            logo: null,
+            size: 2200,
+            city: 'istanbul',
+            date: ''
+        };
 
-<script>
-    // --- 2D FABRIC.JS LOGIC ---
-    const canvas = new fabric.Canvas('cakeCanvas');
-    let dynamicText;
+        const products = [
+            { id: 1, name: 'Altın Varaklı Çikolata Premium', vendor: 'Şef Ahmet Pastanesi', city: 'istanbul', price: 2850, category: 'chocolate', rating: 4.9, reviews: 234 },
+            { id: 2, name: 'Tropikal Meyve Deluxe', vendor: 'Elit Pasta Ankara', city: 'ankara', price: 2100, category: 'fruit', rating: 4.8, reviews: 189 },
+            { id: 3, name: 'Mermer Sanat Pastası', vendor: 'Saray İzmir', city: 'izmir', price: 3200, category: 'premium', rating: 5.0, reviews: 156 },
+            { id: 4, name: 'Çikolata Muz Şöleni', vendor: 'Modern Cake Bursa', city: 'bursa', price: 1950, category: 'chocolate', rating: 4.7, reviews: 203 },
+            { id: 5, name: 'Berry Garden Premium', vendor: 'Tropical Antalya', city: 'antalya', price: 2400, category: 'fruit', rating: 4.9, reviews: 178 },
+            { id: 6, name: 'Klasik Vanilyalı', vendor: 'Classic İstanbul', city: 'istanbul', price: 1750, category: 'classic', rating: 4.6, reviews: 312 }
+        ];
 
-    // Gerçekçi Üstten Görünüm Fotoğrafı Yükle
-    fabric.Image.fromURL('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600&h=600&auto=format&fit=crop', function(img) {
-        img.set({ selectable: false, evented: false });
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-        
-        // Başlangıç Yazısı
-        dynamicText = new fabric.IText('İsim Yazın', {
-            left: 250, top: 250,
-            fontFamily: 'Playfair Display',
-            fill: '#D4AF37',
-            fontSize: 45,
-            originX: 'center', originY: 'center',
-            textAlign: 'center',
-            shadow: 'rgba(0,0,0,0.6) 2px 2px 10px'
-        });
-        canvas.add(dynamicText);
-        canvas.setActiveObject(dynamicText);
-    });
+        function renderProducts(category = 'all', city = 'all') {
+            const grid = document.getElementById('productsGrid');
+            let filtered = products;
+            if (category !== 'all') filtered = filtered.filter(p => p.category === category);
+            if (city !== 'all') filtered = filtered.filter(p => p.city === city);
 
-    function updateCanvasText(val) {
-        if(dynamicText) {
-            dynamicText.set('text', val || 'İsim Yazın');
-            canvas.renderAll();
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cdefs%3E%3CradialGradient id='p${p.id}'%3E%3Cstop offset='0%25' stop-color='%23${p.category === 'chocolate' ? '8B4513' : p.category === 'fruit' ? 'FFB6C1' : 'F5E6D3'}'/%3E%3Cstop offset='100%25' stop-color='%23${p.category === 'chocolate' ? '654321' : p.category === 'fruit' ? 'FFE4E1' : 'E8D5C4'}'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect fill='%23FAF8F5' width='400' height='400'/%3E%3Cellipse cx='200' cy='220' rx='160' ry='60' fill='url(%23p${p.id})'/%3E%3Cellipse cx='200' cy='160' rx='140' ry='50' fill='%23FFF8F0' opacity='0.9'/%3E%3C/svg%3E" alt="${p.name}">
+                        <div class="product-tag ready">✅ HAZIR</div>
+                    </div>
+                    <div class="product-info">
+                        <div class="vendor-badge">
+                            <div class="vendor-icon">S</div>
+                            <span>${p.vendor}</span>
+                        </div>
+                        <h3 class="product-name">${p.name}</h3>
+                        <div class="product-rating">
+                            <span class="stars">⭐ ${p.rating}</span>
+                            <span style="color: #999;">(${p.reviews})</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price">₺${p.price.toLocaleString('tr-TR')}</span>
+                            <button class="add-cart-btn" onclick="addToCart(${p.id})">Sepete Ekle</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
-    }
 
-    function updateCanvasFont(font) {
-        if(dynamicText) {
-            dynamicText.set('fontFamily', font);
-            canvas.renderAll();
+        function filterCategory(cat) {
+            document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProducts(cat, document.getElementById('citySelector').value);
         }
-    }
 
-    document.getElementById('imageLoader').onchange = function(e) {
-        const reader = new FileReader();
-        reader.onload = function(f) {
-            fabric.Image.fromURL(f.target.result, function(img) {
-                img.scaleToWidth(150);
-                canvas.add(img);
-                canvas.centerObject(img);
-                canvas.setActiveObject(img);
+        function filterByCity() {
+            const active = document.querySelector('.category-chip.active');
+            const cat = active.textContent.includes('Tümü') ? 'all' : active.textContent.toLowerCase().replace(/[^a-z]/g, '');
+            renderProducts(cat, document.getElementById('citySelector').value);
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            updateCart();
+            showNotification('✅ Ürün sepete eklendi!');
+        }
+
+        function openStudio() {
+            document.getElementById('studioModal').classList.add('active');
+            currentStep = 1;
+            updateSteps();
+        }
+
+        function closeStudio() {
+            document.getElementById('studioModal').classList.remove('active');
+        }
+
+        function nextStep() {
+            if (currentStep < 3) {
+                currentStep++;
+                updateSteps();
+                if (currentStep === 2) init3D();
+            } else {
+                addCustomToCart();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateSteps();
+            }
+        }
+
+        function updateSteps() {
+            document.querySelectorAll('.progress-step').forEach((s, i) => {
+                if (i + 1 < currentStep) {
+                    s.classList.add('completed');
+                    s.classList.remove('active');
+                } else if (i + 1 === currentStep) {
+                    s.classList.add('active');
+                    s.classList.remove('completed');
+                } else {
+                    s.classList.remove('active', 'completed');
+                }
             });
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    };
 
-    // --- 3D THREE.JS LOGIC ---
-    let scene, camera, renderer, cake3D;
+            document.querySelectorAll('.step-content').forEach((s, i) => {
+                s.style.display = i + 1 === currentStep ? 'block' : 'none';
+            });
 
-    function init3D() {
-        const container = document.getElementById('three-container');
-        scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(45, container.offsetWidth / container.offsetHeight, 0.1, 1000);
-        
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(container.offsetWidth, container.offsetHeight);
-        renderer.setClearColor(0x0f0e0c);
-        container.appendChild(renderer.domElement);
+            document.getElementById('btnPrev').disabled = currentStep === 1;
+            document.getElementById('btnNext').textContent = currentStep === 3 ? '✅ Sepete Ekle' : 'İleri ➡️';
+        }
 
-        // Işıklandırma
-        const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
-        scene.add(light);
-        const spotLight = new THREE.SpotLight(0xffffff, 1);
-        spotLight.position.set(5, 10, 5);
-        scene.add(spotLight);
+        function updateText() {
+            designData.text = document.getElementById('textInput').value;
+            document.getElementById('cakeText').textContent = designData.text;
+        }
 
-        // Pasta Geometrisi (Yumuşak PBR Material)
-        const geometry = new THREE.CylinderGeometry(2, 2, 1.2, 128);
-        const material = new THREE.MeshPhysicalMaterial({
-            color: 0x2b1d0e,
-            roughness: 0.15,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.1
-        });
-        
-        cake3D = new THREE.Mesh(geometry, material);
-        scene.add(cake3D);
-        camera.position.set(0, 3, 6);
-        camera.lookAt(0, 0, 0);
+        function updateColor() {
+            designData.color = document.getElementById('colorSelect').value;
+            document.getElementById('cakeText').style.color = designData.color;
+        }
 
-        animate3D();
-    }
+        function handleLogoUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    designData.logo = event.target.result;
+                    const img = document.getElementById('uploadedLogo');
+                    img.src = event.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
-    function animate3D() {
-        requestAnimationFrame(animate3D);
-        if(cake3D) cake3D.rotation.y += 0.005;
-        renderer.render(scene, camera);
-    }
+        function init3D() {
+            const container = document.getElementById('canvas3D');
+            container.innerHTML = '';
 
-    function show3DView() {
-        const container = document.getElementById('three-container');
-        container.style.display = 'block';
-        if(!scene) init3D();
-        
-        // 2D Tasarımı 3D'ye Giydir (The Magic Step)
-        const canvasTexture = new THREE.CanvasTexture(canvas.getElement());
-        cake3D.material.map = canvasTexture;
-        cake3D.material.needsUpdate = true;
-    }
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xE8E8E8);
 
-    function hide3DView() {
-        document.getElementById('three-container').style.display = 'none';
-    }
+            camera = new THREE.PerspectiveCamera(50, container.offsetWidth / 600, 0.1, 1000);
+            camera.position.set(0, 5, 12);
 
-    function saveAndComplete() {
-        const orderJSON = {
-            vendor: "Bursa_Nilufer_Saray",
-            price: 3750,
-            custom_text: dynamicText.text,
-            design_snapshot: canvas.toDataURL({ format: 'png', quality: 1.0 })
-        };
-        console.log("Sipariş Reçetesi (JSON):", orderJSON);
-        alert("Siparişiniz sepete eklendi! Satıcıya giden üretim reçetesi oluşturuldu.");
-    }
-</script>
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.offsetWidth, 600);
+            container.appendChild(renderer.domElement);
 
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 10, 5);
+            scene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0xD4AF37, 0.4);
+            pointLight.position.set(-5, 5, -5);
+            scene.add(pointLight);
+
+            cakeModel = new THREE.Group();
+
+            const baseGeometry = new THREE.CylinderGeometry(2.4, 2.6, 1.2, 64);
+            const baseMaterial = new THREE.MeshPhongMaterial({
+                color: 0xD2691E,
+                shininess: 30
+            });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            cakeModel.add(base);
+
+            const middleGeometry = new THREE.CylinderGeometry(2.0, 2.2, 1.0, 64);
+            const middleMaterial = new THREE.MeshPhongMaterial({
+                color: 0xFFE4B5,
+                shininess: 50
+            });
+            const middle = new THREE.Mesh(middleGeometry, middleMaterial);
+            middle.position.y = 1.6;
+            cakeModel.add(middle);
+
+            const topGeometry = new THREE.CylinderGeometry(2.05, 2.05, 0.2, 64);
+            const topMaterial = new THREE.MeshPhongMaterial({
+                color: 0xFFFAF0,
+                shininess: 100
+            });
+            const top = new THREE.Mesh(topGeometry, topMaterial);
+            top.position.y = 2.7;
+            cakeModel.add(top);
+
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2;
+                const goldGeometry = new THREE.SphereGeometry(0.12, 32, 32);
+                const goldMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xD4AF37,
+                    shininess: 100,
+                    metalness: 1
+                });
+                const gold = new THREE.Mesh(goldGeometry, goldMaterial);
+                gold.position.set(
+                    Math.cos(angle) * 1.9,
+                    2.85,
+                    Math.sin(angle) * 1.9
+                );
+                cakeModel.add(gold);
+            }
+
+            scene.add(cakeModel);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                cakeModel.rotation.y += 0.005;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        function rotate3D(dir) {
+            if (!cakeModel) return;
+            if (dir === 'left') cakeModel.rotation.y -= 0.5;
+            else if (dir === 'right') cakeModel.rotation.y += 0.5;
+            else cakeModel.rotation.y = 0;
+        }
+
+        function updatePrice() {
+            designData.size = parseInt(document.getElementById('sizeSelect').value);
+            document.getElementById('totalPrice').textContent = '₺' + designData.size.toLocaleString('tr-TR');
+        }
+
+        function addCustomToCart() {
+            const custom = {
+                id: 'custom_' + Date.now(),
+                name: '🎨 Özel Tasarım: ' + designData.text,
+                vendor: 'Özel Sipariş',
+                price: designData.size,
+                orderData: {
+                    ...designData,
+                    city: document.getElementById('deliveryCity').value,
+                    date: document.getElementById('deliveryDate').value,
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            cart.push(custom);
+            updateCart();
+            closeStudio();
+            showNotification('🎉 Özel tasarımınız sepete eklendi!');
+            
+            console.log('═══════ ORDER JSON ═══════');
+            console.log(JSON.stringify(custom.orderData, null, 2));
+            console.log('═════════════════════════');
+        }
+
+        function updateCart() {
+            const body = document.getElementById('cartBody');
+            const badge = document.getElementById('cartBadge');
+            const total = document.getElementById('cartTotal');
+
+            badge.textContent = cart.length;
+
+            if (cart.length === 0) {
+                body.innerHTML = '<p style="text-align: center; color: #999; padding: 60px 20px;">Sepetiniz boş</p>';
+                total.textContent = '₺0';
+            } else {
+                body.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Crect fill='%23FAF8F5' width='160' height='160'/%3E%3Ccircle cx='80' cy='80' r='50' fill='%23D4AF37'/%3E%3C/svg%3E" class="cart-item-img">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-vendor">${item.vendor}</div>
+                            <div class="cart-item-price">₺${item.price.toLocaleString('tr-TR')}</div>
+                        </div>
+                    </div>
+                `).join('');
+                total.textContent = '₺' + cart.reduce((sum, item) => sum + item.price, 0).toLocaleString('tr-TR');
+            }
+        }
+
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('active');
+        }
+
+        function checkout() {
+            if (cart.length === 0) return alert('Sepetiniz boş!');
+
+            const order = {
+                order_id: 'ORD_' + Date.now(),
+                items: cart,
+                total_amount: cart.reduce((sum, item) => sum + item.price, 0),
+                timestamp: new Date().toISOString(),
+                status: 'pending'
+            };
+
+            console.log('═══════ FINAL ORDER JSON ═══════');
+            console.log(JSON.stringify(order, null, 2));
+            console.log('════════════════════════════════');
+
+            alert('🎉 Sipariş başarıyla oluşturuldu!\n\nJSON konsola yazdırıldı (F12)\n\nToplam: ₺' + order.total_amount.toLocaleString('tr-TR'));
+            
+            cart = [];
+            updateCart();
+            toggleCart();
+        }
+
+        function showNotification(msg) {
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = msg;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        renderProducts();
+        updateCart();
+    </script>
 </body>
 </html>
