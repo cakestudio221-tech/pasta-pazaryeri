@@ -3,250 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SARAY PATİSSERİE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <title>SARAY PATİSSERİE — Türkiye'nin Elite Pasta Marketi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --black: #0F0E0C;
             --gold: #D4AF37;
             --white: #FCFBF8;
+            --glass: rgba(212, 175, 55, 0.05);
+            --border: rgba(212, 175, 55, 0.3);
         }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--black);
             color: var(--white);
+            line-height: 1.6;
         }
+
+        /* NAVIGATION */
         .nav {
             position: fixed;
             top: 0;
             width: 100%;
-            height: 70px;
+            height: 80px;
             background: rgba(15, 14, 12, 0.98);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 5%;
             z-index: 1000;
-            border-bottom: 0.5px solid rgba(212, 175, 55, 0.3);
         }
+
         .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 800;
+            letter-spacing: 4px;
             background: linear-gradient(135deg, #D4AF37, #F4E5A1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        select, button {
-            background: rgba(212, 175, 55, 0.05);
-            border: 0.5px solid rgba(212, 175, 55, 0.3);
-            color: var(--white);
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-        .hero {
-            margin-top: 70px;
-            height: 600px;
-            position: relative;
-        }
-        .slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s;
-            background-size: cover;
-            background-position: center;
-        }
-        .slide.active { opacity: 1; }
-        .overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(15, 14, 12, 0.75), rgba(15, 14, 12, 0.3));
+
+        .nav-center {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 60px;
+            gap: 24px;
         }
+
+        .nav-right {
+            display: flex;
+            gap: 20px;
+        }
+
+        select, button {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--white);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        button:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold);
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #F4E5A1;
+        }
+
+        /* HERO */
+        .hero {
+            margin-top: 80px;
+            padding: 120px 5% 80px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
         h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 64px;
+            font-size: 72px;
             font-weight: 800;
             margin-bottom: 24px;
+            line-height: 1.2;
         }
+
         .hero p {
-            font-size: 22px;
-            margin-bottom: 40px;
+            font-size: 20px;
+            opacity: 0.8;
+            max-width: 700px;
+            margin: 0 auto 40px;
         }
+
         .btn-hero {
             background: linear-gradient(135deg, #D4AF37, #F4E5A1);
             color: var(--black);
             border: none;
-            padding: 22px 60px;
-            border-radius: 50px;
-            font-size: 20px;
+            padding: 20px 50px;
+            border-radius: 8px;
+            font-size: 18px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
         }
-        .dots {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 16px;
+
+        .btn-hero:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.5);
         }
-        .dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-        }
-        .dot.active {
-            background: var(--gold);
-            width: 50px;
-            border-radius: 7px;
-        }
+
+        /* CONTAINER */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 80px 5%;
         }
+
+        .section-header {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        /* PRODUCTS GRID */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 28px;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 32px;
         }
+
         .card {
-            background: rgba(212, 175, 55, 0.05);
-            border: 0.5px solid rgba(212, 175, 55, 0.3);
-            border-radius: 24px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            transition: all 0.4s;
+            position: relative;
             overflow: hidden;
-            transition: transform 0.4s;
         }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
         .card:hover {
-            transform: translateY(-12px);
+            transform: translateY(-8px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
         }
-        .card-img {
-            width: 100%;
-            aspect-ratio: 1;
-            background: #fff;
+
+        .card:hover::before {
+            opacity: 1;
         }
-        .card-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 24px;
         }
-        .card-body {
-            padding: 24px;
+
+        .vendor {
+            font-size: 13px;
+            opacity: 0.6;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
+        .rating {
+            color: var(--gold);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
         h3 {
-            font-size: 22px;
-            font-weight: 800;
-            margin: 12px 0;
-        }
-        .price {
+            font-family: 'Playfair Display', serif;
             font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .description {
+            font-size: 15px;
+            opacity: 0.75;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .spec {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .spec-label {
+            font-size: 12px;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .spec-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .tag {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .price-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-label {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-bottom: 4px;
+        }
+
+        .price {
+            font-size: 32px;
             font-weight: 800;
             color: var(--gold);
         }
-        .btns {
+
+        .actions {
             display: flex;
-            gap: 10px;
-            margin-top: 18px;
+            gap: 12px;
         }
+
         .btn {
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
+            transition: all 0.3s;
             border: none;
         }
-        .btn-sec {
-            background: rgba(212, 175, 55, 0.05);
+
+        .btn-secondary {
+            background: var(--glass);
             color: var(--white);
-            border: 0.5px solid rgba(212, 175, 55, 0.3);
+            border: 1px solid var(--border);
         }
-        .btn-pri {
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .btn-add {
             background: var(--gold);
             color: var(--black);
         }
+
+        .btn-add:hover {
+            background: #F4E5A1;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; }
-            h1 { font-size: 42px; }
+            h1 {
+                font-size: 48px;
+            }
+            
+            h2 {
+                font-size: 32px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .specs {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="nav">
+    <nav class="nav">
         <div class="logo">SARAY</div>
-        <select id="city" onchange="filter()">
-            <option value="">📍 Şehir</option>
-            <option value="istanbul">İstanbul</option>
-            <option value="ankara">Ankara</option>
-            <option value="izmir">İzmir</option>
-        </select>
-        <button>🛍 Sepet (<span id="count">0</span>)</button>
-    </div>
+        <div class="nav-center">
+            <select id="city" onchange="filter()">
+                <option value="">📍 Tüm Şehirler</option>
+                <option value="istanbul">İstanbul</option>
+                <option value="ankara">Ankara</option>
+                <option value="izmir">İzmir</option>
+                <option value="bursa">Bursa</option>
+                <option value="antalya">Antalya</option>
+                <option value="adana">Adana</option>
+            </select>
+        </div>
+        <div class="nav-right">
+            <button>👤 Giriş Yap</button>
+            <button>🛍 Sepet (<span id="count">0</span>)</button>
+        </div>
+    </nav>
 
     <div class="hero">
-        <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1920&q=90')">
-            <div class="overlay">
-                <h1>Türkiye'nin En <span style="color:#D4AF37">Elite</span> Pasta Deneyimi</h1>
-                <p>81 ilden seçkin pastaneler</p>
-                <button class="btn-hero" onclick="openStudio()">🎨 PASTANI SEN TASARLA</button>
-            </div>
-        </div>
-        <div class="dots">
-            <div class="dot active"></div>
-        </div>
+        <h1>Türkiye'nin En <span style="color: var(--gold)">Elite</span> Pasta Deneyimi</h1>
+        <p>81 ilden seçkin pastaneler • Profesyonel 3D tasarım stüdyosu • Minimum 4 kişilik özel tasarımlar</p>
+        <button class="btn-hero" onclick="openStudio()">🎨 PASTANI SEN TASARLA</button>
     </div>
 
     <div class="container">
+        <div class="section-header">
+            <h2>Hazır Lüks Modeller</h2>
+            <p class="subtitle">Seçkin pastanelerimizin özel koleksiyonları</p>
+        </div>
+
         <div class="grid" id="grid"></div>
     </div>
 
     <script>
         const products = [
-            {id:1,name:'Premium Çikolata',city:'istanbul',price:850,img:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80'},
-            {id:2,name:'Tropikal Meyveli',city:'ankara',price:750,img:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80'},
-            {id:3,name:'Vanilyalı Rüya',city:'istanbul',price:680,img:'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=800&q=80'}
+            {
+                id: 1,
+                name: 'Premium Çikolata Delight',
+                vendor: 'Şef Ahmet Pastanesi',
+                rating: '4.9',
+                city: 'istanbul',
+                price: 850,
+                description: 'Belçika çikolatası ile hazırlanan, 24 ayar altın varak süslemeli özel tasarım pasta. El yapımı krema ile kaplanmış, premium lezzet deneyimi.',
+                minPerson: 4,
+                flavor: 'Çikolata',
+                coating: 'Ganache',
+                tags: ['24K Altın', 'Belçika Çikolata', 'El Yapımı', 'Premium']
+            },
+            {
+                id: 2,
+                name: 'Tropikal Meyveli Özel',
+                vendor: 'Elit Cake House',
+                rating: '4.8',
+                city: 'ankara',
+                price: 750,
+                description: 'Taze tropikal meyveler ve premium krema ile hazırlanan, ferah ve lezzetli özel pasta. Mevsimin en taze meyveleriyle süslenir.',
+                minPerson: 4,
+                flavor: 'Vanilya',
+                coating: 'Krema',
+                tags: ['Taze Meyve', 'Premium Krema', 'Hafif']
+            },
+            {
+                id: 3,
+                name: 'Klasik Vanilyalı Rüya',
+                vendor: 'Bursa Pasta Atölyesi',
+                rating: '4.7',
+                city: 'bursa',
+                price: 680,
+                description: 'Bourbon vanilyası ile hazırlanan klasik pasta. El yapımı pandispanya ve özel krema karışımı ile benzersiz bir lezzet.',
+                minPerson: 4,
+                flavor: 'Vanilya',
+                coating: 'Krema',
+                tags: ['Bourbon Vanilya', 'El Yapımı', 'Klasik']
+            },
+            {
+                id: 4,
+                name: 'Muz Karamel Sensation',
+                vendor: 'Antalya Patisserie',
+                rating: '4.9',
+                city: 'antalya',
+                price: 820,
+                description: 'Organik muz ve ev yapımı karamel ile hazırlanan özel pasta. Toffee krema ve çıtır detaylarla servisi.',
+                minPerson: 4,
+                flavor: 'Muz',
+                coating: 'Toffee',
+                tags: ['Organik Muz', 'Ev Yapımı', 'Toffee']
+            },
+            {
+                id: 5,
+                name: 'Berry Explosion Mix',
+                vendor: 'İzmir Cake Studio',
+                rating: '4.8',
+                city: 'izmir',
+                price: 890,
+                description: 'Çilek, ahududu ve yaban mersini karışımı ile hazırlanan özel pasta. Taze meyveler ve hafif kreması ile yaz sezonunun favorisi.',
+                minPerson: 4,
+                flavor: 'Karışık Meyve',
+                coating: 'Krema',
+                tags: ['Çilek', 'Ahududu', 'Yaban Mersini', 'Taze']
+            },
+            {
+                id: 6,
+                name: 'Frambuazlı Klasik',
+                vendor: 'Adana Lezzet Evi',
+                rating: '4.6',
+                city: 'adana',
+                price: 780,
+                description: 'Frambuaz püresi ve hafif krema ile hazırlanan zarif pasta. Taze frambuazlarla süslenen özel tasarım.',
+                minPerson: 4,
+                flavor: 'Frambuaz',
+                coating: 'Krema',
+                tags: ['Frambuaz Püresi', 'Hafif', 'Zarif']
+            }
         ];
-        let cart = [], city = '';
+
+        let cart = [];
+        let selectedCity = '';
 
         function render() {
-            let list = city ? products.filter(p => p.city === city) : products;
-            document.getElementById('grid').innerHTML = list.map(p => `
+            let filtered = selectedCity 
+                ? products.filter(p => p.city === selectedCity)
+                : products;
+
+            document.getElementById('grid').innerHTML = filtered.map(p => `
                 <div class="card">
-                    <div class="card-img"><img src="${p.img}"></div>
-                    <div class="card-body">
-                        <h3>${p.name}</h3>
-                        <div class="price">₺${p.price}</div>
-                        <div class="btns">
-                            <button class="btn btn-sec">✏️ Düzenle</button>
-                            <button class="btn btn-pri" onclick="add(${p.id})">Ekle</button>
+                    <div class="card-header">
+                        <div class="vendor">${p.vendor}</div>
+                        <div class="rating">⭐ ${p.rating}</div>
+                    </div>
+                    
+                    <h3>${p.name}</h3>
+                    
+                    <p class="description">${p.description}</p>
+                    
+                    <div class="specs">
+                        <div class="spec">
+                            <span class="spec-label">Min. Kişi</span>
+                            <span class="spec-value">${p.minPerson} Kişi</span>
+                        </div>
+                        <div class="spec">
+                            <span class="spec-label">Lezzet</span>
+                            <span class="spec-value">${p.flavor}</span>
+                        </div>
+                        <div class="spec">
+                            <span class="spec-label">Kaplama</span>
+                            <span class="spec-value">${p.coating}</span>
+                        </div>
+                        <div class="spec">
+                            <span class="spec-label">Hazırlık</span>
+                            <span class="spec-value">2-3 Saat</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tags">
+                        ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="price-section">
+                            <div class="price-label">Başlangıç fiyatı</div>
+                            <div class="price">₺${p.price}</div>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-secondary">✏️ Düzenle</button>
+                            <button class="btn btn-add" onclick="addToCart(${p.id})">Sepete Ekle</button>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function add(id) {
+        function addToCart(id) {
             cart.push(id);
             document.getElementById('count').textContent = cart.length;
-            alert('✅ Eklendi!');
+            alert('✅ Ürün sepete eklendi!');
         }
 
         function filter() {
-            city = document.getElementById('city').value;
+            selectedCity = document.getElementById('city').value;
             render();
         }
 
