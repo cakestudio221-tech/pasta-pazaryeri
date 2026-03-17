@@ -1,1424 +1,1029 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saray Patisserie - Türkiye'nin Lüks Pasta Pazaryeri</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #F5F5F5;
-            color: #333;
-        }
-
-        /* Header - Trendyol Style */
-        .header {
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-top {
-            background: linear-gradient(135deg, #2C1810 0%, #3D2415 100%);
-            padding: 8px 0;
-            text-align: center;
-            color: #FFD700;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .header-main {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #D4AF37, #F4D03F);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-        }
-
-        .search-box {
-            flex: 1;
-            max-width: 600px;
-            margin: 0 40px;
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 50px 12px 20px;
-            border: 2px solid #E0E0E0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #D4AF37;
-        }
-
-        .search-btn {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #D4AF37;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 24px;
-            align-items: center;
-        }
-
-        .header-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .cart-btn {
-            background: #D4AF37;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .cart-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #E74C3C;
-            color: white;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        /* Location Selector */
-        .location-bar {
-            background: #FFF9E6;
-            padding: 12px 5%;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            border-bottom: 1px solid #FFE5B4;
-        }
-
-        .location-bar select {
-            padding: 8px 16px;
-            border: 2px solid #D4AF37;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: 500;
-            background: white;
-        }
-
-        /* Hero Banner */
-        .hero {
-            background: linear-gradient(135deg, #2C1810 0%, #5D4037 100%);
-            padding: 60px 5%;
-            color: white;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 16px;
-            font-weight: 700;
-        }
-
-        .hero p {
-            font-size: 18px;
-            margin-bottom: 32px;
-            color: #FFE5B4;
-        }
-
-        .cta-design {
-            background: #D4AF37;
-            color: #2C1810;
-            padding: 16px 48px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .cta-design:hover {
-            background: #F4D03F;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
-        }
-
-        /* Categories - Trendyol Style */
-        .categories {
-            background: white;
-            padding: 24px 5%;
-            display: flex;
-            gap: 16px;
-            overflow-x: auto;
-            border-bottom: 1px solid #E0E0E0;
-        }
-
-        .category-chip {
-            padding: 10px 24px;
-            border: 2px solid #E0E0E0;
-            border-radius: 20px;
-            background: white;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            white-space: nowrap;
-            transition: all 0.3s;
-        }
-
-        .category-chip.active {
-            background: #D4AF37;
-            border-color: #D4AF37;
-            color: white;
-        }
-
-        .category-chip:hover:not(.active) {
-            border-color: #D4AF37;
-            color: #D4AF37;
-        }
-
-        /* Products Section */
-        .products-container {
-            padding: 40px 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: #2C1810;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .product-card:hover {
-            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
-            transform: translateY(-4px);
-        }
-
-        .product-image {
-            width: 100%;
-            aspect-ratio: 1;
-            background: #FAF8F5;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s;
-        }
-
-        .product-card:hover .product-image img {
-            transform: scale(1.1);
-        }
-
-        .product-tag {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: #E74C3C;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .product-tag.ready {
-            background: #27AE60;
-        }
-
-        .product-info {
-            padding: 16px;
-        }
-
-        .vendor-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .vendor-icon {
-            width: 20px;
-            height: 20px;
-            background: #D4AF37;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .product-name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .product-rating {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-bottom: 12px;
-            font-size: 13px;
-        }
-
-        .stars {
-            color: #FFC107;
-        }
-
-        .product-price {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #F0F0F0;
-        }
-
-        .price {
-            font-size: 24px;
-            font-weight: 700;
-            color: #D4AF37;
-        }
-
-        .add-cart-btn {
-            background: #2C1810;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-
-        .add-cart-btn:hover {
-            background: #3D2415;
-            transform: scale(1.05);
-        }
-
-        /* Design Studio Modal - Full Screen */
-        .studio-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 9999;
-            overflow-y: auto;
-        }
-
-        .studio-modal.active {
-            display: block;
-        }
-
-        .studio-header {
-            background: white;
-            padding: 20px 5%;
-            border-bottom: 2px solid #F0F0F0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .studio-header h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #2C1810;
-        }
-
-        .close-studio {
-            background: #E0E0E0;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .close-studio:hover {
-            background: #D0D0D0;
-        }
-
-        /* Steps Progress */
-        .steps-progress {
-            background: #FFF9E6;
-            padding: 24px 5%;
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-        }
-
-        .progress-step {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #999;
-        }
-
-        .progress-step.active {
-            color: #2C1810;
-        }
-
-        .step-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #E0E0E0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .progress-step.active .step-circle {
-            background: #D4AF37;
-            color: white;
-        }
-
-        .progress-step.completed .step-circle {
-            background: #27AE60;
-            color: white;
-        }
-
-        /* Studio Content */
-        .studio-content {
-            padding: 40px 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .design-workspace {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 32px;
-        }
-
-        /* 2D Canvas Area */
-        .canvas-area {
-            background: white;
-            border-radius: 12px;
-            padding: 32px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .canvas-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: #2C1810;
-        }
-
-        .cake-canvas-2d {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1;
-            background: #FFF8F0;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 3px solid #D4AF37;
-        }
-
-        .cake-photo {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .design-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        .text-on-cake {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 52px;
-            font-weight: 700;
-            color: #D4AF37;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            font-family: 'Poppins', sans-serif;
-            white-space: nowrap;
-        }
-
-        .uploaded-logo {
-            position: absolute;
-            top: 15%;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 30%;
-            border-radius: 8px;
-        }
-
-        /* Controls Panel */
-        .controls-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .control-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .control-card h4 {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #2C1810;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .control-card input,
-        .control-card select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #E0E0E0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s;
-        }
-
-        .control-card input:focus,
-        .control-card select:focus {
-            outline: none;
-            border-color: #D4AF37;
-        }
-
-        .upload-area {
-            border: 2px dashed #D4AF37;
-            border-radius: 8px;
-            padding: 32px;
-            text-align: center;
-            cursor: pointer;
-            background: #FFF9E6;
-            transition: all 0.3s;
-        }
-
-        .upload-area:hover {
-            background: #FFF3CC;
-        }
-
-        .upload-area input {
-            display: none;
-        }
-
-        .upload-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        /* 3D Preview */
-        .preview-3d-area {
-            background: white;
-            border-radius: 12px;
-            padding: 32px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .canvas-3d {
-            width: 100%;
-            height: 600px;
-            background: linear-gradient(135deg, #F5F5F5 0%, #E8E8E8 100%);
-            border-radius: 12px;
-            margin-bottom: 24px;
-        }
-
-        .rotation-controls {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-        }
-
-        .rotate-btn {
-            background: #2C1810;
-            color: white;
-            border: none;
-            padding: 12px 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .rotate-btn:hover {
-            background: #3D2415;
-            transform: scale(1.05);
-        }
-
-        /* Summary Panel */
-        .summary-panel {
-            background: white;
-            border-radius: 12px;
-            padding: 32px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid #F0F0F0;
-        }
-
-        .summary-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #666;
-        }
-
-        .summary-total {
-            background: #FFF9E6;
-            padding: 24px;
-            border-radius: 8px;
-            margin-top: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .total-label {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2C1810;
-        }
-
-        .total-price {
-            font-size: 36px;
-            font-weight: 700;
-            color: #D4AF37;
-        }
-
-        /* Navigation Buttons */
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            padding: 32px 5%;
-            border-top: 2px solid #F0F0F0;
-            background: white;
-        }
-
-        .nav-btn {
-            padding: 14px 40px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .nav-btn.back {
-            background: #E0E0E0;
-            border: none;
-            color: #666;
-        }
-
-        .nav-btn.back:hover {
-            background: #D0D0D0;
-        }
-
-        .nav-btn.next {
-            background: #D4AF37;
-            border: none;
-            color: white;
-        }
-
-        .nav-btn.next:hover {
-            background: #F4D03F;
-        }
-
-        .nav-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Cart Sidebar - Trendyol Style */
-        .cart-sidebar {
-            position: fixed;
-            right: -450px;
-            top: 0;
-            width: 450px;
-            height: 100vh;
-            background: white;
-            box-shadow: -4px 0 12px rgba(0,0,0,0.15);
-            z-index: 10000;
-            transition: right 0.4s;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .cart-sidebar.active {
-            right: 0;
-        }
-
-        .cart-header {
-            padding: 20px;
-            border-bottom: 2px solid #F0F0F0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-header h3 {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .cart-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .cart-item {
-            display: flex;
-            gap: 16px;
-            padding: 16px 0;
-            border-bottom: 1px solid #F0F0F0;
-        }
-
-        .cart-item-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            object-fit: cover;
-            background: #F5F5F5;
-        }
-
-        .cart-item-info {
-            flex: 1;
-        }
-
-        .cart-item-name {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .cart-item-vendor {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .cart-item-price {
-            font-size: 18px;
-            font-weight: 700;
-            color: #D4AF37;
-        }
-
-        .cart-footer {
-            padding: 20px;
-            border-top: 2px solid #F0F0F0;
-        }
-
-        .cart-total-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .cart-total-row .total {
-            color: #D4AF37;
-        }
-
-        .checkout-btn {
-            width: 100%;
-            background: #D4AF37;
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .checkout-btn:hover {
-            background: #F4D03F;
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: #27AE60;
-            color: white;
-            padding: 16px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 99999;
-            animation: slideInRight 0.4s;
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .design-workspace {
-                grid-template-columns: 1fr;
-            }
-
-            .search-box {
-                display: none;
-            }
-
-            .cart-sidebar {
-                width: 100%;
-                right: -100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 16px;
-            }
-
-            .hero h1 {
-                font-size: 32px;
-            }
-
-            .header-actions {
-                gap: 12px;
-            }
-
-            .header-btn span {
-                display: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saray Patisserie</title>
+  <meta name="description" content="81 ilde lüks butik pasta marketplace deneyimi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 30 8% 4%;
+      --foreground: 40 20% 96%;
+      --card: 240 4% 8%;
+      --card-foreground: 40 20% 96%;
+      --primary: 43 52% 53%;
+      --primary-foreground: 30 8% 4%;
+      --secondary: 240 4% 12%;
+      --secondary-foreground: 40 20% 96%;
+      --muted: 240 4% 16%;
+      --muted-foreground: 40 10% 55%;
+      --border: 40 20% 96% / 0.08;
+      --radius: 18px;
+      --shadow-luxury: 0 10px 30px -10px rgba(0,0,0,.5), 0 4px 10px -5px rgba(0,0,0,.7);
+      --shadow-gold: 0 4px 20px -4px rgba(212,175,55,.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      scrollbar-width: none;
+    }
+
+    *::-webkit-scrollbar { display: none; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: "Montserrat", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, hsl(43 52% 53% / 0.08), transparent 25%),
+        linear-gradient(180deg, hsl(var(--background)), hsl(240 4% 6%));
+    }
+
+    h1, h2, h3, h4 {
+      font-family: "Playfair Display", serif;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      margin: 0;
+    }
+
+    p { margin: 0; }
+
+    .hidden { display: none !important; }
+
+    .app {
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    .container {
+      width: min(100%, 1100px);
+      margin: 0 auto;
+    }
+
+    .label-text {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .text-gold-gradient {
+      background: linear-gradient(135deg, hsl(43 52% 53%), hsl(43 60% 65%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .saray-card {
+      background: hsl(var(--card));
+      border: 1px solid hsl(var(--border));
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-luxury);
+    }
+
+    .glass {
+      background: rgba(10,10,11,.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      transition: transform .18s ease, background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease;
+    }
+
+    .btn:active { transform: scale(.97); }
+
+    .btn-primary {
+      background: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+      padding: 13px 20px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      box-shadow: var(--shadow-gold);
+    }
+
+    .section-title {
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .muted {
+      color: hsl(var(--muted-foreground));
+    }
+
+    .hero-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 10px;
+    }
+
+    .location-btn {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .pin {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: hsl(var(--primary) / 0.12);
+      color: hsl(var(--primary));
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: hsl(var(--secondary));
+      border: 1px solid hsl(var(--border));
+      color: hsl(var(--primary));
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-size: 14px;
+    }
+
+    .hero-card {
+      margin: 0 20px;
+      border-radius: 22px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16 / 10;
+      box-shadow: var(--shadow-luxury);
+      background: hsl(var(--secondary));
+    }
+
+    .hero-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, hsl(var(--background)), hsl(var(--background) / .38), transparent);
+    }
+
+    .hero-content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 24px;
+    }
+
+    .hero-content h1 {
+      font-size: clamp(32px, 7vw, 58px);
+      font-style: italic;
+      margin-top: 8px;
+      line-height: .95;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      margin-bottom: 14px;
+      gap: 16px;
+    }
+
+    .section-link {
+      color: hsl(var(--primary));
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .featured-row {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 0 20px 4px;
+      scroll-snap-type: x mandatory;
+    }
+
+    .hero-product {
+      min-width: min(86vw, 390px);
+      scroll-snap-align: center;
+    }
+
+    .hero-product-media {
+      position: relative;
+      aspect-ratio: 4/5;
+      overflow: hidden;
+    }
+
+    .hero-product-media img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .hero-product-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, hsl(var(--card)), transparent 55%);
+    }
+
+    .badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 2;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: hsl(var(--primary) / .92);
+      color: hsl(var(--primary-foreground));
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .11em;
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+
+    .card-title {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: hsl(var(--muted-foreground));
+      line-height: 1.5;
+      margin-bottom: 12px;
+      min-height: 38px;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: hsl(var(--muted-foreground));
+      margin-bottom: 16px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .vendor {
+      font-size: 12px;
+      color: hsl(var(--muted-foreground));
+      margin-bottom: 4px;
+    }
+
+    .price {
+      font-family: "Playfair Display", serif;
+      color: hsl(var(--primary));
+      font-size: 28px;
+    }
+
+    .category-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 0 20px 16px;
+      margin-top: 10px;
+    }
+
+    .category-btn {
+      white-space: nowrap;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid hsl(var(--border));
+      background: hsl(var(--secondary));
+      color: hsl(var(--muted-foreground));
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .category-btn.active {
+      background: hsl(var(--primary) / .10);
+      color: hsl(var(--primary));
+      border-color: hsl(var(--primary) / .35);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 14px;
+      padding: 0 20px;
+    }
+
+    .grid-card .media {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+    }
+
+    .grid-card .media img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .grid-card .media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, hsl(var(--card)), transparent 60%);
+    }
+
+    .rating-pill {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.42);
+      color: hsl(var(--foreground));
+      font-size: 11px;
+      z-index: 2;
+      backdrop-filter: blur(8px);
+    }
+
+    .grid-card .card-body {
+      padding: 14px;
+    }
+
+    .grid-card .card-title {
+      font-size: 17px;
+      line-height: 1.1;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .grid-bottom {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 74px;
+      z-index: 30;
+      border-top: 1px solid hsl(var(--primary) / .18);
+    }
+
+    .bottom-nav-inner {
+      height: 100%;
+      width: min(100%, 540px);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .nav-btn {
+      position: relative;
+      background: transparent;
+      color: hsl(var(--muted-foreground));
+      min-width: 58px;
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .nav-btn .icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .nav-btn.active {
+      color: hsl(var(--primary));
+      font-weight: 700;
+    }
+
+    .nav-btn.active::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      width: 30px;
+      height: 2px;
+      border-radius: 999px;
+      background: hsl(var(--primary));
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: hsl(var(--background));
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .overlay-brand {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .overlay-brand h2 {
+      font-size: clamp(54px, 12vw, 110px);
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .sheet {
+      position: relative;
+      width: min(100%, 560px);
+      max-height: 72vh;
+      background: hsl(var(--secondary));
+      border-top: 1px solid hsl(var(--primary) / .25);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      padding: 22px 18px 26px;
+      box-shadow: 0 -20px 40px rgba(0,0,0,.35);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .sheet-title {
+      font-size: 26px;
+    }
+
+    .sheet-change {
+      margin-left: auto;
+      background: transparent;
+      color: hsl(var(--primary));
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      border: 1px solid hsl(var(--border));
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      border-radius: 14px;
+      padding: 14px 14px 14px 42px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: hsl(var(--muted-foreground));
+      font-size: 14px;
+    }
+
+    .sheet-list {
+      overflow: auto;
+      padding: 2px;
+    }
+
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .location-option {
+      text-align: left;
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      background: hsl(var(--background) / .55);
+      border: 1px solid hsl(var(--border));
+      color: hsl(var(--foreground));
+      font-size: 14px;
+    }
+
+    .district-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .district-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .arrow {
+      color: hsl(var(--muted-foreground));
+      font-size: 16px;
+    }
+
+    .empty {
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px dashed hsl(var(--border));
+      color: hsl(var(--muted-foreground));
+      text-align: center;
+      font-size: 14px;
+      background: hsl(var(--background) / .35);
+    }
+
+    @media (min-width: 768px) {
+      .hero-topbar,
+      .section-head,
+      .category-bar,
+      .grid,
+      .featured-row {
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+
+      .hero-card {
+        margin-left: 28px;
+        margin-right: 28px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(3, minmax(0,1fr));
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-card,
+      .saray-card,
+      .sheet,
+      .location-option,
+      .category-btn,
+      .nav-btn,
+      .btn-primary {
+        animation: fadeUp .45s ease both;
+      }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-top">
-            ⭐ Türkiye'nin ilk lüks pasta marketplace'i • 81 ilde teslimat • 24 ayar yenilebilir altın
+  <div id="locationOverlay" class="overlay">
+    <div class="overlay-brand">
+      <div>
+        <h2 class="text-gold-gradient">Saray</h2>
+        <p class="label-text">Patisserie & Artisan Cakes</p>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="pin">📍</div>
+        <div>
+          <h3 id="sheetTitle" class="sheet-title">Şehrinizi Seçin</h3>
+          <p id="sheetSubtitle" class="muted" style="font-size:14px; margin-top:4px;">81 ilden teslimat</p>
         </div>
-        <div class="header-main">
-            <div class="logo">SARAY</div>
-            <div class="search-box">
-                <input type="text" placeholder="Çikolatalı pasta, doğum günü pastası...">
-                <button class="search-btn">Ara</button>
+        <button id="changeCityBtn" class="btn sheet-change hidden">Değiştir</button>
+      </div>
+
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input id="searchInput" type="text" placeholder="Şehir ara..." />
+      </div>
+
+      <div id="sheetList" class="sheet-list"></div>
+    </div>
+  </div>
+
+  <main id="mainApp" class="app hidden">
+    <div class="container">
+      <section>
+        <div class="hero-topbar">
+          <button id="openLocationBtn" class="btn location-btn">
+            <div class="pin">📍</div>
+            <div style="text-align:left;">
+              <p class="label-text">Teslimat Adresi</p>
+              <p id="currentLocation" style="font-size:14px; font-weight:700; margin-top:3px;">Kadıköy, İstanbul</p>
             </div>
-            <div class="header-actions">
-                <button class="header-btn">
-                    <span>👤</span>
-                    <span>Giriş Yap</span>
+          </button>
+          <div class="brand-mark">S</div>
+        </div>
+
+        <div class="hero-card">
+          <img src="./src/assets/cake-hero.jpg" alt="Saray Patisserie lüks pasta koleksiyonu" onerror="this.src='./public/placeholder.svg'" />
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <p class="label-text" style="color:hsl(var(--primary));">Saray Approved</p>
+            <h1>Bespoke Artistry,<br>Delivered.</h1>
+            <button class="btn btn-primary" style="margin-top:18px;">Koleksiyonu Keşfet</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">Öne Çıkanlar</h2>
+          <span class="section-link">Tümünü Gör</span>
+        </div>
+        <div id="featuredRow" class="featured-row"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head" style="display:block;">
+          <h2 class="section-title">Master Pâtissiers</h2>
+          <p class="muted" style="font-size:14px; margin-top:8px;">Saray onaylı zanaatkârlardan seçmeler</p>
+        </div>
+        <div id="categoryBar" class="category-bar"></div>
+        <div id="productGrid" class="grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <nav class="bottom-nav glass">
+    <div id="bottomNav" class="bottom-nav-inner"></div>
+  </nav>
+
+  <script>
+    const cities = [
+      "Adana","Adıyaman","Afyonkarahisar","Ağrı","Aksaray","Amasya","Ankara","Antalya","Ardahan","Artvin",
+      "Aydın","Balıkesir","Bartın","Batman","Bayburt","Bilecik","Bingöl","Bitlis","Bolu","Burdur",
+      "Bursa","Çanakkale","Çankırı","Çorum","Denizli","Diyarbakır","Düzce","Edirne","Elazığ","Erzincan",
+      "Erzurum","Eskişehir","Gaziantep","Giresun","Gümüşhane","Hakkari","Hatay","Iğdır","Isparta","İstanbul",
+      "İzmir","Kahramanmaraş","Karabük","Karaman","Kars","Kastamonu","Kayseri","Kırıkkale","Kırklareli","Kırşehir",
+      "Kilis","Kocaeli","Konya","Kütahya","Malatya","Manisa","Mardin","Mersin","Muğla","Muş",
+      "Nevşehir","Niğde","Ordu","Osmaniye","Rize","Sakarya","Samsun","Şanlıurfa","Siirt","Sinop",
+      "Şırnak","Sivas","Tekirdağ","Tokat","Trabzon","Tunceli","Uşak","Van","Yalova","Yozgat","Zonguldak"
+    ];
+
+    const districts = {
+      "İstanbul": ["Beşiktaş","Kadıköy","Bebek","Nişantaşı","Etiler","Şişli","Bakırköy","Üsküdar","Beyoğlu","Sarıyer","Fatih","Maltepe","Ataşehir","Levent"],
+      "Ankara": ["Çankaya","Kızılay","Ulus","Bahçelievler","Gazi Osman Paşa","Keçiören","Etimesgut","Yenimahalle"],
+      "İzmir": ["Alsancak","Konak","Bornova","Karşıyaka","Buca","Çeşme","Urla","Balçova"],
+      "Antalya": ["Muratpaşa","Konyaaltı","Lara","Kepez","Alanya","Manavgat","Kaş"],
+      "Bursa": ["Nilüfer","Osmangazi","Yıldırım","Gemlik","Mudanya"]
+    };
+
+    const products = [
+      {
+        id: "1",
+        name: "Altın Yaprak Ganache",
+        description: "24 ayar yenilebilir altın yaprakla süslenmiş, %70 kakao Belçika çikolatası ganache",
+        price: 2450,
+        image: "./src/assets/cake-hero.jpg",
+        vendor: "Maison Dorée Patisserie",
+        vendorRating: 4.9,
+        deliveryTime: "90 dk",
+        category: "Özel Tasarım",
+        minPersons: 8,
+        featured: true
+      },
+      {
+        id: "2",
+        name: "Red Velvet Royale",
+        description: "Kırmızı kadife dokusu, krem peynir dolgulu, altın tozu detaylı",
+        price: 1850,
+        image: "./src/assets/cake-velvet.jpg",
+        vendor: "Bebek Artisan Bakery",
+        vendorRating: 4.8,
+        deliveryTime: "60 dk",
+        category: "Klasik",
+        minPersons: 4
+      },
+      {
+        id: "3",
+        name: "Geometric Elegance",
+        description: "5 katlı düğün pastası, geometrik altın çizgiler, el yapımı şeker hamuruyla kaplanmış",
+        price: 8900,
+        image: "./src/assets/cake-wedding.jpg",
+        vendor: "Saray Grand Atelier",
+        vendorRating: 5.0,
+        deliveryTime: "Randevulu",
+        category: "Düğün",
+        minPersons: 20,
+        featured: true
+      },
+      {
+        id: "4",
+        name: "Baroque Truffle",
+        description: "Barok stil çikolata oymaları, altın tozu ve kakao nibs ile süslenmiş",
+        price: 2100,
+        image: "./src/assets/cake-chocolate.jpg",
+        vendor: "Nişantaşı Çikolata Evi",
+        vendorRating: 4.7,
+        deliveryTime: "75 dk",
+        category: "Çikolata",
+        minPersons: 6
+      },
+      {
+        id: "5",
+        name: "Rose Macaron Tower",
+        description: "El yapımı gül aromalı makaron kulesi, rose gold detaylar",
+        price: 3200,
+        image: "./src/assets/cake-macaron.jpg",
+        vendor: "Pâtisserie Lumière",
+        vendorRating: 4.9,
+        deliveryTime: "120 dk",
+        category: "Özel Tasarım",
+        minPersons: 12
+      },
+      {
+        id: "6",
+        name: "Tarte aux Fruits d'Or",
+        description: "Mevsim meyveli tart, altın yaprak dekorasyonlu, tereyağlı hamur",
+        price: 950,
+        image: "./src/assets/cake-fruit.jpg",
+        vendor: "Bebek Artisan Bakery",
+        vendorRating: 4.8,
+        deliveryTime: "45 dk",
+        category: "Tart",
+        minPersons: 4
+      }
+    ];
+
+    const categories = ["Tümü","Özel Tasarım","Klasik","Düğün","Çikolata","Tart"];
+
+    const tabs = [
+      { id: "home", label: "Vitrin", icon: "⌂" },
+      { id: "explore", label: "Keşfet", icon: "⌕" },
+      { id: "studio", label: "Stüdyo", icon: "✎" },
+      { id: "orders", label: "Siparişler", icon: "◫" },
+      { id: "account", label: "Hesap", icon: "◎" }
+    ];
+
+    const state = {
+      step: "city",
+      selectedCity: "",
+      location: null,
+      activeCategory: "Tümü",
+      activeTab: "home"
+    };
+
+    const overlay = document.getElementById("locationOverlay");
+    const mainApp = document.getElementById("mainApp");
+    const sheetTitle = document.getElementById("sheetTitle");
+    const sheetSubtitle = document.getElementById("sheetSubtitle");
+    const changeCityBtn = document.getElementById("changeCityBtn");
+    const searchInput = document.getElementById("searchInput");
+    const sheetList = document.getElementById("sheetList");
+    const currentLocation = document.getElementById("currentLocation");
+    const categoryBar = document.getElementById("categoryBar");
+    const productGrid = document.getElementById("productGrid");
+    const featuredRow = document.getElementById("featuredRow");
+    const bottomNav = document.getElementById("bottomNav");
+
+    document.getElementById("openLocationBtn").addEventListener("click", () => {
+      overlay.classList.remove("hidden");
+    });
+
+    changeCityBtn.addEventListener("click", () => {
+      state.step = "city";
+      state.selectedCity = "";
+      searchInput.value = "";
+      renderLocationPicker();
+    });
+
+    searchInput.addEventListener("input", renderLocationPicker);
+
+    function getDistricts(city) {
+      return districts[city] || ["Merkez", "Yeni Mahalle", "Cumhuriyet"];
+    }
+
+    function formatPrice(value) {
+      return "₺" + value.toLocaleString("tr-TR");
+    }
+
+    function imageTag(src, alt) {
+      return `<img src="${src}" alt="${alt}" onerror="this.src='./public/placeholder.svg'">`;
+    }
+
+    function renderLocationPicker() {
+      const q = searchInput.value.trim().toLocaleLowerCase("tr-TR");
+
+      if (state.step === "city") {
+        sheetTitle.textContent = "Şehrinizi Seçin";
+        sheetSubtitle.textContent = "81 ilden teslimat";
+        searchInput.placeholder = "Şehir ara...";
+        changeCityBtn.classList.add("hidden");
+
+        const filteredCities = cities.filter(city =>
+          city.toLocaleLowerCase("tr-TR").includes(q)
+        );
+
+        sheetList.innerHTML = filteredCities.length
+          ? `<div class="city-grid">
+              ${filteredCities.map(city => `
+                <button class="btn location-option" onclick="selectCity('${city.replace(/'/g, "\\'")}')">${city}</button>
+              `).join("")}
+            </div>`
+          : `<div class="empty">Şehir bulunamadı.</div>`;
+      } else {
+        sheetTitle.textContent = state.selectedCity;
+        sheetSubtitle.textContent = "İlçe seçin";
+        searchInput.placeholder = "İlçe ara...";
+        changeCityBtn.classList.remove("hidden");
+
+        const filteredDistricts = getDistricts(state.selectedCity).filter(district =>
+          district.toLocaleLowerCase("tr-TR").includes(q)
+        );
+
+        sheetList.innerHTML = filteredDistricts.length
+          ? `<div class="district-list">
+              ${filteredDistricts.map(district => `
+                <button class="btn location-option district-row" onclick="selectDistrict('${district.replace(/'/g, "\\'")}')">
+                  <span>${district}</span>
+                  <span class="arrow">›</span>
                 </button>
-                <button class="header-btn cart-btn" onclick="toggleCart()">
-                    <span>🛒</span>
-                    <span>Sepetim</span>
-                    <span class="cart-badge" id="cartBadge">0</span>
-                </button>
+              `).join("")}
+            </div>`
+          : `<div class="empty">İlçe bulunamadı.</div>`;
+      }
+    }
+
+    function selectCity(city) {
+      state.selectedCity = city;
+      state.step = "district";
+      searchInput.value = "";
+      renderLocationPicker();
+    }
+
+    function selectDistrict(district) {
+      state.location = { city: state.selectedCity, district };
+      currentLocation.textContent = `${district}, ${state.selectedCity}`;
+      overlay.classList.add("hidden");
+      mainApp.classList.remove("hidden");
+    }
+
+    window.selectCity = selectCity;
+    window.selectDistrict = selectDistrict;
+
+    function renderFeatured() {
+      const featured = products.filter(p => p.featured);
+      featuredRow.innerHTML = featured.map(product => `
+        <article class="saray-card hero-product">
+          <div class="hero-product-media">
+            ${imageTag(product.image, product.name)}
+            <span class="badge">${product.category}</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${product.name}</h3>
+            <p class="card-desc">${product.description}</p>
+            <div class="meta-row">
+              <span class="meta-chip">★ ${product.vendorRating}</span>
+              <span class="meta-chip">◷ ${product.deliveryTime}</span>
+              <span class="meta-chip">👥 Min ${product.minPersons} kişi</span>
             </div>
-        </div>
-    </header>
-
-    <!-- Location Bar -->
-    <div class="location-bar">
-        <span>📍 Konumunuz:</span>
-        <select id="citySelector" onchange="filterByCity()">
-            <option value="all">Tüm Türkiye</option>
-            <option value="istanbul">İstanbul</option>
-            <option value="ankara">Ankara</option>
-            <option value="izmir">İzmir</option>
-            <option value="bursa">Bursa</option>
-            <option value="antalya">Antalya</option>
-            <option value="adana">Adana</option>
-        </select>
-    </div>
-
-    <!-- Hero -->
-    <section class="hero">
-        <h1>🎂 Hayalinizdeki Pastayı 3D ile Tasarlayın</h1>
-        <p>Türkiye'nin en seçkin pastanelerinden premium pastalar • 3D tasarım teknolojisi</p>
-        <button class="cta-design" onclick="openStudio()">🎨 Hemen Tasarlamaya Başla</button>
-    </section>
-
-    <!-- Categories -->
-    <div class="categories">
-        <button class="category-chip active" onclick="filterCategory('all')">Tümü</button>
-        <button class="category-chip" onclick="filterCategory('chocolate')">🍫 Çikolatalı</button>
-        <button class="category-chip" onclick="filterCategory('fruit')">🍓 Meyveli</button>
-        <button class="category-chip" onclick="filterCategory('classic')">🎂 Klasik</button>
-        <button class="category-chip" onclick="filterCategory('premium')">⭐ Premium</button>
-    </div>
-
-    <!-- Products -->
-    <div class="products-container">
-        <h2 class="section-title">🔥 Hemen Teslim Pastaları</h2>
-        <div class="products-grid" id="productsGrid"></div>
-    </div>
-
-    <!-- Design Studio Modal -->
-    <div class="studio-modal" id="studioModal">
-        <div class="studio-header">
-            <h2>🎨 3D Pasta Tasarım Stüdyosu</h2>
-            <button class="close-studio" onclick="closeStudio()">×</button>
-        </div>
-
-        <div class="steps-progress">
-            <div class="progress-step active">
-                <div class="step-circle">1</div>
-                <span>2D Tasarla</span>
+            <div class="price-row">
+              <div>
+                <p class="vendor">${product.vendor}</p>
+                <p class="price">${formatPrice(product.price)}</p>
+              </div>
+              <button class="btn btn-primary">Sipariş Ver</button>
             </div>
-            <div class="progress-step">
-                <div class="step-circle">2</div>
-                <span>3D Önizle</span>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderCategories() {
+      categoryBar.innerHTML = categories.map(category => `
+        <button class="btn category-btn ${state.activeCategory === category ? "active" : ""}" onclick="setCategory('${category.replace(/'/g, "\\'")}')">
+          ${category}
+        </button>
+      `).join("");
+    }
+
+    function renderProducts() {
+      const filtered = state.activeCategory === "Tümü"
+        ? products
+        : products.filter(p => p.category === state.activeCategory);
+
+      productGrid.innerHTML = filtered.map(product => `
+        <article class="saray-card grid-card">
+          <div class="media">
+            ${imageTag(product.image, product.name)}
+            <div class="rating-pill">★ ${product.vendorRating}</div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${product.name}</h3>
+            <p class="vendor">${product.vendor}</p>
+            <div class="grid-bottom">
+              <strong class="price" style="font-size:22px;">${formatPrice(product.price)}</strong>
+              <span>◷ ${product.deliveryTime}</span>
             </div>
-            <div class="progress-step">
-                <div class="step-circle">3</div>
-                <span>Tamamla</span>
-            </div>
-        </div>
+          </div>
+        </article>
+      `).join("");
+    }
 
-        <div class="studio-content">
-            <!-- Step 1: 2D Design -->
-            <div class="step-content active" id="step1">
-                <div class="design-workspace">
-                    <div class="canvas-area">
-                        <h3 class="canvas-title">📸 Pastanızı Üstten Görünümde Tasarlayın</h3>
-                        <div class="cake-canvas-2d">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800'%3E%3Cdefs%3E%3CradialGradient id='cake'%3E%3Cstop offset='0%25' stop-color='%23FFFAF0'/%3E%3Cstop offset='70%25' stop-color='%23FFF8DC'/%3E%3Cstop offset='100%25' stop-color='%23F5E6D3'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect fill='%23FFF8F0' width='800' height='800'/%3E%3Ccircle cx='400' cy='400' r='360' fill='url(%23cake)'/%3E%3Ccircle cx='400' cy='400' r='340' fill='%23FFFFFF' opacity='0.6'/%3E%3Ccircle cx='400' cy='400' r='320' fill='%23FFF8DC' opacity='0.8'/%3E%3C/svg%3E" class="cake-photo" alt="Pasta Üst Görünüm">
-                            <div class="design-overlay">
-                                <img id="uploadedLogo" class="uploaded-logo" style="display: none;">
-                                <div class="text-on-cake" id="cakeText">İyi ki Doğdun</div>
-                            </div>
-                        </div>
-                    </div>
+    function setCategory(category) {
+      state.activeCategory = category;
+      renderCategories();
+      renderProducts();
+    }
 
-                    <div class="controls-panel">
-                        <div class="control-card">
-                            <h4>✏️ Pasta Üzerine Yazı</h4>
-                            <input type="text" id="textInput" value="İyi ki Doğdun" oninput="updateText()" placeholder="Yazınızı girin">
-                        </div>
+    window.setCategory = setCategory;
 
-                        <div class="control-card">
-                            <h4>🎨 Yazı Rengi</h4>
-                            <select id="colorSelect" onchange="updateColor()">
-                                <option value="#D4AF37">✨ Altın</option>
-                                <option value="#2C1810">⚫ Siyah</option>
-                                <option value="#FFFFFF">⚪ Beyaz</option>
-                                <option value="#E74C3C">🔴 Kırmızı</option>
-                            </select>
-                        </div>
+    function renderTabs() {
+      bottomNav.innerHTML = tabs.map(tab => `
+        <button class="btn nav-btn ${state.activeTab === tab.id ? "active" : ""}" onclick="setTab('${tab.id}')">
+          <span class="icon">${tab.icon}</span>
+          <span>${tab.label}</span>
+        </button>
+      `).join("");
+    }
 
-                        <div class="control-card">
-                            <h4>📷 Logo / Fotoğraf Yükle</h4>
-                            <div class="upload-area" onclick="document.getElementById('logoUpload').click()">
-                                <div class="upload-icon">📸</div>
-                                <div>Logonuzu veya fotoğrafınızı yükleyin</div>
-                                <input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    function setTab(tabId) {
+      state.activeTab = tabId;
+      renderTabs();
+    }
 
-            <!-- Step 2: 3D Preview -->
-            <div class="step-content" id="step2" style="display: none;">
-                <div class="preview-3d-area">
-                    <h3 class="canvas-title">🎯 3D Gerçekçi Önizleme - 360° Döndürün</h3>
-                    <div class="canvas-3d" id="canvas3D"></div>
-                    <div class="rotation-controls">
-                        <button class="rotate-btn" onclick="rotate3D('left')">⬅️ Sola Döndür</button>
-                        <button class="rotate-btn" onclick="rotate3D('reset')">🔄 Sıfırla</button>
-                        <button class="rotate-btn" onclick="rotate3D('right')">➡️ Sağa Döndür</button>
-                    </div>
-                </div>
-            </div>
+    window.setTab = setTab;
 
-            <!-- Step 3: Summary -->
-            <div class="step-content" id="step3" style="display: none;">
-                <div class="summary-panel">
-                    <h3 class="canvas-title">📋 Sipariş Detayları</h3>
-                    <div class="summary-row">
-                        <span class="summary-label">🎂 Pasta Boyutu</span>
-                        <select id="sizeSelect" onchange="updatePrice()">
-                            <option value="2200">Orta (10-12 kişilik) - ₺2.200</option>
-                            <option value="3200">Büyük (15-20 kişilik) - ₺3.200</option>
-                            <option value="4500">XL (25-30 kişilik) - ₺4.500</option>
-                        </select>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">📍 Teslimat Şehri</span>
-                        <select id="deliveryCity">
-                            <option value="istanbul">İstanbul</option>
-                            <option value="ankara">Ankara</option>
-                            <option value="izmir">İzmir</option>
-                            <option value="bursa">Bursa</option>
-                        </select>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">📅 Teslimat Tarihi</span>
-                        <input type="date" id="deliveryDate" style="padding: 8px; border: 2px solid #E0E0E0; border-radius: 6px;">
-                    </div>
-                    <div class="summary-total">
-                        <span class="total-label">💰 Toplam Tutar</span>
-                        <span class="total-price" id="totalPrice">₺2.200</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="nav-buttons">
-            <button class="nav-btn back" onclick="prevStep()" id="btnPrev" disabled>⬅️ Geri</button>
-            <button class="nav-btn next" onclick="nextStep()" id="btnNext">İleri ➡️</button>
-        </div>
-    </div>
-
-    <!-- Cart Sidebar -->
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h3>🛒 Sepetim</h3>
-            <button class="close-studio" onclick="toggleCart()">×</button>
-        </div>
-        <div class="cart-body" id="cartBody">
-            <p style="text-align: center; color: #999; padding: 60px 20px;">Sepetiniz boş</p>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total-row">
-                <span>Toplam:</span>
-                <span class="total" id="cartTotal">₺0</span>
-            </div>
-            <button class="checkout-btn" onclick="checkout()">🎉 Siparişi Tamamla</button>
-        </div>
-    </div>
-
-    <script>
-        let currentStep = 1;
-        let cart = [];
-        let scene, camera, renderer, cakeModel;
-        let designData = {
-            text: 'İyi ki Doğdun',
-            color: '#D4AF37',
-            logo: null,
-            size: 2200,
-            city: 'istanbul',
-            date: ''
-        };
-
-        const products = [
-            { id: 1, name: 'Altın Varaklı Çikolata Premium', vendor: 'Şef Ahmet Pastanesi', city: 'istanbul', price: 2850, category: 'chocolate', rating: 4.9, reviews: 234 },
-            { id: 2, name: 'Tropikal Meyve Deluxe', vendor: 'Elit Pasta Ankara', city: 'ankara', price: 2100, category: 'fruit', rating: 4.8, reviews: 189 },
-            { id: 3, name: 'Mermer Sanat Pastası', vendor: 'Saray İzmir', city: 'izmir', price: 3200, category: 'premium', rating: 5.0, reviews: 156 },
-            { id: 4, name: 'Çikolata Muz Şöleni', vendor: 'Modern Cake Bursa', city: 'bursa', price: 1950, category: 'chocolate', rating: 4.7, reviews: 203 },
-            { id: 5, name: 'Berry Garden Premium', vendor: 'Tropical Antalya', city: 'antalya', price: 2400, category: 'fruit', rating: 4.9, reviews: 178 },
-            { id: 6, name: 'Klasik Vanilyalı', vendor: 'Classic İstanbul', city: 'istanbul', price: 1750, category: 'classic', rating: 4.6, reviews: 312 }
-        ];
-
-        function renderProducts(category = 'all', city = 'all') {
-            const grid = document.getElementById('productsGrid');
-            let filtered = products;
-            if (category !== 'all') filtered = filtered.filter(p => p.category === category);
-            if (city !== 'all') filtered = filtered.filter(p => p.city === city);
-
-            grid.innerHTML = filtered.map(p => `
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cdefs%3E%3CradialGradient id='p${p.id}'%3E%3Cstop offset='0%25' stop-color='%23${p.category === 'chocolate' ? '8B4513' : p.category === 'fruit' ? 'FFB6C1' : 'F5E6D3'}'/%3E%3Cstop offset='100%25' stop-color='%23${p.category === 'chocolate' ? '654321' : p.category === 'fruit' ? 'FFE4E1' : 'E8D5C4'}'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect fill='%23FAF8F5' width='400' height='400'/%3E%3Cellipse cx='200' cy='220' rx='160' ry='60' fill='url(%23p${p.id})'/%3E%3Cellipse cx='200' cy='160' rx='140' ry='50' fill='%23FFF8F0' opacity='0.9'/%3E%3C/svg%3E" alt="${p.name}">
-                        <div class="product-tag ready">✅ HAZIR</div>
-                    </div>
-                    <div class="product-info">
-                        <div class="vendor-badge">
-                            <div class="vendor-icon">S</div>
-                            <span>${p.vendor}</span>
-                        </div>
-                        <h3 class="product-name">${p.name}</h3>
-                        <div class="product-rating">
-                            <span class="stars">⭐ ${p.rating}</span>
-                            <span style="color: #999;">(${p.reviews})</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="price">₺${p.price.toLocaleString('tr-TR')}</span>
-                            <button class="add-cart-btn" onclick="addToCart(${p.id})">Sepete Ekle</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterCategory(cat) {
-            document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-            renderProducts(cat, document.getElementById('citySelector').value);
-        }
-
-        function filterByCity() {
-            const active = document.querySelector('.category-chip.active');
-            const cat = active.textContent.includes('Tümü') ? 'all' : active.textContent.toLowerCase().replace(/[^a-z]/g, '');
-            renderProducts(cat, document.getElementById('citySelector').value);
-        }
-
-        function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            cart.push(product);
-            updateCart();
-            showNotification('✅ Ürün sepete eklendi!');
-        }
-
-        function openStudio() {
-            document.getElementById('studioModal').classList.add('active');
-            currentStep = 1;
-            updateSteps();
-        }
-
-        function closeStudio() {
-            document.getElementById('studioModal').classList.remove('active');
-        }
-
-        function nextStep() {
-            if (currentStep < 3) {
-                currentStep++;
-                updateSteps();
-                if (currentStep === 2) init3D();
-            } else {
-                addCustomToCart();
-            }
-        }
-
-        function prevStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                updateSteps();
-            }
-        }
-
-        function updateSteps() {
-            document.querySelectorAll('.progress-step').forEach((s, i) => {
-                if (i + 1 < currentStep) {
-                    s.classList.add('completed');
-                    s.classList.remove('active');
-                } else if (i + 1 === currentStep) {
-                    s.classList.add('active');
-                    s.classList.remove('completed');
-                } else {
-                    s.classList.remove('active', 'completed');
-                }
-            });
-
-            document.querySelectorAll('.step-content').forEach((s, i) => {
-                s.style.display = i + 1 === currentStep ? 'block' : 'none';
-            });
-
-            document.getElementById('btnPrev').disabled = currentStep === 1;
-            document.getElementById('btnNext').textContent = currentStep === 3 ? '✅ Sepete Ekle' : 'İleri ➡️';
-        }
-
-        function updateText() {
-            designData.text = document.getElementById('textInput').value;
-            document.getElementById('cakeText').textContent = designData.text;
-        }
-
-        function updateColor() {
-            designData.color = document.getElementById('colorSelect').value;
-            document.getElementById('cakeText').style.color = designData.color;
-        }
-
-        function handleLogoUpload(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    designData.logo = event.target.result;
-                    const img = document.getElementById('uploadedLogo');
-                    img.src = event.target.result;
-                    img.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function init3D() {
-            const container = document.getElementById('canvas3D');
-            container.innerHTML = '';
-
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xE8E8E8);
-
-            camera = new THREE.PerspectiveCamera(50, container.offsetWidth / 600, 0.1, 1000);
-            camera.position.set(0, 5, 12);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.offsetWidth, 600);
-            container.appendChild(renderer.domElement);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 10, 5);
-            scene.add(directionalLight);
-
-            const pointLight = new THREE.PointLight(0xD4AF37, 0.4);
-            pointLight.position.set(-5, 5, -5);
-            scene.add(pointLight);
-
-            cakeModel = new THREE.Group();
-
-            const baseGeometry = new THREE.CylinderGeometry(2.4, 2.6, 1.2, 64);
-            const baseMaterial = new THREE.MeshPhongMaterial({
-                color: 0xD2691E,
-                shininess: 30
-            });
-            const base = new THREE.Mesh(baseGeometry, baseMaterial);
-            cakeModel.add(base);
-
-            const middleGeometry = new THREE.CylinderGeometry(2.0, 2.2, 1.0, 64);
-            const middleMaterial = new THREE.MeshPhongMaterial({
-                color: 0xFFE4B5,
-                shininess: 50
-            });
-            const middle = new THREE.Mesh(middleGeometry, middleMaterial);
-            middle.position.y = 1.6;
-            cakeModel.add(middle);
-
-            const topGeometry = new THREE.CylinderGeometry(2.05, 2.05, 0.2, 64);
-            const topMaterial = new THREE.MeshPhongMaterial({
-                color: 0xFFFAF0,
-                shininess: 100
-            });
-            const top = new THREE.Mesh(topGeometry, topMaterial);
-            top.position.y = 2.7;
-            cakeModel.add(top);
-
-            for (let i = 0; i < 12; i++) {
-                const angle = (i / 12) * Math.PI * 2;
-                const goldGeometry = new THREE.SphereGeometry(0.12, 32, 32);
-                const goldMaterial = new THREE.MeshPhongMaterial({
-                    color: 0xD4AF37,
-                    shininess: 100,
-                    metalness: 1
-                });
-                const gold = new THREE.Mesh(goldGeometry, goldMaterial);
-                gold.position.set(
-                    Math.cos(angle) * 1.9,
-                    2.85,
-                    Math.sin(angle) * 1.9
-                );
-                cakeModel.add(gold);
-            }
-
-            scene.add(cakeModel);
-
-            function animate() {
-                requestAnimationFrame(animate);
-                cakeModel.rotation.y += 0.005;
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
-
-        function rotate3D(dir) {
-            if (!cakeModel) return;
-            if (dir === 'left') cakeModel.rotation.y -= 0.5;
-            else if (dir === 'right') cakeModel.rotation.y += 0.5;
-            else cakeModel.rotation.y = 0;
-        }
-
-        function updatePrice() {
-            designData.size = parseInt(document.getElementById('sizeSelect').value);
-            document.getElementById('totalPrice').textContent = '₺' + designData.size.toLocaleString('tr-TR');
-        }
-
-        function addCustomToCart() {
-            const custom = {
-                id: 'custom_' + Date.now(),
-                name: '🎨 Özel Tasarım: ' + designData.text,
-                vendor: 'Özel Sipariş',
-                price: designData.size,
-                orderData: {
-                    ...designData,
-                    city: document.getElementById('deliveryCity').value,
-                    date: document.getElementById('deliveryDate').value,
-                    timestamp: new Date().toISOString()
-                }
-            };
-
-            cart.push(custom);
-            updateCart();
-            closeStudio();
-            showNotification('🎉 Özel tasarımınız sepete eklendi!');
-            
-            console.log('═══════ ORDER JSON ═══════');
-            console.log(JSON.stringify(custom.orderData, null, 2));
-            console.log('═════════════════════════');
-        }
-
-        function updateCart() {
-            const body = document.getElementById('cartBody');
-            const badge = document.getElementById('cartBadge');
-            const total = document.getElementById('cartTotal');
-
-            badge.textContent = cart.length;
-
-            if (cart.length === 0) {
-                body.innerHTML = '<p style="text-align: center; color: #999; padding: 60px 20px;">Sepetiniz boş</p>';
-                total.textContent = '₺0';
-            } else {
-                body.innerHTML = cart.map(item => `
-                    <div class="cart-item">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Crect fill='%23FAF8F5' width='160' height='160'/%3E%3Ccircle cx='80' cy='80' r='50' fill='%23D4AF37'/%3E%3C/svg%3E" class="cart-item-img">
-                        <div class="cart-item-info">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-vendor">${item.vendor}</div>
-                            <div class="cart-item-price">₺${item.price.toLocaleString('tr-TR')}</div>
-                        </div>
-                    </div>
-                `).join('');
-                total.textContent = '₺' + cart.reduce((sum, item) => sum + item.price, 0).toLocaleString('tr-TR');
-            }
-        }
-
-        function toggleCart() {
-            document.getElementById('cartSidebar').classList.toggle('active');
-        }
-
-        function checkout() {
-            if (cart.length === 0) return alert('Sepetiniz boş!');
-
-            const order = {
-                order_id: 'ORD_' + Date.now(),
-                items: cart,
-                total_amount: cart.reduce((sum, item) => sum + item.price, 0),
-                timestamp: new Date().toISOString(),
-                status: 'pending'
-            };
-
-            console.log('═══════ FINAL ORDER JSON ═══════');
-            console.log(JSON.stringify(order, null, 2));
-            console.log('════════════════════════════════');
-
-            alert('🎉 Sipariş başarıyla oluşturuldu!\n\nJSON konsola yazdırıldı (F12)\n\nToplam: ₺' + order.total_amount.toLocaleString('tr-TR'));
-            
-            cart = [];
-            updateCart();
-            toggleCart();
-        }
-
-        function showNotification(msg) {
-            const notif = document.createElement('div');
-            notif.className = 'notification';
-            notif.textContent = msg;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 3000);
-        }
-
-        renderProducts();
-        updateCart();
-    </script>
+    renderLocationPicker();
+    renderFeatured();
+    renderCategories();
+    renderProducts();
+    renderTabs();
+  </script>
 </body>
 </html>
