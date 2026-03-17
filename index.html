@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PastaBurada — Türkiye'nin Pasta Pazaryeri</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<style>
+:root {
+  --cream: #FDF6EE;
+  --blush: #F2C4CE;
+  --rose: #D4748C;
+  --deep: #8B3A52;
+  --mocha: #5C3D2E;
+  --gold: #C9A84C;
+  --mint: #A8D5BA;
+  --text: #2C1810;
+  --gray: #8A7B72;
+  --light: #FAF3ED;
+  --white: #FFFFFF;
+  --shadow: 0 8px 32px rgba(92,61,46,0.12);
+  --shadow-sm: 0 2px 12px rgba(92,61,46,0.08);
+  --radius: 20px;
+  --radius-sm: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ===== SCREENS ===== */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ===== NAVBAR ===== */
+.navbar {
+  background: var(--white);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--deep);
+  font-weight: 700;
+}
+
+.logo span { color: var(--gold); font-style: italic; }
+
+.nav-pills { display: flex; gap: 8px; }
+
+.pill {
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.pill-outline {
+  background: transparent;
+  border: 1.5px solid var(--blush);
+  color: var(--deep);
+}
+
+.pill-outline:hover { background: var(--blush); }
+
+.pill-filled {
+  background: var(--deep);
+  color: white;
+}
+
+.pill-filled:hover { background: var(--mocha); }
+
+/* ===== LANDING ===== */
+#landing {
+  background: linear-gradient(160deg, #FDF6EE 0%, #F9EAE8 50%, #F2C4CE 100%);
+}
+
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  gap: 24px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(212,116,140,0.15);
+  border: 1px solid var(--blush);
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-size: 13px;
+  color: var(--deep);
+  font-weight: 500;
+}
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 7vw, 64px);
+  color: var(--mocha);
+  line-height: 1.15;
+  max-width: 700px;
+}
+
+.hero h1 em { color: var(--deep); font-style: italic; }
+
+.hero p {
+  color: var(--gray);
+  font-size: 17px;
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+
+.btn {
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-primary {
+  background: var(--deep);
+  color: white;
+  box-shadow: 0 4px 20px rgba(139,58,82,0.35);
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(139,58,82,0.45); background: var(--mocha); }
+
+.btn-secondary {
+  background: white;
+  color: var(--deep);
+  border: 1.5px solid var(--blush);
+}
+
+.btn-secondary:hover { background: var(--blush); }
+
+.hero-cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.hero-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  width: 140px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.hero-card:hover { transform: translateY(-4px); }
+.hero-card .emoji { font-size: 36px; margin-bottom: 8px; }
+.hero-card span { font-size: 12px; color: var(--gray); font-weight: 500; }
+
+/* ===== AUTH MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44,24,16,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: white;
+  border-radius: var(--radius);
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.modal h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: var(--mocha);
+  margin-bottom: 6px;
+}
+
+.modal p.sub { color: var(--gray); font-size: 14px; margin-bottom: 24px; }
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  background: none; border: none;
+  font-size: 22px; cursor: pointer; color: var(--gray);
+}
+
+.form-group { margin-bottom: 16px; }
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mocha);
+  margin-bottom: 6px;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #EDE0D8;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  background: var(--light);
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--rose);
+  background: white;
+}
+
+.role-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: var(--light);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.role-tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray);
+  border: none;
+  background: none;
+  transition: all 0.2s;
+}
+
+.role-tab.active {
+  background: white;
+  color: var(--deep);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+}
+
+.auth-toggle {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--gray);
+}
+
+.auth-toggle a { color: var(--deep); cursor: pointer; font-weight: 600; text-decoration: none; }
+
+/* ===== CATALOG SCREEN ===== */
+#catalog .content-area {
+  flex: 1;
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: var(--mocha);
+  margin-bottom: 4px;
+}
+
+.page-sub { color: var(--gray); font-size: 14px; margin-bottom: 24px; }
+
+.city-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.city-chip {
+  padding: 8px 18px;
+  border-radius: 50px;
+  background: white;
+  border: 1.5px solid #EDE0D8;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.city-chip.active, .city-chip:hover {
+  background: var(--deep);
+  color: white;
+  border-color: var(--deep);
+}
+
+.cake-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.cake-card {
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.cake-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+
+.cake-img {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  position: relative;
+}
+
+.cake-badge {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: var(--deep);
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-weight: 600;
+}
+
+.cake-info { padding: 18px; }
+.cake-name { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--mocha); margin-bottom: 6px; }
+.cake-desc { font-size: 13px; color: var(--gray); line-height: 1.5; margin-bottom: 12px; }
+.cake-footer { display: flex; align-items: center; justify-content: space-between; }
+.cake-price { font-size: 20px; font-weight: 700; color: var(--deep); }
+.cake-price span { font-size: 13px; color: var(--gray); font-weight: 400; }
+
+/* ===== EDITOR SCREEN ===== */
+#editor .content-area {
+  flex: 1;
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  #editor .content-area {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editor-canvas-area {
+  background: white;
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.canvas-wrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+#cakeCanvas { border-radius: 16px; }
+
+.editor-toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.toolbar-btn {
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: 1.5px solid #EDE0D8;
+  background: var(--light);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.toolbar-btn:hover, .toolbar-btn.active { background: var(--deep); color: white; border-color: var(--deep); }
+
+.editor-panel {
+  background: white;
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panel-section h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mocha);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.color-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.color-swatch {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.color-swatch.active { border-color: var(--mocha); transform: scale(1.15); }
+
+.variant-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.variant-chip {
+  padding: 7px 14px;
+  border-radius: 50px;
+  border: 1.5px solid #EDE0D8;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--light);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.variant-chip.active, .variant-chip:hover {
+  background: var(--blush);
+  border-color: var(--rose);
+  color: var(--deep);
+}
+
+.price-summary {
+  background: var(--light);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--gray);
+}
+
+.price-row.total {
+  border-top: 1px solid #EDE0D8;
+  margin-top: 8px;
+  padding-top: 8px;
+  font-weight: 700;
+  color: var(--mocha);
+  font-size: 16px;
+}
+
+/* ===== VENDOR LIST SCREEN ===== */
+#vendors .content-area {
+  flex: 1;
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.vendor-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.vendor-card:hover { transform: translateX(6px); box-shadow: var(--shadow); }
+
+.vendor-avatar {
+  width: 60px; height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.vendor-info { flex: 1; }
+.vendor-name { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--mocha); margin-bottom: 4px; }
+.vendor-meta { font-size: 13px; color: var(--gray); display: flex; gap: 12px; }
+.vendor-meta span { display: flex; align-items: center; gap: 4px; }
+
+.vendor-right { text-align: right; }
+.vendor-delivery { font-size: 13px; color: var(--mint); font-weight: 600; }
+.vendor-price-range { font-size: 13px; color: var(--gray); }
+
+/* ===== ORDER TRACKING ===== */
+#tracking .content-area {
+  flex: 1;
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.order-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+.order-id { font-size: 13px; color: var(--gray); }
+.order-name { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--mocha); margin-top: 2px; }
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pending { background: #FEF3C7; color: #92400E; }
+.status-approved { background: #D1FAE5; color: #065F46; }
+.status-preparing { background: #DBEAFE; color: #1E40AF; }
+.status-delivered { background: #EDE9FE; color: #5B21B6; }
+.status-rejected { background: #FEE2E2; color: #991B1B; }
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.progress-steps::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background: #EDE0D8;
+}
+
+.progress-fill {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  height: 2px;
+  background: var(--deep);
+  transition: width 0.5s ease;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 1;
+}
+
+.step-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #EDE0D8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border: 3px solid white;
+}
+
+.step.done .step-dot { background: var(--deep); }
+.step.active .step-dot { background: var(--rose); box-shadow: 0 0 0 4px rgba(212,116,140,0.2); }
+
+.step-label { font-size: 11px; color: var(--gray); font-weight: 500; text-align: center; }
+.step.done .step-label, .step.active .step-label { color: var(--mocha); font-weight: 600; }
+
+/* ===== VENDOR PANEL ===== */
+#vendor-panel .content-area {
+  flex: 1;
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.panel-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.stat-card .stat-icon { font-size: 28px; margin-bottom: 8px; }
+.stat-card .stat-value { font-size: 28px; font-weight: 700; color: var(--deep); font-family: 'Playfair Display', serif; }
+.stat-card .stat-label { font-size: 13px; color: var(--gray); margin-top: 2px; }
+
+.orders-table {
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.orders-table-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 100px 120px;
+  padding: 14px 20px;
+  background: var(--light);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 100px 120px;
+  padding: 16px 20px;
+  align-items: center;
+  border-bottom: 1px solid #F5EDE8;
+  transition: background 0.15s;
+}
+
+.order-row:hover { background: var(--light); }
+.order-row:last-child { border-bottom: none; }
+
+.order-row .cake-thumb { font-size: 24px; }
+
+.action-btns { display: flex; gap: 6px; }
+
+.btn-approve {
+  padding: 6px 12px;
+  background: #D1FAE5;
+  color: #065F46;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-approve:hover { background: #A7F3D0; }
+
+.btn-reject {
+  padding: 6px 12px;
+  background: #FEE2E2;
+  color: #991B1B;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reject:hover { background: #FECACA; }
+
+/* ===== ADMIN PANEL ===== */
+#admin-panel .content-area {
+  flex: 1;
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  background: white;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  width: fit-content;
+}
+
+.admin-tab {
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray);
+  border: none;
+  background: none;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.admin-tab.active {
+  background: var(--deep);
+  color: white;
+  font-weight: 600;
+}
+
+.firm-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 100px 100px 80px;
+  padding: 16px 20px;
+  align-items: center;
+  border-bottom: 1px solid #F5EDE8;
+}
+
+.firm-row:hover { background: var(--light); }
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #EDE0D8;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .toggle-slider { background: var(--mint); }
+input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+/* ===== COMMISSION CARD ===== */
+.commission-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+.commission-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--mocha);
+  margin-bottom: 20px;
+}
+
+.commission-slider { width: 100%; margin: 12px 0; accent-color: var(--deep); }
+
+.commission-preview {
+  background: var(--light);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.comm-item { text-align: center; }
+.comm-value { font-size: 22px; font-weight: 700; color: var(--deep); }
+.comm-label { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+/* ===== ADDRESS SCREEN ===== */
+#address .content-area {
+  flex: 1;
+  padding: 24px;
+  max-width: 560px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--mocha);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: var(--shadow);
+  z-index: 9999;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ===== BACK BTN ===== */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gray);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 0;
+  border: none;
+  background: none;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 16px;
+}
+
+.back-btn:hover { color: var(--deep); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .orders-table-header, .order-row { grid-template-columns: 1fr 80px 120px; }
+  .orders-table-header span:nth-child(2),
+  .orders-table-header span:nth-child(3),
+  .order-row div:nth-child(2),
+  .order-row div:nth-child(3) { display: none; }
+}
+
+/* ===== NOTIFICATION DOT ===== */
+.notif-dot {
+  width: 8px; height: 8px;
+  background: var(--rose);
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 4px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray);
+}
+
+.empty-state .empty-icon { font-size: 60px; margin-bottom: 16px; }
+.empty-state h3 { font-family: 'Playfair Display', serif; color: var(--mocha); margin-bottom: 8px; }
+
+/* Gradient backgrounds for cake cards */
+.bg-pink { background: linear-gradient(135deg, #FFF0F3, #FFD6E0); }
+.bg-lavender { background: linear-gradient(135deg, #F0F0FF, #E8D5F5); }
+.bg-mint { background: linear-gradient(135deg, #F0FFF4, #C6F6D5); }
+.bg-peach { background: linear-gradient(135deg, #FFF3E0, #FFCCBC); }
+.bg-sky { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); }
+</style>
+</head>
+<body>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== AUTH MODAL ===== -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="authTitle">Hoş Geldiniz 🎂</h2>
+    <p class="sub" id="authSub">Hesabınıza giriş yapın veya kayıt olun</p>
+
+    <div class="role-tabs" id="roleTabs">
+      <button class="role-tab active" onclick="selectRole('customer', this)">👤 Müşteri</button>
+      <button class="role-tab" onclick="selectRole('vendor', this)">🏪 Firma</button>
+      <button class="role-tab" onclick="selectRole('admin', this)">⚙️ Admin</button>
+    </div>
+
+    <div class="form-group">
+      <label>E-posta</label>
+      <input type="email" id="authEmail" placeholder="ornek@email.com">
+    </div>
+    <div class="form-group">
+      <label>Şifre</label>
+      <input type="password" id="authPassword" placeholder="••••••••">
+    </div>
+    <div class="form-group" id="cityGroup" style="display:none">
+      <label>Şehir</label>
+      <select id="authCity">
+        <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
+        <option>Bursa</option><option>Antalya</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="doAuth()">Giriş Yap</button>
+    <div class="auth-toggle">
+      Hesabın yok mu? <a onclick="toggleAuth()">Kayıt ol</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LANDING ===== -->
+<div class="screen active" id="landing">
+  <nav class="navbar">
+    <div class="logo">Pasta<span>Burada</span></div>
+    <div class="nav-pills">
+      <button class="pill pill-outline" onclick="openModal('vendor')">Firma Girişi</button>
+      <button class="pill pill-filled" onclick="openModal('customer')">Sipariş Ver</button>
+    </div>
+  </nav>
+  <div class="hero">
+    <div class="hero-badge">🎉 Türkiye'nin En Büyük Pasta Pazaryeri</div>
+    <h1>Hayalindeki <em>pastayı</em> kapına getiriyoruz</h1>
+    <p>Özelleştir, sipariş ver, takip et. Şehrindeki en iyi pastacılardan, hızlı teslimat.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="goToCatalog()">🎂 Pasta Seç</button>
+      <button class="btn btn-secondary" onclick="openModal('vendor')">🏪 Firma Ol</button>
+    </div>
+    <div class="hero-cards">
+      <div class="hero-card" onclick="goToCatalog()"><div class="emoji">🎂</div><span>Doğum Günü</span></div>
+      <div class="hero-card" onclick="goToCatalog()"><div class="emoji">💍</div><span>Düğün</span></div>
+      <div class="hero-card" onclick="goToCatalog()"><div class="emoji">🎁</div><span>Sürpriz</span></div>
+      <div class="hero-card" onclick="goToCatalog()"><div class="emoji">👶</div><span>Baby Shower</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CATALOG ===== -->
+<div class="screen" id="catalog">
+  <nav class="navbar">
+    <div class="logo">Pasta<span>Burada</span></div>
+    <div class="nav-pills">
+      <button class="pill pill-outline" onclick="showScreen('tracking')">📦 Siparişlerim</button>
+      <button class="pill pill-filled" onclick="showScreen('landing')">🏠 Ana Sayfa</button>
+    </div>
+  </nav>
+  <div class="content-area">
+    <h1 class="page-title">Pasta Seç 🎂</h1>
+    <p class="page-sub">Beğendiğin pastayı özelleştir ve sipariş ver</p>
+
+    <div class="city-bar" id="cityBar"></div>
+    <div class="cake-grid" id="cakeGrid"></div>
+  </div>
+</div>
+
+<!-- ===== EDITOR ===== -->
+<div class="screen" id="editor">
+  <nav class="navbar">
+    <div class="logo">Pasta<span>Burada</span></div>
+    <div class="nav-pills">
+      <button class="pill pill-outline" onclick="showScreen('catalog')">← Geri</button>
+    </div>
+  </nav>
+  <div class="content-area">
+    <div class="editor-canvas-area">
+      <h2 style="font-family:'Playfair Display',serif;color:var(--mocha);font-size:20px">Pastanı Özelleştir ✨</h2>
+      <div class="canvas-wrapper">
+        <canvas id="cakeCanvas" width="420" height="380"></canvas>
+      </div>
+      <div class="editor-toolbar">
+        <button class="toolbar-btn" onclick="addText('İsim')">+ İsim Ekle</button>
+        <button class="toolbar-btn" onclick="addText('Mesaj')">+ Mesaj Ekle</button>
+        <button class="toolbar-btn" onclick="clearCanvas()">🗑 Temizle</button>
+      </div>
+    </div>
+
+    <div class="editor-panel">
+      <div class="panel-section">
+        <h3>🎨 Krema Rengi</h3>
+        <div class="color-swatches" id="creamColors"></div>
+      </div>
+
+      <div class="panel-section">
+        <h3>🍰 Kek Türü</h3>
+        <div class="variant-chips" id="cakeTypes"></div>
+      </div>
+
+      <div class="panel-section">
+        <h3>🍓 Süsleme</h3>
+        <div class="variant-chips" id="toppings"></div>
+      </div>
+
+      <div class="panel-section">
+        <h3>💬 Kişisel Mesaj</h3>
+        <div class="form-group" style="margin:0">
+          <input type="text" id="customMessage" placeholder="Örn: İyi ki doğdun Ayşe! 🎉" oninput="updateCanvasText()">
+        </div>
+      </div>
+
+      <div class="price-summary">
+        <div class="price-row"><span>Pasta</span><span id="basePrice">₺450</span></div>
+        <div class="price-row"><span>Özelleştirme</span><span>₺50</span></div>
+        <div class="price-row total"><span>Toplam</span><span id="totalPrice">₺500</span></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="proceedToAddress()" style="width:100%">Devam Et →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADDRESS ===== -->
+<div class="screen" id="address">
+  <nav class="navbar">
+    <div class="logo">Pasta<span>Burada</span></div>
+    <div class="nav-pills">
+      <button class="pill pill-outline" onclick="showScreen('editor')">← Geri</button>
+    </div>
+  </nav>
+  <div class="content-area">
+    <button class="back-btn" onclick="showScreen('editor')">← Geri</button>
+    <h1 class="page-title">Teslimat Bilgileri 📍</h1>
+    <p class="page-sub">Sipariş nereye gönderilsin?</p>
+
+    <div style="background:white;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow-sm)">
+      <div class="form-group">
+        <label>Ad Soyad</label>
+        <input type="text" placeholder="Ayşe Yılmaz" id="addrName">
+      </div>
+      <div class="form-group">
+        <label>Telefon</label>
+        <input type="tel" placeholder="0532 xxx xx xx" id="addrPhone">
+      </div>
+      <div class="form-group">
+        <label>Şehir</label>
+        <select id="addrCity" onchange="loadVendors()">
+          <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
+          <option>Bursa</option><option>Antalya</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Adres</label>
+        <input type="text" placeholder="Mahalle, cadde, sokak, no..." id="addrFull">
+      </div>
+      <div class="form-group">
+        <label>Teslimat Tarihi</label>
+        <input type="date" id="addrDate">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="showScreen('vendors')">Firmaları Gör →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VENDOR LIST ===== -->
+<div class="screen" id="vendors">
+  <nav class="navbar">
+    <div class="logo">Pasta<span>Burada</span></div>
+    <div class="nav-pills">
+      <button class="pill pill-outline" onclick="showScreen('address')">← Geri</button>
+    </div>
+  </nav>
+  <div class="content-area">
+    <button class="back-btn" onclick="showScreen('address')">← Geri</button>
+    <h1 class="page-title">Firma Seç 🏪</h1>
+    <p class="page-sub" id="vendorCityText">Şehrinizdeki pastacılar</p>
+    <div id="vendorList"></div>
+  </div>
+</div>
+
+<!-- ===== ORDER TRACKING ===== -->
+<div class="screen" id="tracking">
+  <nav class="navbar">
+    <div class="logo">Pasta<span>Burada</span></div>
+    <div class="nav-pills">
+      <button class="pill pill-outline" onclick="showScreen('catalog')">🎂 Pasta Seç</button>
+    </div>
+  </nav>
+  <div class="content-area">
+    <h1 class="page-title">Siparişlerim 📦</h1>
+    <p class="page-sub">Aktif ve geçmiş siparişleriniz</p>
+    <div id="orderList"></div>
+  </div>
+</div>
+
+<!-- ===== VENDOR PANEL ===== -->
+<div class="screen" id="vendor-panel">
+  <nav class="navbar">
+    <div class="logo">Pasta<span>Burada</span> <span style="font-size:13px;color:var(--gray);font-style:normal;font-family:'DM Sans'">Firma Paneli</span></div>
+    <div class="nav-pills">
+      <button class="pill pill-outline" onclick="showScreen('landing')">🏠 Çıkış</button>
+    </div>
+  </nav>
+  <div class="content-area">
+    <h1 class="page-title">Firma Paneliniz 🏪</h1>
+    <p class="page-sub">Siparişleri yönetin, onaylayın veya reddedin</p>
+
+    <div class="panel-stats" id="vendorStats"></div>
+
+    <div class="orders-table">
+      <div class="orders-table-header">
+        <span>Pasta</span><span>Müşteri</span><span>Tarih</span><span>Tutar</span><span>İşlem</span>
+      </div>
+      <div id="vendorOrders"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div class="screen" id="admin-panel">
+  <nav class="navbar">
+    <div class="logo">Pasta<span>Burada</span> <span style="font-size:13px;color:var(--gray);font-style:normal;font-family:'DM Sans'">Admin</span></div>
+    <div class="nav-pills">
+      <button class="pill pill-outline" onclick="showScreen('landing')">🏠 Çıkış</button>
+    </div>
+  </nav>
+  <div class="content-area">
+    <h1 class="page-title">Admin Paneli ⚙️</h1>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="adminTab('firms', this)">🏪 Firmalar</button>
+      <button class="admin-tab" onclick="adminTab('orders', this)">📦 Siparişler</button>
+      <button class="admin-tab" onclick="adminTab('commission', this)">💰 Komisyon</button>
+    </div>
+
+    <div id="adminContent"></div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let state = {
+  currentUser: null,
+  currentRole: 'customer',
+  selectedCake: null,
+  selectedVendor: null,
+  fabricCanvas: null,
+  selectedCreamColor: '#FFFFFF',
+  selectedCakeType: 'Vanilyalı',
+  selectedTopping: 'Meyve',
+  commissionRate: 15
+};
+
+// ===== DATA =====
+const cakes = [
+  { id:'cake_001', name:'Kalp Pasta', emoji:'🎂', bg:'bg-pink', price:450, desc:'Narin pembe detaylar, kalpten bir pasta', editable:['isim','mesaj'], variant:{ creamColor:['#FFFFFF','#FFB6C1','#ADD8E6'], topping:['Meyve','Çikolata','Karışık'], cakeType:['Vanilyalı','Çikolatalı','Limonlu'] } },
+  { id:'cake_002', name:'Düğün Pastası', emoji:'💍', bg:'bg-lavender', price:850, desc:'Şık ve zarif, özel gününüz için', editable:['isim','mesaj'], variant:{ creamColor:['#FFFFFF','#E8D5F5','#D4B8E0'], topping:['Çiçek','Şeker','Macaroon'], cakeType:['Vanilyalı','Bademli','Frambuazlı'] } },
+  { id:'cake_003', name:'Doğum Günü', emoji:'🎉', bg:'bg-peach', price:380, desc:'Renkli balonlar ve sürpriz iç dolgu', editable:['isim','mesaj'], variant:{ creamColor:['#FFA07A','#FFD700','#98FB98'], topping:['Sprinkles','Meyve','Çikolata'], cakeType:['Vanilyalı','Çikolatalı','Kırmızı Kadife'] } },
+  { id:'cake_004', name:'Baby Shower', emoji:'👶', bg:'bg-sky', price:520, desc:'Tatlı ve şirin, bebek temalı özel pasta', editable:['isim','mesaj'], variant:{ creamColor:['#ADD8E6','#FFB6C1','#98FB98'], topping:['Şeker Figür','Balon','Yıldız'], cakeType:['Vanilyalı','Muzlu','Çilekli'] } },
+  { id:'cake_005', name:'Naked Cake', emoji:'🍰', bg:'bg-mint', price:490, desc:'Sade ama büyüleyici, doğal görünümlü', editable:['isim','mesaj'], variant:{ creamColor:['#F5DEB3','#D2B48C','#FFFFFF'], topping:['Meyve','Çiçek','Fındık'], cakeType:['Limonlu','Vanilyalı','Çikolatalı'] } },
+  { id:'cake_006', name:'Çikolatalı Drip', emoji:'🍫', bg:'bg-lavender', price:420, desc:'Zengin çikolata, şelale efektli', editable:['isim','mesaj'], variant:{ creamColor:['#8B4513','#D2691E','#FFFFFF'], topping:['Çikolata Parçası','Oreo','Karamel'], cakeType:['Çikolatalı','Vanilyalı','Karamelli'] } }
+];
+
+const vendorsDB = {
+  'İstanbul': [
+    { id:'v1', name:'Pembe Mutfak', emoji:'🩷', rating:4.9, reviews:218, delivery:'2-4 saat', priceRange:'₺350-₺1200', city:'İstanbul', orders:0 },
+    { id:'v2', name:'Lezzet Atölyesi', emoji:'🍰', rating:4.7, reviews:145, delivery:'3-5 saat', priceRange:'₺280-₺900', city:'İstanbul', orders:0 },
+    { id:'v3', name:'Şeker Rüyası', emoji:'🌸', rating:4.8, reviews:89, delivery:'1-3 saat', priceRange:'₺400-₺1500', city:'İstanbul', orders:0 }
+  ],
+  'Ankara': [
+    { id:'v4', name:'Başkent Pasta', emoji:'🎂', rating:4.6, reviews:67, delivery:'2-4 saat', priceRange:'₺300-₺950', city:'Ankara', orders:0 },
+    { id:'v5', name:'Ankara Tatlı', emoji:'🍮', rating:4.5, reviews:43, delivery:'3-6 saat', priceRange:'₺250-₺800', city:'Ankara', orders:0 }
+  ],
+  'İzmir': [
+    { id:'v6', name:'Ege Pastacılık', emoji:'🌊', rating:4.8, reviews:112, delivery:'2-3 saat', priceRange:'₺320-₺1100', city:'İzmir', orders:0 }
+  ],
+  'Bursa': [
+    { id:'v7', name:'Bursa Pasta Evi', emoji:'🌿', rating:4.7, reviews:78, delivery:'2-4 saat', priceRange:'₺280-₺900', city:'Bursa', orders:0 }
+  ],
+  'Antalya': [
+    { id:'v8', name:'Akdeniz Lezzet', emoji:'☀️', rating:4.6, reviews:55, delivery:'3-5 saat', priceRange:'₺300-₺1000', city:'Antalya', orders:0 }
+  ]
+};
+
+let orders = [
+  { id:'#2401', cakeName:'Kalp Pasta', emoji:'🎂', customer:'Ayşe K.', date:'17 Mar', amount:'₺500', status:'preparing', vendorId:'v1', customText:'İyi ki doğdun!' },
+  { id:'#2400', cakeName:'Doğum Günü', emoji:'🎉', customer:'Mehmet T.', date:'16 Mar', amount:'₺430', status:'delivered', vendorId:'v1', customText:'Sürpriz!' },
+  { id:'#2399', cakeName:'Naked Cake', emoji:'🍰', customer:'Fatma S.', date:'15 Mar', amount:'₺540', status:'approved', vendorId:'v2', customText:'Tebrikler' }
+];
+
+// ===== SCREENS =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  window.scrollTo(0,0);
+
+  if (id === 'catalog') renderCatalog();
+  if (id === 'tracking') renderTracking();
+  if (id === 'vendors') renderVendors();
+  if (id === 'vendor-panel') renderVendorPanel();
+  if (id === 'admin-panel') renderAdminPanel('firms');
+}
+
+// ===== AUTH =====
+let isLogin = true;
+let selectedRole = 'customer';
+
+function openModal(role) {
+  selectedRole = role || 'customer';
+  document.querySelectorAll('.role-tab').forEach((t,i) => {
+    const roles = ['customer','vendor','admin'];
+    t.classList.toggle('active', roles[i] === selectedRole);
+  });
+  document.getElementById('cityGroup').style.display = selectedRole === 'vendor' ? 'block' : 'none';
+  document.getElementById('authModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('authModal').classList.remove('open');
+}
+
+function selectRole(role, btn) {
+  selectedRole = role;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cityGroup').style.display = role === 'vendor' ? 'block' : 'none';
+}
+
+function toggleAuth() {
+  isLogin = !isLogin;
+  document.getElementById('authTitle').textContent = isLogin ? 'Hoş Geldiniz 🎂' : 'Hesap Oluştur ✨';
+  document.getElementById('authSub').textContent = isLogin ? 'Hesabınıza giriş yapın' : 'Hızlıca kayıt olun';
+}
+
+function doAuth() {
+  const email = document.getElementById('authEmail').value;
+  closeModal();
+  state.currentRole = selectedRole;
+  state.currentUser = { email: email || 'demo@pastaborada.com', role: selectedRole };
+
+  showToast(isLogin ? '✅ Giriş yapıldı!' : '🎉 Hesap oluşturuldu!');
+
+  if (selectedRole === 'customer') showScreen('catalog');
+  else if (selectedRole === 'vendor') showScreen('vendor-panel');
+  else if (selectedRole === 'admin') showScreen('admin-panel');
+}
+
+// ===== CATALOG =====
+const cities = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya'];
+let activeCity = 'İstanbul';
+
+function renderCatalog() {
+  const bar = document.getElementById('cityBar');
+  bar.innerHTML = cities.map(c => `
+    <button class="city-chip ${c===activeCity?'active':''}" onclick="filterCity('${c}')">${c}</button>
+  `).join('');
+  renderCakeGrid();
+}
+
+function filterCity(city) {
+  activeCity = city;
+  renderCatalog();
+}
+
+function renderCakeGrid() {
+  document.getElementById('cakeGrid').innerHTML = cakes.map(c => `
+    <div class="cake-card" onclick="selectCake('${c.id}')">
+      <div class="cake-img ${c.bg}">
+        ${c.emoji}
+        <div class="cake-badge">Özelleştir</div>
+      </div>
+      <div class="cake-info">
+        <div class="cake-name">${c.name}</div>
+        <div class="cake-desc">${c.desc}</div>
+        <div class="cake-footer">
+          <div class="cake-price">₺${c.price} <span>/ adet</span></div>
+          <button class="btn btn-primary" style="padding:8px 16px;font-size:13px">Seç →</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectCake(id) {
+  state.selectedCake = cakes.find(c => c.id === id);
+  showScreen('editor');
+  setTimeout(initEditor, 100);
+}
+
+function goToCatalog() {
+  if (!state.currentUser) { openModal('customer'); return; }
+  showScreen('catalog');
+}
+
+// ===== FABRIC.JS EDITOR =====
+function initEditor() {
+  if (state.fabricCanvas) {
+    state.fabricCanvas.dispose();
+  }
+
+  const cake = state.selectedCake;
+  if (!cake) return;
+
+  const canvas = new fabric.Canvas('cakeCanvas', {
+    width: 420, height: 380,
+    backgroundColor: '#FDF6EE'
+  });
+  state.fabricCanvas = canvas;
+
+  // Draw cake base
+  const cakeBase = new fabric.Ellipse({
+    left: 110, top: 80,
+    rx: 100, ry: 30,
+    fill: state.selectedCreamColor || '#FFFFFF',
+    stroke: '#D4748C', strokeWidth: 2,
+    selectable: false
+  });
+
+  const cakeBody = new fabric.Rect({
+    left: 110, top: 100,
+    width: 200, height: 130,
+    fill: state.selectedCreamColor || '#FFFFFF',
+    stroke: '#D4748C', strokeWidth: 2,
+    selectable: false
+  });
+
+  const cakeBottom = new fabric.Ellipse({
+    left: 110, top: 215,
+    rx: 100, ry: 30,
+    fill: state.selectedCreamColor || '#FFFFFF',
+    stroke: '#D4748C', strokeWidth: 2,
+    selectable: false
+  });
+
+  // Cake emoji
+  const emojiText = new fabric.Text(cake.emoji, {
+    left: 185, top: 130,
+    fontSize: 60,
+    selectable: false
+  });
+
+  // Candles
+  for (let i = 0; i < 3; i++) {
+    const candle = new fabric.Rect({
+      left: 155 + i*40, top: 50,
+      width: 8, height: 32,
+      fill: ['#FFD700','#FF69B4','#87CEEB'][i],
+      selectable: false
+    });
+    const flame = new fabric.Ellipse({
+      left: 155 + i*40, top: 42,
+      rx: 5, ry: 8,
+      fill: '#FFA500',
+      selectable: false
+    });
+    canvas.add(candle, flame);
+  }
+
+  canvas.add(cakeBottom, cakeBody, cakeBase, emojiText);
+
+  // Default name text
+  const nameText = new fabric.IText('✨ ' + (cake.name) + ' ✨', {
+    left: 70, top: 255,
+    fontSize: 18,
+    fontFamily: 'Georgia',
+    fill: '#8B3A52',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    width: 280
+  });
+
+  canvas.add(nameText);
+  canvas.renderAll();
+
+  // Render options
+  renderEditorOptions(cake);
+  document.getElementById('basePrice').textContent = '₺' + cake.price;
+  document.getElementById('totalPrice').textContent = '₺' + (cake.price + 50);
+}
+
+function renderEditorOptions(cake) {
+  const colors = cake.variant.creamColor;
+  document.getElementById('creamColors').innerHTML = colors.map(c => `
+    <div class="color-swatch ${state.selectedCreamColor===c?'active':''}"
+      style="background:${c};border:2px solid ${c==='#FFFFFF'?'#ddd':c}"
+      onclick="setCreamColor('${c}', this)"
+    ></div>
+  `).join('');
+
+  document.getElementById('cakeTypes').innerHTML = cake.variant.cakeType.map(t => `
+    <button class="variant-chip ${state.selectedCakeType===t?'active':''}" onclick="setCakeType('${t}',this)">${t}</button>
+  `).join('');
+
+  document.getElementById('toppings').innerHTML = cake.variant.topping.map(t => `
+    <button class="variant-chip ${state.selectedTopping===t?'active':''}" onclick="setTopping('${t}',this)">${t}</button>
+  `).join('');
+}
+
+function setCreamColor(color, el) {
+  state.selectedCreamColor = color;
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  // Update canvas
+  if (state.fabricCanvas) {
+    state.fabricCanvas.getObjects().forEach(obj => {
+      if (obj.type === 'rect' || obj.type === 'ellipse') {
+        if (obj.fill !== '#FFA500' && obj.fill !== '#FFD700' && obj.fill !== '#FF69B4' && obj.fill !== '#87CEEB') {
+          obj.set('fill', color);
+        }
+      }
+    });
+    state.fabricCanvas.renderAll();
+  }
+}
+
+function setCakeType(type, el) {
+  state.selectedCakeType = type;
+  document.querySelectorAll('#cakeTypes .variant-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setTopping(topping, el) {
+  state.selectedTopping = topping;
+  document.querySelectorAll('#toppings .variant-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function addText(type) {
+  if (!state.fabricCanvas) return;
+  const text = new fabric.IText(type === 'İsim' ? 'İsminizi Yazın' : 'Mesajınızı Yazın', {
+    left: 70, top: type === 'İsim' ? 260 : 290,
+    fontSize: type === 'İsim' ? 20 : 16,
+    fontFamily: 'Georgia',
+    fill: '#8B3A52',
+    fontWeight: type === 'İsim' ? 'bold' : 'normal',
+    width: 280
+  });
+  state.fabricCanvas.add(text);
+  state.fabricCanvas.setActiveObject(text);
+  text.enterEditing();
+  state.fabricCanvas.renderAll();
+}
+
+function updateCanvasText() {
+  const msg = document.getElementById('customMessage').value;
+  if (!state.fabricCanvas || !msg) return;
+  const objs = state.fabricCanvas.getObjects('i-text');
+  if (objs.length > 0) {
+    const lastText = objs[objs.length - 1];
+    lastText.set('text', msg);
+    state.fabricCanvas.renderAll();
+  }
+}
+
+function clearCanvas() {
+  if (state.fabricCanvas) {
+    state.fabricCanvas.clear();
+    state.fabricCanvas.setBackgroundColor('#FDF6EE', state.fabricCanvas.renderAll.bind(state.fabricCanvas));
+    initEditor();
+  }
+}
+
+function proceedToAddress() {
+  showScreen('address');
+  const today = new Date();
+  today.setDate(today.getDate() + 1);
+  document.getElementById('addrDate').valueAsDate = today;
+}
+
+// ===== VENDORS =====
+function loadVendors() {}
+
+function renderVendors() {
+  const city = document.getElementById('addrCity')?.value || activeCity || 'İstanbul';
+  document.getElementById('vendorCityText').textContent = `${city}'deki pasta firmaları`;
+  const vendors = vendorsDB[city] || [];
+  document.getElementById('vendorList').innerHTML = vendors.map(v => `
+    <div class="vendor-card" onclick="selectVendor('${v.id}')">
+      <div class="vendor-avatar" style="background:linear-gradient(135deg,#FDF6EE,#F2C4CE)">${v.emoji}</div>
+      <div class="vendor-info">
+        <div class="vendor-name">${v.name}</div>
+        <div class="vendor-meta">
+          <span>⭐ ${v.rating}</span>
+          <span>💬 ${v.reviews} yorum</span>
+          <span>📍 ${v.city}</span>
+        </div>
+      </div>
+      <div class="vendor-right">
+        <div class="vendor-delivery">🚀 ${v.delivery}</div>
+        <div class="vendor-price-range">${v.priceRange}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectVendor(id) {
+  state.selectedVendor = id;
+  placeOrder(id);
+}
+
+function placeOrder(vendorId) {
+  const cake = state.selectedCake;
+  const newOrder = {
+    id: '#' + (2400 + orders.length + 1),
+    cakeName: cake?.name || 'Pasta',
+    emoji: cake?.emoji || '🎂',
+    customer: state.currentUser?.email?.split('@')[0] || 'Müşteri',
+    date: new Date().toLocaleDateString('tr-TR', {day:'numeric', month:'short'}),
+    amount: document.getElementById('totalPrice')?.textContent || '₺500',
+    status: 'pending',
+    vendorId: vendorId,
+    customText: document.getElementById('customMessage')?.value || ''
+  };
+  orders.unshift(newOrder);
+  showToast('🎉 Siparişiniz iletildi! Firma onayı bekleniyor.');
+  setTimeout(() => showScreen('tracking'), 1000);
+}
+
+// ===== TRACKING =====
+const statusConfig = {
+  pending: { label:'Bekliyor', cls:'status-pending', step:0 },
+  approved: { label:'Onaylandı', cls:'status-approved', step:1 },
+  preparing: { label:'Hazırlanıyor', cls:'status-preparing', step:2 },
+  delivered: { label:'Teslim Edildi', cls:'status-delivered', step:3 },
+  rejected: { label:'Reddedildi', cls:'status-rejected', step:-1 }
+};
+
+const steps = [
+  { label:'Sipariş', emoji:'📋' },
+  { label:'Onaylandı', emoji:'✅' },
+  { label:'Hazırlanıyor', emoji:'👩‍🍳' },
+  { label:'Teslim', emoji:'🚀' }
+];
+
+function renderTracking() {
+  const myOrders = orders.filter(o => o.customer === (state.currentUser?.email?.split('@')[0] || 'Ayşe K.') || true);
+
+  if (myOrders.length === 0) {
+    document.getElementById('orderList').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🎂</div>
+        <h3>Henüz sipariş yok</h3>
+        <p>İlk siparişinizi verin!</p>
+        <button class="btn btn-primary" onclick="showScreen('catalog')" style="margin-top:16px">Pasta Seç →</button>
+      </div>
+    `;
+    return;
+  }
+
+  document.getElementById('orderList').innerHTML = myOrders.map(o => {
+    const cfg = statusConfig[o.status];
+    const currentStep = cfg.step;
+    const progressWidth = currentStep < 0 ? 0 : (currentStep / 3 * 100);
+
+    return `
+      <div class="order-card">
+        <div class="order-header">
+          <div>
+            <div class="order-id">${o.id} · ${o.date}</div>
+            <div class="order-name">${o.emoji} ${o.cakeName}</div>
+            ${o.customText ? `<div style="font-size:13px;color:var(--gray);margin-top:4px">"${o.customText}"</div>` : ''}
+          </div>
+          <div>
+            <span class="status-badge ${cfg.cls}">${cfg.label}</span>
+            <div style="font-size:14px;color:var(--deep);font-weight:700;margin-top:8px;text-align:right">${o.amount}</div>
+          </div>
+        </div>
+
+        ${o.status !== 'rejected' ? `
+        <div class="progress-steps" style="padding-bottom:32px">
+          <div class="progress-fill" style="width:calc(${progressWidth}% - 32px + ${progressWidth > 0 ? 16 : 0}px)"></div>
+          ${steps.map((s, i) => `
+            <div class="step ${i < currentStep ? 'done' : i === currentStep ? 'active' : ''}">
+              <div class="step-dot">${i < currentStep ? '✓' : s.emoji}</div>
+              <div class="step-label">${s.label}</div>
+            </div>
+          `).join('')}
+        </div>
+        ` : `<div style="text-align:center;padding:16px;color:#991B1B;font-size:14px">❌ Siparişiniz reddedildi. Başka bir firma seçebilirsiniz.</div>`}
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== VENDOR PANEL =====
+function renderVendorPanel() {
+  const vendorOrders = orders.filter(o => o.vendorId === 'v1' || true).slice(0, 8);
+  const pending = vendorOrders.filter(o => o.status === 'pending').length;
+  const total = vendorOrders.length;
+  const revenue = vendorOrders.filter(o=>o.status!=='rejected').reduce((s,o) => s + parseInt(o.amount.replace('₺','')), 0);
+
+  document.getElementById('vendorStats').innerHTML = `
+    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-value">${total}</div><div class="stat-label">Toplam Sipariş</div></div>
+    <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-value">${pending}</div><div class="stat-label">Bekleyen <span class="notif-dot"></span></div></div>
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value">₺${revenue.toLocaleString()}</div><div class="stat-label">Bu Ay Ciro</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-value">4.9</div><div class="stat-label">Ortalama Puan</div></div>
+  `;
+
+  document.getElementById('vendorOrders').innerHTML = vendorOrders.map(o => {
+    const cfg = statusConfig[o.status];
+    return `
+      <div class="order-row" id="row-${o.id.replace('#','')}">
+        <div>${o.emoji} ${o.cakeName}</div>
+        <div style="color:var(--gray);font-size:13px">${o.customer}</div>
+        <div style="color:var(--gray);font-size:13px">${o.date}</div>
+        <div style="font-weight:700;color:var(--deep)">${o.amount}</div>
+        <div>
+          ${o.status === 'pending' ? `
+            <div class="action-btns">
+              <button class="btn-approve" onclick="approveOrder('${o.id}')">✓ Onayla</button>
+              <button class="btn-reject" onclick="rejectOrder('${o.id}')">✕</button>
+            </div>
+          ` : `<span class="status-badge ${cfg.cls}">${cfg.label}</span>`}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function approveOrder(id) {
+  const order = orders.find(o => o.id === id);
+  if (order) { order.status = 'approved'; showToast('✅ Sipariş onaylandı! Müşteriye bildirim gönderildi.'); renderVendorPanel(); }
+}
+
+function rejectOrder(id) {
+  const order = orders.find(o => o.id === id);
+  if (order) { order.status = 'rejected'; showToast('❌ Sipariş reddedildi.'); renderVendorPanel(); }
+}
+
+// ===== ADMIN PANEL =====
+let currentAdminTab = 'firms';
+
+function renderAdminPanel(tab) {
+  currentAdminTab = tab;
+  const content = document.getElementById('adminContent');
+
+  if (tab === 'firms') {
+    const allVendors = Object.values(vendorsDB).flat();
+    content.innerHTML = `
+      <div class="orders-table">
+        <div class="firm-row" style="background:var(--light);font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px">
+          <span>#</span><span>Firma</span><span>Şehir</span><span>Puan</span><span>Aktif</span>
+        </div>
+        ${allVendors.map((v, i) => `
+          <div class="firm-row">
+            <span style="color:var(--gray);font-size:13px">${i+1}</span>
+            <div style="display:flex;align-items:center;gap:8px">${v.emoji} <span style="font-weight:600">${v.name}</span></div>
+            <span style="color:var(--gray);font-size:13px">${v.city}</span>
+            <span style="font-weight:700;color:var(--deep)">⭐ ${v.rating}</span>
+            <label class="toggle-switch">
+              <input type="checkbox" checked onchange="showToast('Firma durumu güncellendi')">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else if (tab === 'orders') {
+    content.innerHTML = `
+      <div class="orders-table">
+        <div class="orders-table-header">
+          <span>Sipariş</span><span>Müşteri</span><span>Tarih</span><span>Tutar</span><span>Durum</span>
+        </div>
+        ${orders.map(o => `
+          <div class="order-row">
+            <div>${o.emoji} ${o.cakeName}</div>
+            <div style="color:var(--gray);font-size:13px">${o.customer}</div>
+            <div style="color:var(--gray);font-size:13px">${o.date}</div>
+            <div style="font-weight:700;color:var(--deep)">${o.amount}</div>
+            <span class="status-badge ${statusConfig[o.status].cls}">${statusConfig[o.status].label}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else if (tab === 'commission') {
+    content.innerHTML = `
+      <div class="commission-card">
+        <h3>💰 Komisyon Ayarları</h3>
+        <div class="form-group">
+          <label>Genel Komisyon Oranı: <strong style="color:var(--deep)" id="commLabel">${state.commissionRate}%</strong></label>
+          <input type="range" class="commission-slider" min="5" max="35" value="${state.commissionRate}"
+            oninput="updateCommission(this.value)">
+        </div>
+        <div class="commission-preview">
+          <div class="comm-item"><div class="comm-value" id="commPct">${state.commissionRate}%</div><div class="comm-label">Oran</div></div>
+          <div class="comm-item"><div class="comm-value" id="commEx">₺${Math.round(500*state.commissionRate/100)}</div><div class="comm-label">₺500'den komisyon</div></div>
+          <div class="comm-item"><div class="comm-value" id="commMonth">₺${Math.round(24500*state.commissionRate/100)}</div><div class="comm-label">Bu ay tahmini</div></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="showToast('✅ Komisyon oranı kaydedildi!')">Kaydet</button>
+      </div>
+
+      <div class="commission-card">
+        <h3>🏙 Şehir Bazlı Oranlar</h3>
+        ${cities.map(c => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #F5EDE8">
+            <span style="font-weight:500">${c}</span>
+            <div style="display:flex;align-items:center;gap:12px">
+              <input type="range" min="5" max="35" value="${state.commissionRate}" style="width:120px;accent-color:var(--deep)"
+                oninput="this.nextElementSibling.textContent=this.value+'%'">
+              <span style="width:40px;font-weight:700;color:var(--deep)">${state.commissionRate}%</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+}
+
+function updateCommission(val) {
+  state.commissionRate = parseInt(val);
+  document.getElementById('commLabel').textContent = val + '%';
+  document.getElementById('commPct').textContent = val + '%';
+  document.getElementById('commEx').textContent = '₺' + Math.round(500*val/100);
+  document.getElementById('commMonth').textContent = '₺' + Math.round(24500*val/100);
+}
+
+function adminTab(tab, btn) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderAdminPanel(tab);
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== INIT =====
+showScreen('landing');
+</script>
+</body>
+</html>
