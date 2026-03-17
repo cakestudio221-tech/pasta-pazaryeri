@@ -2,962 +2,233 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#000000">
-    <title>Saray — Türkiye'nin İlk Haute Pâtisserie Marketplace'i</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saray Patisserie | Professional Cake Studio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
         :root {
-            --black: #000000;
-            --gold: #C9A961;
-            --white: #FFFFFF;
-            --grey: #86868B;
-            --light-grey: #F5F5F7;
+            --black: #0F0E0C;
+            --gold: #D4AF37;
+            --white: #F5F5F5;
+            --dark-gray: #1a1a1a;
+            --glass: rgba(255, 255, 255, 0.03);
         }
 
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--white);
-            color: var(--black);
-            font-size: 17px;
-            line-height: 1.47059;
-            font-weight: 400;
-            letter-spacing: -0.022em;
-        }
+        * { box-sizing: border-box; outline: none; }
+        body { margin: 0; background-color: var(--black); color: var(--white); font-family: 'Montserrat', sans-serif; overflow: hidden; }
 
-        h1, h2, h3 {
-            font-family: 'Libre Baskerville', serif;
-            font-weight: 400;
-            letter-spacing: -0.03em;
-        }
-
-        /* Navigation - Apple Style */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: saturate(180%) blur(20px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            z-index: 9999;
-        }
-
-        .nav-content {
-            max-width: 1024px;
-            margin: 0 auto;
-            height: 100%;
-            padding: 0 22px;
+        /* Header */
+        header {
+            height: 70px;
+            padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(15, 14, 12, 0.98);
+            z-index: 1000;
         }
 
-        .logo {
-            font-family: 'Libre Baskerville', serif;
-            font-size: 21px;
-            letter-spacing: 0.1em;
-            color: var(--black);
-        }
+        .logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gold); letter-spacing: 3px; }
+        .btn-auth { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; }
 
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: var(--black);
-            text-decoration: none;
-            font-size: 14px;
-            transition: opacity 0.3s;
-        }
-
-        .nav-links a:hover {
-            opacity: 0.6;
-        }
-
-        .nav-icon {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: opacity 0.3s;
-            font-size: 20px;
-        }
-
-        .nav-icon:hover {
-            opacity: 0.6;
-        }
-
-        /* Hero Section - Apple Style */
-        .hero {
-            margin-top: 48px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%);
-        }
-
-        .hero h1 {
-            font-size: clamp(48px, 7vw, 96px);
-            line-height: 1.05;
-            margin-bottom: 16px;
-            font-weight: 400;
-        }
-
-        .hero .gold {
-            color: var(--gold);
-            font-style: italic;
-        }
-
-        .hero p {
-            font-size: 21px;
-            line-height: 1.381;
-            color: var(--grey);
-            max-width: 700px;
-            margin: 0 auto 40px;
-            font-weight: 400;
-        }
-
-        .cta {
-            background: var(--black);
-            color: var(--white);
-            border: none;
-            padding: 14px 40px;
-            border-radius: 980px;
-            font-size: 17px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 400;
-        }
-
-        .cta:hover {
-            background: #1d1d1f;
-            transform: scale(1.02);
-        }
-
-        /* Product Grid - Clean & Spacious */
-        .section {
-            padding: 100px 20px;
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 48px;
-            text-align: center;
-            margin-bottom: 80px;
-            font-weight: 400;
-        }
-
-        .grid {
+        /* Layout */
+        .studio-wrapper {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 60px;
+            grid-template-columns: 320px 1fr 320px;
+            height: calc(100vh - 70px);
         }
 
-        .card {
-            cursor: pointer;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-        }
-
-        .card-image {
-            width: 100%;
-            aspect-ratio: 1;
-            background: var(--light-grey);
-            border-radius: 18px;
-            overflow: hidden;
-            margin-bottom: 24px;
-        }
-
-        .card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card:hover .card-image img {
-            transform: scale(1.05);
-        }
-
-        .card-title {
-            font-size: 24px;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .card-subtitle {
-            font-size: 14px;
-            color: var(--grey);
-            margin-bottom: 16px;
-        }
-
-        .card-price {
-            font-size: 28px;
-            color: var(--black);
-            font-weight: 600;
-        }
-
-        /* City Selector - Minimal Dropdown */
-        .location-bar {
-            background: var(--light-grey);
-            padding: 20px;
-            text-align: center;
-            margin-top: 48px;
-        }
-
-        .location-bar select {
-            background: var(--white);
-            border: 1px solid #D2D2D7;
-            padding: 12px 40px 12px 16px;
-            border-radius: 12px;
-            font-size: 17px;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23000' stroke-width='2' fill='none'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-        }
-
-        /* Studio Modal - Full Screen Experience */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--white);
-            z-index: 10000;
+        /* Sidebars */
+        .sidebar {
+            background: var(--dark-gray);
+            border-right: 0.5px solid rgba(255,255,255,0.1);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
             overflow-y: auto;
         }
 
-        .modal.active {
-            display: block;
-            animation: fadeIn 0.4s;
+        .tool-title { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 18px; margin-bottom: 15px; border-left: 3px solid var(--gold); padding-left: 10px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 11px; text-transform: uppercase; color: #888; }
+        
+        input[type="text"], select {
+            background: #252525; border: 1px solid #444; color: white; padding: 12px; border-radius: 4px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        .btn-action { background: var(--gold); color: var(--black); border: none; padding: 14px; border-radius: 4px; font-weight: 700; cursor: pointer; }
 
-        .modal-nav {
-            height: 48px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 22px;
-        }
-
-        .modal-nav h2 {
-            font-size: 21px;
-        }
-
-        .close-btn {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background: transparent;
-            font-size: 28px;
-            cursor: pointer;
-            color: var(--grey);
-            transition: color 0.3s;
-        }
-
-        .close-btn:hover {
-            color: var(--black);
-        }
-
-        .modal-content {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
-
-        /* 2D Canvas - Centered & Clean */
-        .canvas-container {
-            max-width: 800px;
-            margin: 0 auto 60px;
-        }
-
-        .canvas {
+        /* Main Area */
+        .main-stage {
             position: relative;
-            width: 100%;
-            aspect-ratio: 1;
-            background: #FAFAFA;
-            border-radius: 24px;
-            overflow: hidden;
-        }
-
-        .canvas img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .text-layer {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Libre Baskerville', serif;
-            font-size: 56px;
-            color: var(--gold);
-            text-align: center;
-            pointer-events: none;
-            font-weight: 400;
-        }
-
-        /* Controls - Minimal Form Design */
-        .controls {
-            max-width: 600px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .control-group label {
-            display: block;
-            font-size: 12px;
-            color: var(--grey);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-
-        .control-group input,
-        .control-group select {
-            width: 100%;
-            padding: 16px;
-            border: 1px solid #D2D2D7;
-            border-radius: 12px;
-            font-size: 17px;
-            font-family: 'Inter', sans-serif;
-            background: var(--white);
-            transition: border-color 0.3s;
-        }
-
-        .control-group input:focus,
-        .control-group select:focus {
-            outline: none;
-            border-color: var(--black);
-        }
-
-        /* 3D Canvas - Full Width */
-        .canvas-3d {
-            width: 100%;
-            height: 600px;
-            background: #FAFAFA;
-            border-radius: 24px;
-            margin: 60px 0;
-        }
-
-        .preview-controls {
+            background: radial-gradient(circle, #222 0%, #0f0e0c 100%);
             display: flex;
             justify-content: center;
-            gap: 16px;
-            margin-top: 32px;
-        }
-
-        .btn-preview {
-            background: var(--black);
-            color: var(--white);
-            border: none;
-            padding: 12px 32px;
-            border-radius: 980px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-preview:hover {
-            background: #1d1d1f;
-        }
-
-        /* Summary - Clean Pricing */
-        .summary {
-            max-width: 600px;
-            margin: 60px auto;
-            padding: 40px;
-            background: var(--light-grey);
-            border-radius: 24px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid #D2D2D7;
-        }
-
-        .summary-row:last-child {
-            border-bottom: none;
-            font-size: 24px;
-            font-weight: 600;
-            padding-top: 24px;
-        }
-
-        /* Cart - Minimal Sidebar */
-        .cart {
-            position: fixed;
-            right: -400px;
-            top: 0;
-            width: 400px;
-            height: 100vh;
-            background: var(--white);
-            border-left: 1px solid rgba(0, 0, 0, 0.1);
-            z-index: 11000;
-            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .cart.active {
-            right: 0;
-        }
-
-        .cart-header {
-            height: 48px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 22px;
         }
 
-        .cart-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-        }
-
-        .cart-item {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid #D2D2D7;
-        }
-
-        .cart-item-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            background: var(--light-grey);
-            object-fit: cover;
-        }
-
-        .cart-item-name {
-            font-size: 15px;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .cart-item-price {
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .cart-footer {
-            padding: 24px;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .cart-total {
-            display: flex;
-            justify-content: space-between;
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 24px;
-        }
-
-        .checkout-btn {
-            width: 100%;
-            background: var(--black);
-            color: var(--white);
-            border: none;
-            padding: 16px;
-            border-radius: 980px;
-            font-size: 17px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .checkout-btn:hover {
-            background: #1d1d1f;
-        }
-
-        /* Steps Indicator - Minimal */
-        .steps {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin: 40px 0 60px;
-        }
-
-        .step {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 14px;
-            color: var(--grey);
-        }
-
-        .step.active {
-            color: var(--black);
-        }
-
-        .step-dot {
-            width: 8px;
-            height: 8px;
+        #canvas-holder {
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--gold);
             border-radius: 50%;
-            background: #D2D2D7;
+            overflow: hidden;
+            width: 450px;
+            height: 450px;
+            background: #fff;
         }
 
-        .step.active .step-dot {
+        /* 3D Overlay */
+        #three-preview {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black);
+            display: none;
+            z-index: 100;
         }
 
-        /* Notification - Apple Toast */
-        .toast {
-            position: fixed;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.85);
-            color: var(--white);
-            padding: 16px 32px;
-            border-radius: 980px;
-            font-size: 14px;
-            z-index: 99999;
-            animation: slideDown 0.3s;
+        .btn-preview-toggle {
+            position: absolute;
+            bottom: 40px;
+            background: #fff;
+            color: #000;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 200;
+            border: none;
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -20px);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
+        /* Right Summary */
+        .summary-bar {
+            background: var(--dark-gray);
+            border-left: 0.5px solid rgba(255,255,255,0.1);
+            padding: 25px;
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .nav-links a:not(.nav-icon) {
-                display: none;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-
-            .hero h1 {
-                font-size: 48px;
-            }
-
-            .cart {
-                width: 100%;
-                right: -100%;
-            }
-        }
-
-        /* Smooth Scroll */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Selection */
-        ::selection {
-            background: var(--gold);
-            color: var(--white);
-        }
+        .price { font-size: 36px; color: var(--gold); margin: 20px 0; font-family: 'Playfair Display', serif; }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-content">
-            <div class="logo">SARAY</div>
-            <div class="nav-links">
-                <a href="#collection">Koleksiyon</a>
-                <a href="#studio">Tasarla</a>
-                <a href="#story">Hikaye</a>
-                <div class="nav-icon" onclick="toggleCart()">🛍</div>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Location Bar -->
-    <div class="location-bar">
-        <select id="citySelector" onchange="filterLocation()">
-            <option value="all">Türkiye genelinde göster</option>
-            <option value="istanbul">İstanbul</option>
-            <option value="ankara">Ankara</option>
-            <option value="izmir">İzmir</option>
-            <option value="bursa">Bursa</option>
-            <option value="antalya">Antalya</option>
-        </select>
+<header>
+    <div class="logo">SARAY PATISSERIE</div>
+    <div class="nav-right">
+        <span style="font-size: 12px; color: var(--gold); margin-right: 20px;">📍 BURSA</span>
+        <button class="btn-auth">GİRİŞ YAP</button>
     </div>
+</header>
 
-    <!-- Hero -->
-    <section class="hero">
-        <h1>Her pasta, <span class="gold">bir sanat eseri</span></h1>
-        <p>Türkiye'nin en seçkin pastanelerinden, 3D tasarım teknolojisiyle özelleştirebildiğiniz lüks pastalar.</p>
-        <button class="cta" onclick="openStudio()">Tasarlamaya başla</button>
+<main class="studio-wrapper">
+    <aside class="sidebar">
+        <div class="tool-title">EDİTÖR</div>
+        <div class="input-group">
+            <label>Pasta Mesajı</label>
+            <input type="text" id="cake-input" placeholder="İsim yazın..." onkeyup="updateText(this.value)">
+        </div>
+        <div class="input-group">
+            <label>Font Seçimi</label>
+            <select id="font-family" onchange="updateFont(this.value)">
+                <option value="Playfair Display">Lüks Klasik</option>
+                <option value="Dancing Script">Zarif El Yazısı</option>
+                <option value="Montserrat">Modern Minimal</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Görsel Yükle</label>
+            <input type="file" id="img-loader" accept="image/*">
+        </div>
+    </aside>
+
+    <section class="main-stage">
+        <div id="canvas-holder">
+            <canvas id="main-canvas" width="450" height="450"></canvas>
+        </div>
+        <button class="btn-preview-toggle" onclick="toggle3D()">👁️ 360° ÖNİZLEME</button>
+        <div id="three-preview">
+            <button onclick="toggle3D()" style="position:absolute; top:30px; right:30px; z-index:200; background:var(--gold); border:none; padding:10px 20px; cursor:pointer;">← GERİ DÖN</button>
+        </div>
     </section>
 
-    <!-- Collection -->
-    <section class="section" id="collection">
-        <h2 class="section-title">Hemen teslim</h2>
-        <div class="grid" id="productGrid"></div>
-    </section>
+    <aside class="summary-bar">
+        <div class="tool-title">ÖZET</div>
+        <p style="font-size: 12px; color: #888;">Satıcı: Saray Bursa</p>
+        <div class="price">₺3.450</div>
+        <button class="btn-action" style="width:100%" onclick="alert('Sepete Eklendi!')">SEPETE EKLE</button>
+    </aside>
+</main>
 
-    <!-- Studio Modal -->
-    <div class="modal" id="studioModal">
-        <div class="modal-nav">
-            <h2>Tasarım Stüdyosu</h2>
-            <button class="close-btn" onclick="closeStudio()">×</button>
-        </div>
+<script>
+    // 2D Tasarım (Fabric.js)
+    const canvas = new fabric.Canvas('main-canvas');
+    let cakeText;
 
-        <div class="modal-content">
-            <!-- Steps -->
-            <div class="steps">
-                <div class="step active">
-                    <div class="step-dot"></div>
-                    <span>Tasarla</span>
-                </div>
-                <div class="step">
-                    <div class="step-dot"></div>
-                    <span>Önizle</span>
-                </div>
-                <div class="step">
-                    <div class="step-dot"></div>
-                    <span>Tamamla</span>
-                </div>
-            </div>
+    // Gerçekçi Pasta Fotoğrafı (Top-View)
+    fabric.Image.fromURL('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=500&h=500&auto=format&fit=crop', function(img) {
+        img.set({ selectable: false, evented: false });
+        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+        cakeText = new fabric.IText('İsim Yazın', {
+            left: 225, top: 225, fontFamily: 'Playfair Display', fill: '#D4AF37', fontSize: 40, originX: 'center', originY: 'center'
+        });
+        canvas.add(cakeText);
+    });
 
-            <!-- Step 1: Design -->
-            <div class="step-content active" id="step1">
-                <div class="canvas-container">
-                    <div class="canvas">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800'%3E%3Crect fill='%23FAFAFA' width='800' height='800'/%3E%3Ccircle cx='400' cy='400' r='340' fill='%23FFFFFF'/%3E%3Ccircle cx='400' cy='400' r='320' fill='%23F5F5F7'/%3E%3C/svg%3E" alt="Cake">
-                        <div class="text-layer" id="cakeText">İyi ki doğdun</div>
-                    </div>
-                </div>
+    function updateText(val) { if(cakeText) { cakeText.set('text', val || 'İsim Yazın'); canvas.renderAll(); } }
+    function updateFont(font) { if(cakeText) { cakeText.set('fontFamily', font); canvas.renderAll(); } }
 
-                <div class="controls">
-                    <div class="control-group">
-                        <label>Mesajınız</label>
-                        <input type="text" id="textInput" value="İyi ki doğdun" oninput="updateText()" maxlength="40">
-                    </div>
-
-                    <div class="control-group">
-                        <label>Stil</label>
-                        <select id="fontSelect" onchange="updateFont()">
-                            <option value="Libre Baskerville">Klasik</option>
-                            <option value="Inter">Modern</option>
-                        </select>
-                    </div>
-
-                    <button class="cta" onclick="nextStep()" style="margin-top: 24px;">Devam et</button>
-                </div>
-            </div>
-
-            <!-- Step 2: 3D Preview -->
-            <div class="step-content" id="step2" style="display: none;">
-                <div class="canvas-3d" id="canvas3D"></div>
-                <div class="preview-controls">
-                    <button class="btn-preview" onclick="rotate3D('left')">← Döndür</button>
-                    <button class="btn-preview" onclick="rotate3D('right')">Döndür →</button>
-                </div>
-                <div style="text-align: center; margin-top: 40px;">
-                    <button class="cta" onclick="nextStep()">Devam et</button>
-                </div>
-            </div>
-
-            <!-- Step 3: Summary -->
-            <div class="step-content" id="step3" style="display: none;">
-                <div class="summary">
-                    <div class="summary-row">
-                        <span>Boyut</span>
-                        <select id="sizeSelect" onchange="updatePrice()">
-                            <option value="2000">Orta — ₺2.000</option>
-                            <option value="2800">Büyük — ₺2.800</option>
-                        </select>
-                    </div>
-                    <div class="summary-row">
-                        <span>Teslimat</span>
-                        <input type="date" id="deliveryDate">
-                    </div>
-                    <div class="summary-row">
-                        <span>Toplam</span>
-                        <span id="totalPrice">₺2.000</span>
-                    </div>
-                </div>
-                <div style="text-align: center;">
-                    <button class="cta" onclick="addToCart()">Sepete ekle</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cart -->
-    <div class="cart" id="cartSidebar">
-        <div class="cart-header">
-            <h3>Sepet</h3>
-            <button class="close-btn" onclick="toggleCart()">×</button>
-        </div>
-        <div class="cart-body" id="cartBody">
-            <p style="text-align: center; color: var(--grey); padding: 60px 20px;">Sepetiniz boş</p>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total">
-                <span>Toplam</span>
-                <span id="cartTotal">₺0</span>
-            </div>
-            <button class="checkout-btn" onclick="checkout()">Satın al</button>
-        </div>
-    </div>
-
-    <script>
-        // State
-        let currentStep = 1;
-        let cart = [];
-        let scene, camera, renderer, cake;
-        let designData = {
-            text: 'İyi ki doğdun',
-            font: 'Libre Baskerville',
-            size: 2000
-        };
-
-        // Products
-        const products = [
-            { id: 1, name: 'Altın Varaklı Çikolata', city: 'istanbul', price: 2850, image: 'choco' },
-            { id: 2, name: 'Tropikal Meyve', city: 'ankara', price: 2100, image: 'fruit' },
-            { id: 3, name: 'Mermer Sanat', city: 'izmir', price: 3200, image: 'marble' },
-            { id: 4, name: 'Çikolata Muz', city: 'bursa', price: 1950, image: 'banana' },
-            { id: 5, name: 'Berry Delight', city: 'antalya', price: 2400, image: 'berry' },
-            { id: 6, name: 'Geometrik', city: 'istanbul', price: 2750, image: 'geo' }
-        ];
-
-        function getImage(type) {
-            return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Crect fill='%23FAFAFA' width='600' height='600'/%3E%3Ccircle cx='300' cy='300' r='240' fill='%23F5F5F7'/%3E%3C/svg%3E`;
-        }
-
-        function renderProducts(city = 'all') {
-            const grid = document.getElementById('productGrid');
-            const filtered = city === 'all' ? products : products.filter(p => p.city === city);
-            
-            grid.innerHTML = filtered.map(p => `
-                <div class="card" onclick="quickAdd(${p.id})">
-                    <div class="card-image">
-                        <img src="${getImage(p.image)}" alt="${p.name}">
-                    </div>
-                    <h3 class="card-title">${p.name}</h3>
-                    <p class="card-subtitle">${p.city.charAt(0).toUpperCase() + p.city.slice(1)}</p>
-                    <div class="card-price">₺${p.price.toLocaleString('tr-TR')}</div>
-                </div>
-            `).join('');
-        }
-
-        function filterLocation() {
-            renderProducts(document.getElementById('citySelector').value);
-        }
-
-        function quickAdd(id) {
-            const product = products.find(p => p.id === id);
-            cart.push(product);
-            updateCart();
-            showToast('Sepete eklendi');
-        }
-
-        function openStudio() {
-            document.getElementById('studioModal').classList.add('active');
-            currentStep = 1;
-            updateSteps();
-        }
-
-        function closeStudio() {
-            document.getElementById('studioModal').classList.remove('active');
-        }
-
-        function nextStep() {
-            if (currentStep < 3) {
-                currentStep++;
-                updateSteps();
-                if (currentStep === 2) init3D();
-            }
-        }
-
-        function updateSteps() {
-            document.querySelectorAll('.step').forEach((s, i) => {
-                s.classList.toggle('active', i + 1 === currentStep);
-            });
-            document.querySelectorAll('.step-content').forEach((s, i) => {
-                s.style.display = i + 1 === currentStep ? 'block' : 'none';
+    document.getElementById('img-loader').onchange = function(e) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            fabric.Image.fromURL(event.target.result, function(img) {
+                img.scaleToWidth(120);
+                canvas.add(img);
+                canvas.centerObject(img);
             });
         }
+        reader.readAsDataURL(e.target.files[0]);
+    };
 
-        function updateText() {
-            designData.text = document.getElementById('textInput').value;
-            document.getElementById('cakeText').textContent = designData.text;
-        }
+    // 3D Önizleme (Three.js)
+    let scene, camera, renderer, cake3D;
+    let is3D = false;
 
-        function updateFont() {
-            designData.font = document.getElementById('fontSelect').value;
-            document.getElementById('cakeText').style.fontFamily = designData.font;
-        }
+    function init3D() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, (window.innerWidth - 640) / (window.innerHeight - 70), 0.1, 1000);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth - 640, window.innerHeight - 70);
+        document.getElementById('three-preview').appendChild(renderer.domElement);
 
-        function init3D() {
-            const container = document.getElementById('canvas3D');
-            container.innerHTML = '';
+        const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+        scene.add(light);
 
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xFAFAFA);
+        const geometry = new THREE.CylinderGeometry(2, 2, 1.2, 64);
+        const material = new THREE.MeshPhysicalMaterial({ color: 0x2b1d0e, roughness: 0.2, clearcoat: 1.0 });
+        cake3D = new THREE.Mesh(geometry, material);
+        scene.add(cake3D);
+        camera.position.set(0, 3, 5); camera.lookAt(0,0,0);
+        animate();
+    }
 
-            camera = new THREE.PerspectiveCamera(50, container.offsetWidth / 600, 0.1, 1000);
-            camera.position.set(0, 4, 10);
+    function animate() { requestAnimationFrame(animate); if(cake3D) cake3D.rotation.y += 0.005; renderer.render(scene, camera); }
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.offsetWidth, 600);
-            container.appendChild(renderer.domElement);
-
-            const light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(5, 10, 5);
-            scene.add(light);
-            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-
-            const geometry = new THREE.CylinderGeometry(2, 2.2, 1.5, 64);
-            const material = new THREE.MeshPhongMaterial({
-                color: 0xFFF8F0,
-                shininess: 100
-            });
-            cake = new THREE.Mesh(geometry, material);
-            scene.add(cake);
-
-            function animate() {
-                requestAnimationFrame(animate);
-                cake.rotation.y += 0.005;
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
-
-        function rotate3D(dir) {
-            if (cake) cake.rotation.y += dir === 'left' ? -0.5 : 0.5;
-        }
-
-        function updatePrice() {
-            designData.size = parseInt(document.getElementById('sizeSelect').value);
-            document.getElementById('totalPrice').textContent = '₺' + designData.size.toLocaleString('tr-TR');
-        }
-
-        function addToCart() {
-            const custom = {
-                id: 'custom_' + Date.now(),
-                name: 'Özel: ' + designData.text,
-                city: 'özel',
-                price: designData.size,
-                orderData: {
-                    text: designData.text,
-                    font: designData.font,
-                    size: designData.size,
-                    date: document.getElementById('deliveryDate').value,
-                    timestamp: new Date().toISOString()
-                }
-            };
-            cart.push(custom);
-            updateCart();
-            closeStudio();
-            showToast('Özel tasarım sepete eklendi');
-            console.log('ORDER JSON:', JSON.stringify(custom.orderData, null, 2));
-        }
-
-        function updateCart() {
-            const body = document.getElementById('cartBody');
-            const total = document.getElementById('cartTotal');
-
-            if (cart.length === 0) {
-                body.innerHTML = '<p style="text-align: center; color: var(--grey); padding: 60px 20px;">Sepetiniz boş</p>';
-                total.textContent = '₺0';
-            } else {
-                body.innerHTML = cart.map((item, i) => `
-                    <div class="cart-item">
-                        <img src="${getImage('default')}" class="cart-item-image">
-                        <div style="flex: 1;">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-price">₺${item.price.toLocaleString('tr-TR')}</div>
-                        </div>
-                    </div>
-                `).join('');
-                total.textContent = '₺' + cart.reduce((sum, item) => sum + item.price, 0).toLocaleString('tr-TR');
-            }
-        }
-
-        function toggleCart() {
-            document.getElementById('cartSidebar').classList.toggle('active');
-        }
-
-        function checkout() {
-            if (cart.length === 0) return alert('Sepetiniz boş');
-            
-            const order = {
-                order_id: 'ORD_' + Date.now(),
-                items: cart,
-                total: cart.reduce((sum, item) => sum + item.price, 0),
-                timestamp: new Date().toISOString()
-            };
-
-            console.log('FINAL ORDER:', JSON.stringify(order, null, 2));
-            alert('Sipariş tamamlandı!\n\nJSON konsola yazdırıldı (F12)');
-            cart = [];
-            updateCart();
-            toggleCart();
-        }
-
-        function showToast(msg) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
-        }
-
-        // Initialize
-        renderProducts();
-        updateCart();
-    </script>
+    function toggle3D() {
+        const preview = document.getElementById('three-preview');
+        is3D = !is3D;
+        if(is3D) {
+            preview.style.display = 'block';
+            if(!scene) init3D();
+            const texture = new THREE.CanvasTexture(canvas.getElement());
+            cake3D.material.map = texture; cake3D.material.needsUpdate = true;
+        } else { preview.style.display = 'none'; }
+    }
+</script>
 </body>
 </html>
