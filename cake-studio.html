@@ -812,13 +812,6 @@
         let scene, camera, renderer, controls, cake;
         let canvas2D, ctx2D, canvas3D;
 
-        // ===== CAKE BASE IMAGES =====
-        const cakeImages = {
-            1: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1200&q=90', // Chocolate
-            2: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=1200&q=90', // Vanilla
-            3: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=1200&q=90'  // Berry
-        };
-
         // ===== INITIALIZATION =====
         window.addEventListener('DOMContentLoaded', () => {
             canvas2D = document.getElementById('canvas2D');
@@ -843,45 +836,72 @@
 
             ctx2D.clearRect(0, 0, canvas2D.width, canvas2D.height);
 
-            // Draw cake base image
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-                const size = Math.min(canvas2D.width, canvas2D.height) * 0.7;
-                const x = (canvas2D.width - size) / 2;
-                const y = (canvas2D.height - size) / 2;
+            // White background
+            ctx2D.fillStyle = '#FFFFFF';
+            ctx2D.fillRect(0, 0, canvas2D.width, canvas2D.height);
 
-                // Draw cake with coating color overlay
-                ctx2D.save();
-                ctx2D.drawImage(img, x, y, size, size);
-                ctx2D.globalCompositeOperation = 'multiply';
-                ctx2D.fillStyle = state.coatingColor;
-                ctx2D.globalAlpha = 0.3;
-                ctx2D.fillRect(x, y, size, size);
-                ctx2D.restore();
+            // Draw clean geometric cake (top view)
+            const centerX = canvas2D.width / 2;
+            const centerY = canvas2D.height / 2;
+            const radius = Math.min(canvas2D.width, canvas2D.height) * 0.35;
 
-                // Draw uploaded image
-                if (state.image) {
-                    const uploadedImg = new Image();
-                    uploadedImg.src = state.image;
-                    uploadedImg.onload = () => {
-                        const imgSize = size * (state.imageSize / 100);
-                        const imgX = canvas2D.width / 2 - imgSize / 2;
-                        const imgY = canvas2D.height / 2 - imgSize / 2;
-                        ctx2D.globalAlpha = state.imageOpacity / 100;
-                        ctx2D.drawImage(uploadedImg, imgX, imgY, imgSize, imgSize);
-                        ctx2D.globalAlpha = 1;
-                        drawText();
-                    };
-                } else {
-                    drawText();
+            // Main cake circle
+            ctx2D.fillStyle = state.coatingColor;
+            ctx2D.beginPath();
+            ctx2D.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx2D.fill();
+
+            // Border decoration
+            ctx2D.strokeStyle = state.textColor;
+            ctx2D.lineWidth = 8;
+            ctx2D.beginPath();
+            ctx2D.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx2D.stroke();
+
+            // Inner decoration circle
+            ctx2D.lineWidth = 3;
+            ctx2D.beginPath();
+            ctx2D.arc(centerX, centerY, radius * 0.85, 0, Math.PI * 2);
+            ctx2D.stroke();
+
+            // Decorative dots around edge
+            if (state.decorations.length > 0) {
+                const dotCount = 12;
+                for (let i = 0; i < dotCount; i++) {
+                    const angle = (i * 30) * Math.PI / 180;
+                    const x = centerX + Math.cos(angle) * radius * 0.7;
+                    const y = centerY + Math.sin(angle) * radius * 0.7;
+                    
+                    ctx2D.fillStyle = state.textColor;
+                    ctx2D.beginPath();
+                    ctx2D.arc(x, y, 8, 0, Math.PI * 2);
+                    ctx2D.fill();
                 }
-            };
-            img.src = cakeImages[state.tiers] || cakeImages[1];
+            }
+
+            // Draw uploaded image
+            if (state.image) {
+                const uploadedImg = new Image();
+                uploadedImg.src = state.image;
+                uploadedImg.onload = () => {
+                    const imgSize = radius * (state.imageSize / 100);
+                    const imgX = centerX - imgSize / 2;
+                    const imgY = centerY - imgSize / 2;
+                    ctx2D.globalAlpha = state.imageOpacity / 100;
+                    ctx2D.drawImage(uploadedImg, imgX, imgY, imgSize, imgSize);
+                    ctx2D.globalAlpha = 1;
+                    drawText();
+                };
+            } else {
+                drawText();
+            }
         }
 
         function drawText() {
             if (!state.text) return;
+
+            const centerX = canvas2D.width / 2;
+            const centerY = canvas2D.height / 2;
 
             ctx2D.save();
             ctx2D.font = `${state.textSize}px ${state.font}`;
@@ -890,7 +910,7 @@
             ctx2D.textBaseline = 'middle';
             ctx2D.shadowColor = 'rgba(0,0,0,0.5)';
             ctx2D.shadowBlur = 4;
-            ctx2D.fillText(state.text, canvas2D.width / 2, canvas2D.height / 2);
+            ctx2D.fillText(state.text, centerX, centerY);
             ctx2D.restore();
         }
 
