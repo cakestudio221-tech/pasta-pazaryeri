@@ -1,231 +1,1653 @@
-language: "jsx"
-name: "Pasta Sipariş Platformu Prototipi"
-code: `
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CakeCustom - Profesyonel Pasta Sipariş Sistemi</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <title>Pasta Sipariş ve Özelleştirme Platformu</title>
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fabric.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    
     <style>
-        .canvas-container { margin: 0 auto; border-radius: 1rem; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        .step-active { border-bottom: 4px solid #ec4899; color: #ec4899; }
-        .mobile-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 10px; z-index: 50; }
-    </style>
-</head>
-<body class="bg-gray-50 pb-20 md:pb-0">
-
-    <!-- Header -->
-    <nav class="bg-white shadow-sm p-4 sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-pink-600 flex items-center gap-2">
-                <i class="fas fa-birthday-cake"></i> CakeCustom
-            </h1>
-            <div class="flex gap-4 text-sm font-medium">
-                <button onclick="switchRole('customer')" id="btn-cust" class="text-pink-600 border-b-2 border-pink-600">Müşteri</button>
-                <button onclick="switchRole('vendor')" id="btn-vend" class="text-gray-500">Firma Paneli</button>
-                <button onclick="switchRole('admin')" id="btn-adm" class="text-gray-500">Admin</button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- MÜŞTERİ AKIŞI -->
-    <main id="customer-view" class="max-w-4xl mx-auto p-4">
-        <!-- Step Indicator -->
-        <div class="flex justify-between mb-8 bg-white p-4 rounded-lg shadow-sm overflow-x-auto">
-            <div class="flex flex-col items-center px-4"><span class="text-xs font-bold uppercase">1. Tasarım</span></div>
-            <div class="flex flex-col items-center px-4 text-gray-400"><span class="text-xs font-bold uppercase">2. Konum</span></div>
-            <div class="flex flex-col items-center px-4 text-gray-400"><span class="text-xs font-bold uppercase">3. Onay</span></div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-8">
-            <!-- Fabric.js Editor -->
-            <div class="bg-white p-6 rounded-2xl shadow-lg">
-                <h3 class="text-lg font-semibold mb-4">Pastanı Özelleştir</h3>
-                <div class="relative bg-pink-50 rounded-xl p-2">
-                    <canvas id="cakeCanvas" width="300" height="300"></canvas>
-                </div>
-                <p class="text-xs text-gray-500 mt-4 text-center italic">* Yazıyı sürükleyerek konumlandırabilirsiniz.</p>
-            </div>
-
-            <!-- Controls -->
-            <div class="space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Pasta Üzerindeki İsim/Mesaj</label>
-                    <input type="text" id="cakeText" oninput="updateText()" placeholder="Örn: İyi ki Doğdun Can!" 
-                           class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none">
-                    
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Krema Rengi</label>
-                        <div class="flex gap-3">
-                            <button onclick="changeColor('#ffffff')" class="w-8 h-8 rounded-full border border-gray-300 bg-white"></button>
-                            <button onclick="changeColor('#fbcfe8')" class="w-8 h-8 rounded-full bg-pink-200"></button>
-                            <button onclick="changeColor('#bfdbfe')" class="w-8 h-8 rounded-full bg-blue-200"></button>
-                            <button onclick="changeColor('#fef08a')" class="w-8 h-8 rounded-full bg-yellow-200"></button>
-                        </div>
-                    </div>
-
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Şehir Seçin</label>
-                        <select id="citySelect" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50">
-                            <option value="istanbul">İstanbul</option>
-                            <option value="ankara">Ankara</option>
-                            <option value="izmir">İzmir</option>
-                        </select>
-                    </div>
-
-                    <button onclick="submitOrder()" class="w-full mt-8 bg-pink-600 text-white py-4 rounded-xl font-bold hover:bg-pink-700 transition-all shadow-lg shadow-pink-200">
-                        Sipariş Ver (450 TL)
-                    </button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- FİRMA PANELİ -->
-    <main id="vendor-view" class="hidden max-w-6xl mx-auto p-4">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Firma Sipariş Yönetimi</h2>
-            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">Aktif: Tatlı Dünyası Pastanesi</span>
-        </div>
-
-        <div class="grid gap-4" id="order-list">
-            <!-- Siparişler buraya dinamik gelecek -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600">
-                        <i class="fas fa-birthday-cake fa-2x"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-lg">Sipariş #1024</h4>
-                        <p class="text-sm text-gray-500">Müşteri: Ahmet Yılmaz | Şehir: İstanbul</p>
-                        <p class="text-pink-600 font-medium">Mesaj: "Mutlu Yıllar"</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button class="bg-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-600">Onayla</button>
-                    <button class="bg-red-100 text-red-600 px-6 py-2 rounded-lg font-semibold hover:bg-red-200">Reddet</button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- ADMIN PANELİ -->
-    <main id="admin-view" class="hidden max-w-6xl mx-auto p-4">
-        <div class="grid md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-                <p class="text-gray-500 text-sm">Toplam Firma</p>
-                <h3 class="text-2xl font-bold">124</h3>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-pink-500">
-                <p class="text-gray-500 text-sm">Günlük Sipariş</p>
-                <h3 class="text-2xl font-bold">42</h3>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
-                <p class="text-gray-500 text-sm">Toplam Komisyon</p>
-                <h3 class="text-2xl font-bold">₺8,450</h3>
-            </div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-gray-50 border-b">
-                    <tr>
-                        <th class="p-4 font-semibold">Firma Adı</th>
-                        <th class="p-4 font-semibold">Şehir</th>
-                        <th class="p-4 font-semibold">Durum</th>
-                        <th class="p-4 font-semibold">İşlem</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b">
-                        <td class="p-4">Liva Pastanesi</td>
-                        <td class="p-4">Ankara</td>
-                        <td class="p-4"><span class="text-green-600 bg-green-50 px-2 py-1 rounded text-xs">Onaylı</span></td>
-                        <td class="p-4"><button class="text-blue-600 hover:underline">Düzenle</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <script>
-        let canvas;
-        let cakeText;
-
-        // Fabric.js Başlatma
-        window.onload = function() {
-            canvas = new fabric.Canvas('cakeCanvas');
-            
-            // Pasta Tabanı (Daire)
-            const cakeBase = new fabric.Circle({
-                radius: 100,
-                fill: '#ffffff',
-                stroke: '#fbcfe8',
-                strokeWidth: 5,
-                left: 50,
-                top: 50,
-                selectable: false
-            });
-            canvas.add(cakeBase);
-
-            // Özelleştirilebilir Metin
-            cakeText = new fabric.IText('İsim Yazınız', {
-                left: 100,
-                top: 130,
-                fontFamily: 'Arial',
-                fontSize: 20,
-                fill: '#db2777',
-                fontWeight: 'bold'
-            });
-            canvas.add(cakeText);
-            canvas.renderAll();
-        };
-
-        // Canlı Güncelleme Fonksiyonları
-        function updateText() {
-            const val = document.getElementById('cakeText').value;
-            cakeText.set('text', val || 'İsim Yazınız');
-            canvas.renderAll();
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        function changeColor(color) {
-            const objects = canvas.getObjects();
-            objects[0].set('fill', color);
-            canvas.renderAll();
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
-
-        // Rol Değiştirme Simülasyonu
-        function switchRole(role) {
-            document.getElementById('customer-view').classList.add('hidden');
-            document.getElementById('vendor-view').classList.add('hidden');
-            document.getElementById('admin-view').classList.add('hidden');
-            
-            document.getElementById('btn-cust').className = 'text-gray-500';
-            document.getElementById('btn-vend').className = 'text-gray-500';
-            document.getElementById('btn-adm').className = 'text-gray-500';
-
-            if(role === 'customer') {
-                document.getElementById('customer-view').classList.remove('hidden');
-                document.getElementById('btn-cust').className = 'text-pink-600 border-b-2 border-pink-600';
-            } else if(role === 'vendor') {
-                document.getElementById('vendor-view').classList.remove('hidden');
-                document.getElementById('btn-vend').className = 'text-pink-600 border-b-2 border-pink-600';
-            } else {
-                document.getElementById('admin-view').classList.remove('hidden');
-                document.getElementById('btn-adm').className = 'text-pink-600 border-b-2 border-pink-600';
+        
+        /* Toast Notification Styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+            max-width: 400px;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
         }
-
-        function submitOrder() {
-            const city = document.getElementById('citySelect').value;
+        
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+        
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+        
+        /* 3D Card Effects */
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+        
+        .card-3d:hover {
+            transform: translateY(-5px) rotateX(5deg);
+        }
+        
+        /* 3D Cake Preview */
+        .cake-3d-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cake-3d {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate3d 20s infinite linear;
+        }
+        
+        @keyframes rotate3d {
+            0% {
+                transform: rotateY(0deg) rotateX(10deg);
+            }
+            100% {
+                transform: rotateY(360deg) rotateX(10deg);
+            }
+        }
+        
+        .cake-3d img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 100px rgba(255,255,255,0.1) inset;
+        }
+        
+        .cake-3d::before {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 20px;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.3), transparent);
+            border-radius: 50%;
+            filter: blur(10px);
+        }
+        
+        /* Fabric Canvas Container */
+        .canvas-container {
+            margin: 0 auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Hidden Class */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Pulse Animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Container -->
+    <div id="app">
+        <!-- Login/Register Screen -->
+        <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+                <div class="text-center mb-8">
+                    <i class="fas fa-birthday-cake text-6xl text-purple-600 mb-4"></i>
+                    <h1 class="text-3xl font-bold text-gray-800">Pasta Platformu</h1>
+                    <p class="text-gray-600 mt-2">Hayalinizdeki pastayı özelleştirin</p>
+                </div>
+                
+                <!-- Login Form -->
+                <div id="loginForm">
+                    <h2 class="text-2xl font-semibold mb-6">Giriş Yap</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="loginEmail" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                   placeholder="ornek@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Şifre</label>
+                            <input type="password" id="loginPassword" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                   placeholder="••••••••">
+                        </div>
+                        <button onclick="login()" 
+                                class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                            Giriş Yap
+                        </button>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <p class="text-gray-600">Hesabınız yok mu? 
+                            <button onclick="toggleAuthForm()" class="text-purple-600 font-semibold">Kayıt Ol</button>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Register Form -->
+                <div id="registerForm" class="hidden">
+                    <h2 class="text-2xl font-semibold mb-6">Kayıt Ol</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Ad Soyad</label>
+                            <input type="text" id="registerName" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                   placeholder="Ad Soyad">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="registerEmail" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                   placeholder="ornek@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Şifre</label>
+                            <input type="password" id="registerPassword" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                   placeholder="••••••••">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Kullanıcı Tipi</label>
+                            <select id="registerRole" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                                <option value="customer">Müşteri</option>
+                                <option value="company">Pasta Firması</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div id="companyFields" class="hidden space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Firma Adı</label>
+                                <input type="text" id="companyName" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                       placeholder="Firma Adı">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Şehir</label>
+                                <select id="companyCity" 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                                    <option value="İstanbul">İstanbul</option>
+                                    <option value="Ankara">Ankara</option>
+                                    <option value="İzmir">İzmir</option>
+                                    <option value="Bursa">Bursa</option>
+                                    <option value="Antalya">Antalya</option>
+                                    <option value="Adana">Adana</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="register()" 
+                                class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                            Kayıt Ol
+                        </button>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <p class="text-gray-600">Hesabınız var mı? 
+                            <button onclick="toggleAuthForm()" class="text-purple-600 font-semibold">Giriş Yap</button>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Demo Accounts Info -->
+                <div class="mt-8 p-4 bg-gray-100 rounded-lg">
+                    <h3 class="font-semibold text-sm text-gray-700 mb-2">Demo Hesaplar:</h3>
+                    <div class="text-xs text-gray-600 space-y-1">
+                        <p><strong>Müşteri:</strong> musteri@demo.com / 123456</p>
+                        <p><strong>Firma:</strong> firma@demo.com / 123456</p>
+                        <p><strong>Admin:</strong> admin@demo.com / 123456</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Customer Panel -->
+        <div id="customerPanel" class="hidden min-h-screen p-4">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Müşteri Paneli</h2>
+                        <p class="text-gray-600" id="customerWelcome"></p>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="showCustomerView('gallery')" 
+                                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                            <i class="fas fa-birthday-cake mr-2"></i>Pasta Seç
+                        </button>
+                        <button onclick="showCustomerView('orders')" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-list mr-2"></i>Siparişlerim
+                        </button>
+                        <button onclick="logout()" 
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Çıkış
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Cake Gallery View -->
+                <div id="cakeGallery">
+                    <h3 class="text-2xl font-bold text-white mb-6">Pasta Galerisi</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cakeGalleryGrid">
+                        <!-- Cakes will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Cake Editor View -->
+                <div id="cakeEditor" class="hidden">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800">Pasta Özelleştirme</h3>
+                            <button onclick="showCustomerView('gallery')" 
+                                    class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                                <i class="fas fa-arrow-left mr-2"></i>Geri
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Editor Controls -->
+                            <div class="space-y-6">
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-3">Metin Ekle</h4>
+                                    <input type="text" id="cakeText" 
+                                           placeholder="İsim veya mesaj yazın"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-2">
+                                    <button onclick="addTextToCake()" 
+                                            class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">
+                                        Metin Ekle
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-3">Krema Rengi</h4>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <button onclick="changeColor('#ffffff')" 
+                                                class="w-12 h-12 rounded-lg border-2 border-gray-300" 
+                                                style="background: #ffffff;"></button>
+                                        <button onclick="changeColor('#ffc0cb')" 
+                                                class="w-12 h-12 rounded-lg border-2 border-gray-300" 
+                                                style="background: #ffc0cb;"></button>
+                                        <button onclick="changeColor('#87ceeb')" 
+                                                class="w-12 h-12 rounded-lg border-2 border-gray-300" 
+                                                style="background: #87ceeb;"></button>
+                                        <button onclick="changeColor('#98fb98')" 
+                                                class="w-12 h-12 rounded-lg border-2 border-gray-300" 
+                                                style="background: #98fb98;"></button>
+                                        <button onclick="changeColor('#dda0dd')" 
+                                                class="w-12 h-12 rounded-lg border-2 border-gray-300" 
+                                                style="background: #dda0dd;"></button>
+                                        <button onclick="changeColor('#f0e68c')" 
+                                                class="w-12 h-12 rounded-lg border-2 border-gray-300" 
+                                                style="background: #f0e68c;"></button>
+                                        <button onclick="changeColor('#ffa07a')" 
+                                                class="w-12 h-12 rounded-lg border-2 border-gray-300" 
+                                                style="background: #ffa07a;"></button>
+                                        <button onclick="changeColor('#ffb6c1')" 
+                                                class="w-12 h-12 rounded-lg border-2 border-gray-300" 
+                                                style="background: #ffb6c1;"></button>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-3">Süsleme</h4>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button onclick="addDecoration('🎂')" 
+                                                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-2xl">🎂</button>
+                                        <button onclick="addDecoration('🎉')" 
+                                                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-2xl">🎉</button>
+                                        <button onclick="addDecoration('🎈')" 
+                                                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-2xl">🎈</button>
+                                        <button onclick="addDecoration('🌟')" 
+                                                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-2xl">🌟</button>
+                                        <button onclick="addDecoration('💝')" 
+                                                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-2xl">💝</button>
+                                        <button onclick="addDecoration('👶')" 
+                                                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-2xl">👶</button>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="clearCanvas()" 
+                                        class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700">
+                                    <i class="fas fa-trash mr-2"></i>Temizle
+                                </button>
+                            </div>
+                            
+                            <!-- Canvas -->
+                            <div class="lg:col-span-2">
+                                <div class="bg-gray-100 rounded-lg p-4">
+                                    <canvas id="cakeCanvas" width="600" height="600"></canvas>
+                                </div>
+                                <button onclick="showCitySelection()" 
+                                        class="w-full mt-4 bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition">
+                                    Devam Et <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- City & Company Selection -->
+                <div id="citySelection" class="hidden">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800">Şehir ve Firma Seçimi</h3>
+                            <button onclick="backToEditor()" 
+                                    class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                                <i class="fas fa-arrow-left mr-2"></i>Geri
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-lg mb-4">Şehir Seçin</h4>
+                                <div class="grid grid-cols-2 gap-4" id="cityButtons">
+                                    <!-- Cities will be loaded here -->
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-semibold text-lg mb-4">Firma Seçin</h4>
+                                <div id="companyList" class="space-y-3">
+                                    <p class="text-gray-500">Önce bir şehir seçin</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="orderSummary" class="hidden mt-6 p-6 bg-gray-50 rounded-lg">
+                            <h4 class="font-semibold text-lg mb-4">Sipariş Özeti</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <img id="summaryImage" src="" alt="Özelleştirilmiş Pasta" class="rounded-lg shadow-lg">
+                                </div>
+                                <div class="space-y-3">
+                                    <p><strong>Pasta Türü:</strong> <span id="summaryType"></span></p>
+                                    <p><strong>Şehir:</strong> <span id="summaryCity"></span></p>
+                                    <p><strong>Firma:</strong> <span id="summaryCompany"></span></p>
+                                    <p><strong>Fiyat:</strong> <span id="summaryPrice" class="text-2xl font-bold text-green-600"></span></p>
+                                    <button onclick="placeOrder()" 
+                                            class="w-full bg-purple-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-purple-700 transition mt-4">
+                                        <i class="fas fa-shopping-cart mr-2"></i>Sipariş Ver
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Orders View -->
+                <div id="ordersView" class="hidden">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">Siparişlerim</h3>
+                        <div id="customerOrdersList" class="space-y-4">
+                            <!-- Orders will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Company Panel -->
+        <div id="companyPanel" class="hidden min-h-screen p-4">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Firma Paneli</h2>
+                        <p class="text-gray-600" id="companyWelcome"></p>
+                    </div>
+                    <button onclick="logout()" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Çıkış
+                    </button>
+                </div>
+                
+                <!-- Orders List -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Gelen Siparişler</h3>
+                    <div id="companyOrdersList" class="space-y-4">
+                        <!-- Orders will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="hidden min-h-screen p-4">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Admin Paneli</h2>
+                        <p class="text-gray-600" id="adminWelcome"></p>
+                    </div>
+                    <button onclick="logout()" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Çıkış
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Statistics -->
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">İstatistikler</h3>
+                        <div class="space-y-4" id="adminStats">
+                            <!-- Stats will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Company Management -->
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Firma Yönetimi</h3>
+                        <button onclick="showAddCompanyForm()" 
+                                class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 mb-4">
+                            <i class="fas fa-plus mr-2"></i>Yeni Firma Ekle
+                        </button>
+                        <div id="companyManagementList" class="space-y-3">
+                            <!-- Companies will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- All Orders -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Tüm Siparişler</h3>
+                        <div id="adminOrdersList" class="space-y-4">
+                            <!-- Orders will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3D Cake Preview Modal -->
+        <div id="cake3DModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl p-8 max-w-2xl w-full">
+                <h3 class="text-2xl font-bold text-center mb-6">Pastanız Hazır! 🎉</h3>
+                <div class="cake-3d-container">
+                    <div class="cake-3d">
+                        <img id="cake3DImage" src="" alt="3D Pasta">
+                    </div>
+                </div>
+                <p class="text-center text-gray-600 mb-6">Siparişiniz başarıyla oluşturuldu!</p>
+                <button onclick="close3DModal()" 
+                        class="w-full bg-purple-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-purple-700 transition">
+                    Tamam
+                </button>
+            </div>
+        </div>
+        
+        <!-- Add Company Modal -->
+        <div id="addCompanyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full">
+                <h3 class="text-xl font-bold mb-4">Yeni Firma Ekle</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Firma Adı</label>
+                        <input type="text" id="newCompanyName" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Şehir</label>
+                        <select id="newCompanyCity" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="İstanbul">İstanbul</option>
+                            <option value="Ankara">Ankara</option>
+                            <option value="İzmir">İzmir</option>
+                            <option value="Bursa">Bursa</option>
+                            <option value="Antalya">Antalya</option>
+                            <option value="Adana">Adana</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="newCompanyEmail" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Telefon</label>
+                        <input type="tel" id="newCompanyPhone" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="addCompany()" 
+                                class="flex-1 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">
+                            Ekle
+                        </button>
+                        <button onclick="closeAddCompanyModal()" 
+                                class="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600">
+                            İptal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ========================================
+        // GLOBAL VARIABLES & INITIALIZATION
+        // ========================================
+        
+        let currentUser = null;
+        let fabricCanvas = null;
+        let currentCake = null;
+        let selectedCity = null;
+        let selectedCompany = null;
+        
+        // Cake types with real images from placeholder services
+        const cakeTypes = [
+            {
+                id: 1,
+                name: 'Doğum Günü Pastası',
+                type: 'birthday',
+                image: 'https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600&h=600&fit=crop',
+                basePrice: 250
+            },
+            {
+                id: 2,
+                name: 'Düğün Pastası',
+                type: 'wedding',
+                image: 'https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600&h=600&fit=crop',
+                basePrice: 1500
+            },
+            {
+                id: 3,
+                name: 'Nişan Pastası',
+                type: 'engagement',
+                image: 'https://images.unsplash.com/photo-1607478900766-efe13248b125?w=600&h=600&fit=crop',
+                basePrice: 800
+            },
+            {
+                id: 4,
+                name: 'Bebek Pastası',
+                type: 'baby',
+                image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjZvC0Q7TEcgUZiPOh65gO4nPVs8p4B5oDlbV76hjb-ua0MEnF9xi84tat8OmE0g4Hq4QcwgNRAhqGo42w0C0fds5fOSeM6e605eIAQZ2TvtI4who21B_49d2FS2ZU3O2547Oa2DHpvjt_r/s1600/IMG_9809.JPG',
+                basePrice: 300
+            },
+            {
+                id: 5,
+                name: 'Yaş Günü Pastası',
+                type: 'anniversary',
+                image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600&h=600&fit=crop',
+                basePrice: 400
+            },
+            {
+                id: 6,
+                name: 'Özel Gün Pastası',
+                type: 'special',
+                image: 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=600&h=600&fit=crop',
+                basePrice: 500
+            }
+        ];
+        
+        const cities = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana'];
+        
+        // Initialize demo data on page load
+        window.onload = function() {
+            initializeDemoData();
+            checkSession();
+        };
+        
+        // ========================================
+        // LOCAL STORAGE MANAGEMENT
+        // ========================================
+        
+        function initializeDemoData() {
+            // Check if demo data already exists
+            if (!localStorage.getItem('users')) {
+                // Demo users
+                const demoUsers = [
+                    {
+                        id: 1,
+                        email: 'musteri@demo.com',
+                        password: '123456',
+                        name: 'Ahmet Yılmaz',
+                        role: 'customer'
+                    },
+                    {
+                        id: 2,
+                        email: 'firma@demo.com',
+                        password: '123456',
+                        name: 'Tatlı Dünyası',
+                        role: 'company',
+                        companyId: 1
+                    },
+                    {
+                        id: 3,
+                        email: 'admin@demo.com',
+                        password: '123456',
+                        name: 'Admin',
+                        role: 'admin'
+                    }
+                ];
+                localStorage.setItem('users', JSON.stringify(demoUsers));
+                
+                // Demo companies
+                const demoCompanies = [
+                    {
+                        id: 1,
+                        name: 'Tatlı Dünyası',
+                        city: 'İstanbul',
+                        email: 'firma@demo.com',
+                        phone: '0212 123 45 67',
+                        rating: 4.8
+                    },
+                    {
+                        id: 2,
+                        name: 'Pastacım',
+                        city: 'İstanbul',
+                        email: 'info@pastacim.com',
+                        phone: '0212 234 56 78',
+                        rating: 4.5
+                    },
+                    {
+                        id: 3,
+                        name: 'Krema Pastanesi',
+                        city: 'Ankara',
+                        email: 'krema@pasta.com',
+                        phone: '0312 345 67 89',
+                        rating: 4.7
+                    },
+                    {
+                        id: 4,
+                        name: 'Leziz Pastane',
+                        city: 'İzmir',
+                        email: 'leziz@pasta.com',
+                        phone: '0232 456 78 90',
+                        rating: 4.6
+                    },
+                    {
+                        id: 5,
+                        name: 'Şeker Dükkanı',
+                        city: 'Bursa',
+                        email: 'seker@dukkan.com',
+                        phone: '0224 567 89 01',
+                        rating: 4.4
+                    },
+                    {
+                        id: 6,
+                        name: 'Pasta Sarayı',
+                        city: 'Antalya',
+                        email: 'saray@pasta.com',
+                        phone: '0242 678 90 12',
+                        rating: 4.9
+                    },
+                    {
+                        id: 7,
+                        name: 'Tatlı Rüya',
+                        city: 'Adana',
+                        email: 'ruya@tatli.com',
+                        phone: '0322 789 01 23',
+                        rating: 4.3
+                    }
+                ];
+                localStorage.setItem('companies', JSON.stringify(demoCompanies));
+                
+                // Demo orders
+                const demoOrders = [
+                    {
+                        id: 1,
+                        customerId: 1,
+                        companyId: 1,
+                        cakeType: 'birthday',
+                        customImage: cakeTypes[0].image,
+                        city: 'İstanbul',
+                        status: 'pending',
+                        date: new Date().toISOString(),
+                        price: 250
+                    },
+                    {
+                        id: 2,
+                        customerId: 1,
+                        companyId: 3,
+                        cakeType: 'wedding',
+                        customImage: cakeTypes[1].image,
+                        city: 'Ankara',
+                        status: 'approved',
+                        date: new Date(Date.now() - 86400000).toISOString(),
+                        price: 1500
+                    }
+                ];
+                localStorage.setItem('orders', JSON.stringify(demoOrders));
+                
+                // Settings
+                localStorage.setItem('settings', JSON.stringify({
+                    commissionRate: 10
+                }));
+            }
+        }
+        
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('users') || '[]');
+        }
+        
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        
+        function getCompanies() {
+            return JSON.parse(localStorage.getItem('companies') || '[]');
+        }
+        
+        function saveCompanies(companies) {
+            localStorage.setItem('companies', JSON.stringify(companies));
+        }
+        
+        function getOrders() {
+            return JSON.parse(localStorage.getItem('orders') || '[]');
+        }
+        
+        function saveOrders(orders) {
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
+        
+        function getSettings() {
+            return JSON.parse(localStorage.getItem('settings') || '{"commissionRate": 10}');
+        }
+        
+        // ========================================
+        // AUTHENTICATION
+        // ========================================
+        
+        function checkSession() {
+            const session = localStorage.getItem('currentSession');
+            if (session) {
+                currentUser = JSON.parse(session);
+                showPanel(currentUser.role);
+            }
+        }
+        
+        function toggleAuthForm() {
+            document.getElementById('loginForm').classList.toggle('hidden');
+            document.getElementById('registerForm').classList.toggle('hidden');
+        }
+        
+        document.getElementById('registerRole').addEventListener('change', function() {
+            const companyFields = document.getElementById('companyFields');
+            if (this.value === 'company') {
+                companyFields.classList.remove('hidden');
+            } else {
+                companyFields.classList.add('hidden');
+            }
+        });
+        
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showToast('Lütfen tüm alanları doldurun', 'error');
+                return;
+            }
+            
+            const users = getUsers();
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentSession', JSON.stringify(user));
+                showToast('Giriş başarılı!', 'success');
+                setTimeout(() => {
+                    showPanel(user.role);
+                }, 500);
+            } else {
+                showToast('Email veya şifre hatalı!', 'error');
+            }
+        }
+        
+        function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+            
+            if (!name || !email || !password) {
+                showToast('Lütfen tüm alanları doldurun', 'error');
+                return;
+            }
+            
+            if (role === 'company') {
+                const companyName = document.getElementById('companyName').value;
+                const companyCity = document.getElementById('companyCity').value;
+                
+                if (!companyName || !companyCity) {
+                    showToast('Lütfen firma bilgilerini doldurun', 'error');
+                    return;
+                }
+                
+                // Add company
+                const companies = getCompanies();
+                const newCompanyId = Math.max(...companies.map(c => c.id), 0) + 1;
+                companies.push({
+                    id: newCompanyId,
+                    name: companyName,
+                    city: companyCity,
+                    email: email,
+                    phone: '',
+                    rating: 5.0
+                });
+                saveCompanies(companies);
+            }
+            
+            const users = getUsers();
+            
+            if (users.find(u => u.email === email)) {
+                showToast('Bu email zaten kayıtlı!', 'error');
+                return;
+            }
+            
+            const newUser = {
+                id: Math.max(...users.map(u => u.id), 0) + 1,
+                email,
+                password,
+                name,
+                role
+            };
+            
+            if (role === 'company') {
+                const companies = getCompanies();
+                newUser.companyId = companies[companies.length - 1].id;
+            }
+            
+            users.push(newUser);
+            saveUsers(users);
+            
+            showToast('Kayıt başarılı! Giriş yapabilirsiniz.', 'success');
+            toggleAuthForm();
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentSession');
+            currentUser = null;
+            location.reload();
+        }
+        
+        function showPanel(role) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            
+            if (role === 'customer') {
+                document.getElementById('customerPanel').classList.remove('hidden');
+                document.getElementById('customerWelcome').textContent = `Hoş geldiniz, ${currentUser.name}`;
+                loadCakeGallery();
+                loadCustomerOrders();
+            } else if (role === 'company') {
+                document.getElementById('companyPanel').classList.remove('hidden');
+                const company = getCompanies().find(c => c.id === currentUser.companyId);
+                document.getElementById('companyWelcome').textContent = `${company.name} - ${company.city}`;
+                loadCompanyOrders();
+            } else if (role === 'admin') {
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('adminWelcome').textContent = `Hoş geldiniz, ${currentUser.name}`;
+                loadAdminData();
+            }
+        }
+        
+        // ========================================
+        // CUSTOMER PANEL
+        // ========================================
+        
+        function showCustomerView(view) {
+            document.getElementById('cakeGallery').classList.add('hidden');
+            document.getElementById('cakeEditor').classList.add('hidden');
+            document.getElementById('citySelection').classList.add('hidden');
+            document.getElementById('ordersView').classList.add('hidden');
+            
+            if (view === 'gallery') {
+                document.getElementById('cakeGallery').classList.remove('hidden');
+                loadCakeGallery();
+            } else if (view === 'orders') {
+                document.getElementById('ordersView').classList.remove('hidden');
+                loadCustomerOrders();
+            }
+        }
+        
+        function loadCakeGallery() {
+            const gallery = document.getElementById('cakeGalleryGrid');
+            gallery.innerHTML = '';
+            
+            cakeTypes.forEach(cake => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-lg overflow-hidden card-3d cursor-pointer';
+                card.onclick = () => selectCake(cake);
+                card.innerHTML = `
+                    <img src="${cake.image}" alt="${cake.name}" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">${cake.name}</h4>
+                        <p class="text-2xl font-bold text-purple-600 mb-4">₺${cake.basePrice}</p>
+                        <button class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
+                            Seç ve Özelleştir
+                        </button>
+                    </div>
+                `;
+                gallery.appendChild(card);
+            });
+        }
+        
+        function selectCake(cake) {
+            currentCake = cake;
+            showCustomerView('editor');
+            document.getElementById('cakeEditor').classList.remove('hidden');
+            initializeFabricCanvas(cake);
+        }
+        
+        function initializeFabricCanvas(cake) {
+            const canvasElement = document.getElementById('cakeCanvas');
+            
+            if (fabricCanvas) {
+                fabricCanvas.dispose();
+            }
+            
+            fabricCanvas = new fabric.Canvas('cakeCanvas', {
+                width: 600,
+                height: 600,
+                backgroundColor: '#f3f4f6'
+            });
+            
+            // Load cake image onto canvas
+            fabric.Image.fromURL(cake.image, function(img) {
+                img.set({
+                    left: 0,
+                    top: 0,
+                    scaleX: 600 / img.width,
+                    scaleY: 600 / img.height,
+                    selectable: false
+                });
+                fabricCanvas.add(img);
+                fabricCanvas.sendToBack(img);
+            }, { crossOrigin: 'anonymous' });
+        }
+        
+        function addTextToCake() {
             const text = document.getElementById('cakeText').value;
-            alert(\`Siparişiniz \${city.toUpperCase()} bölgesindeki firmalara iletildi!\\nMesaj: \${text}\`);
-            switchRole('vendor'); // Simülasyon için firma paneline atıyoruz
+            if (!text) {
+                showToast('Lütfen bir metin girin', 'error');
+                return;
+            }
+            
+            const fabricText = new fabric.Text(text, {
+                left: 300,
+                top: 300,
+                fontSize: 40,
+                fontFamily: 'Arial',
+                fill: '#333',
+                fontWeight: 'bold',
+                stroke: '#fff',
+                strokeWidth: 2
+            });
+            
+            fabricCanvas.add(fabricText);
+            fabricCanvas.setActiveObject(fabricText);
+            document.getElementById('cakeText').value = '';
+        }
+        
+        function changeColor(color) {
+            // Add a semi-transparent color overlay
+            const colorRect = new fabric.Rect({
+                left: 0,
+                top: 0,
+                width: 600,
+                height: 600,
+                fill: color,
+                opacity: 0.3,
+                selectable: false
+            });
+            
+            fabricCanvas.add(colorRect);
+            fabricCanvas.sendToBack(colorRect);
+            fabricCanvas.renderAll();
+        }
+        
+        function addDecoration(emoji) {
+            const decoration = new fabric.Text(emoji, {
+                left: Math.random() * 500,
+                top: Math.random() * 500,
+                fontSize: 50
+            });
+            
+            fabricCanvas.add(decoration);
+        }
+        
+        function clearCanvas() {
+            const objects = fabricCanvas.getObjects();
+            for (let i = objects.length - 1; i >= 0; i--) {
+                if (objects[i].selectable !== false) {
+                    fabricCanvas.remove(objects[i]);
+                }
+            }
+            fabricCanvas.renderAll();
+        }
+        
+        function showCitySelection() {
+            document.getElementById('cakeEditor').classList.add('hidden');
+            document.getElementById('citySelection').classList.remove('hidden');
+            
+            const cityButtons = document.getElementById('cityButtons');
+            cityButtons.innerHTML = '';
+            
+            cities.forEach(city => {
+                const btn = document.createElement('button');
+                btn.className = 'px-6 py-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-semibold';
+                btn.textContent = city;
+                btn.onclick = () => selectCity(city);
+                cityButtons.appendChild(btn);
+            });
+        }
+        
+        function backToEditor() {
+            document.getElementById('citySelection').classList.add('hidden');
+            document.getElementById('cakeEditor').classList.remove('hidden');
+        }
+        
+        function selectCity(city) {
+            selectedCity = city;
+            
+            const companies = getCompanies().filter(c => c.city === city);
+            const companyList = document.getElementById('companyList');
+            companyList.innerHTML = '';
+            
+            if (companies.length === 0) {
+                companyList.innerHTML = '<p class="text-gray-500">Bu şehirde henüz firma bulunmuyor</p>';
+                return;
+            }
+            
+            companies.forEach(company => {
+                const card = document.createElement('div');
+                card.className = 'p-4 border border-gray-300 rounded-lg hover:border-purple-600 cursor-pointer transition';
+                card.onclick = () => selectCompany(company);
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h5 class="font-semibold text-lg">${company.name}</h5>
+                            <p class="text-sm text-gray-600">${company.phone}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-yellow-500">
+                                <i class="fas fa-star"></i> ${company.rating}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                companyList.appendChild(card);
+            });
+            
+            // Highlight selected city
+            const buttons = document.getElementById('cityButtons').children;
+            for (let btn of buttons) {
+                if (btn.textContent === city) {
+                    btn.classList.add('ring-4', 'ring-yellow-400');
+                } else {
+                    btn.classList.remove('ring-4', 'ring-yellow-400');
+                }
+            }
+        }
+        
+        function selectCompany(company) {
+            selectedCompany = company;
+            
+            // Show order summary
+            const summary = document.getElementById('orderSummary');
+            summary.classList.remove('hidden');
+            
+            // Get canvas as image
+            const dataURL = fabricCanvas.toDataURL({
+                format: 'png',
+                quality: 1
+            });
+            
+            document.getElementById('summaryImage').src = dataURL;
+            document.getElementById('summaryType').textContent = currentCake.name;
+            document.getElementById('summaryCity').textContent = selectedCity;
+            document.getElementById('summaryCompany').textContent = company.name;
+            document.getElementById('summaryPrice').textContent = `₺${currentCake.basePrice}`;
+            
+            // Scroll to summary
+            summary.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function placeOrder() {
+            const orders = getOrders();
+            
+            const newOrder = {
+                id: Math.max(...orders.map(o => o.id), 0) + 1,
+                customerId: currentUser.id,
+                companyId: selectedCompany.id,
+                cakeType: currentCake.type,
+                cakeTypeName: currentCake.name,
+                customImage: fabricCanvas.toDataURL({ format: 'png', quality: 1 }),
+                city: selectedCity,
+                companyName: selectedCompany.name,
+                status: 'pending',
+                date: new Date().toISOString(),
+                price: currentCake.basePrice
+            };
+            
+            orders.push(newOrder);
+            saveOrders(orders);
+            
+            // Show 3D preview
+            show3DPreview(newOrder.customImage);
+            
+            // Send notification to company (simulated)
+            setTimeout(() => {
+                showToast(`📧 ${selectedCompany.name} firmasına sipariş bildirimi gönderildi!`, 'info');
+            }, 1000);
+            
+            // Reset selection
+            currentCake = null;
+            selectedCity = null;
+            selectedCompany = null;
+        }
+        
+        function show3DPreview(imageUrl) {
+            document.getElementById('cake3DImage').src = imageUrl;
+            document.getElementById('cake3DModal').classList.remove('hidden');
+        }
+        
+        function close3DModal() {
+            document.getElementById('cake3DModal').classList.add('hidden');
+            showCustomerView('orders');
+        }
+        
+        function loadCustomerOrders() {
+            const orders = getOrders().filter(o => o.customerId === currentUser.id);
+            const ordersList = document.getElementById('customerOrdersList');
+            ordersList.innerHTML = '';
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p class="text-gray-500 text-center py-8">Henüz siparişiniz bulunmuyor</p>';
+                return;
+            }
+            
+            orders.reverse().forEach(order => {
+                const statusColors = {
+                    pending: 'bg-yellow-100 text-yellow-800',
+                    approved: 'bg-green-100 text-green-800',
+                    rejected: 'bg-red-100 text-red-800',
+                    preparing: 'bg-blue-100 text-blue-800',
+                    delivered: 'bg-purple-100 text-purple-800'
+                };
+                
+                const statusTexts = {
+                    pending: 'Beklemede',
+                    approved: 'Onaylandı',
+                    rejected: 'Reddedildi',
+                    preparing: 'Hazırlanıyor',
+                    delivered: 'Teslim Edildi'
+                };
+                
+                const card = document.createElement('div');
+                card.className = 'border border-gray-300 rounded-lg p-4';
+                card.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <img src="${order.customImage}" alt="Pasta" class="rounded-lg shadow-lg">
+                        </div>
+                        <div class="md:col-span-3 space-y-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold text-lg">${order.cakeTypeName}</h4>
+                                    <p class="text-sm text-gray-600">Sipariş #${order.id}</p>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold ${statusColors[order.status]}">
+                                    ${statusTexts[order.status]}
+                                </span>
+                            </div>
+                            <p class="text-gray-700"><strong>Firma:</strong> ${order.companyName}</p>
+                            <p class="text-gray-700"><strong>Şehir:</strong> ${order.city}</p>
+                            <p class="text-gray-700"><strong>Fiyat:</strong> <span class="text-xl font-bold text-green-600">₺${order.price}</span></p>
+                            <p class="text-sm text-gray-500">${new Date(order.date).toLocaleDateString('tr-TR')}</p>
+                        </div>
+                    </div>
+                `;
+                ordersList.appendChild(card);
+            });
+        }
+        
+        // ========================================
+        // COMPANY PANEL
+        // ========================================
+        
+        function loadCompanyOrders() {
+            const orders = getOrders().filter(o => o.companyId === currentUser.companyId);
+            const ordersList = document.getElementById('companyOrdersList');
+            ordersList.innerHTML = '';
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p class="text-gray-500 text-center py-8">Henüz sipariş bulunmuyor</p>';
+                return;
+            }
+            
+            orders.reverse().forEach(order => {
+                const users = getUsers();
+                const customer = users.find(u => u.id === order.customerId);
+                
+                const statusColors = {
+                    pending: 'bg-yellow-100 text-yellow-800',
+                    approved: 'bg-green-100 text-green-800',
+                    rejected: 'bg-red-100 text-red-800',
+                    preparing: 'bg-blue-100 text-blue-800',
+                    delivered: 'bg-purple-100 text-purple-800'
+                };
+                
+                const statusTexts = {
+                    pending: 'Beklemede',
+                    approved: 'Onaylandı',
+                    rejected: 'Reddedildi',
+                    preparing: 'Hazırlanıyor',
+                    delivered: 'Teslim Edildi'
+                };
+                
+                const card = document.createElement('div');
+                card.className = 'border border-gray-300 rounded-lg p-6';
+                card.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <img src="${order.customImage}" alt="Pasta" class="rounded-lg shadow-lg">
+                        </div>
+                        <div class="md:col-span-2 space-y-3">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold text-xl">${order.cakeTypeName}</h4>
+                                    <p class="text-sm text-gray-600">Sipariş #${order.id}</p>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold ${statusColors[order.status]}">
+                                    ${statusTexts[order.status]}
+                                </span>
+                            </div>
+                            <p class="text-gray-700"><strong>Müşteri:</strong> ${customer ? customer.name : 'Bilinmiyor'}</p>
+                            <p class="text-gray-700"><strong>Fiyat:</strong> <span class="text-2xl font-bold text-green-600">₺${order.price}</span></p>
+                            <p class="text-sm text-gray-500">${new Date(order.date).toLocaleDateString('tr-TR')}</p>
+                            
+                            ${order.status === 'pending' ? `
+                                <div class="flex gap-3 mt-4">
+                                    <button onclick="updateOrderStatus(${order.id}, 'approved')" 
+                                            class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                                        <i class="fas fa-check mr-2"></i>Onayla
+                                    </button>
+                                    <button onclick="updateOrderStatus(${order.id}, 'rejected')" 
+                                            class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">
+                                        <i class="fas fa-times mr-2"></i>Reddet
+                                    </button>
+                                </div>
+                            ` : ''}
+                            
+                            ${order.status === 'approved' ? `
+                                <button onclick="updateOrderStatus(${order.id}, 'preparing')" 
+                                        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition mt-4">
+                                    <i class="fas fa-utensils mr-2"></i>Hazırlanmaya Başlandı
+                                </button>
+                            ` : ''}
+                            
+                            ${order.status === 'preparing' ? `
+                                <button onclick="updateOrderStatus(${order.id}, 'delivered')" 
+                                        class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition mt-4">
+                                    <i class="fas fa-truck mr-2"></i>Teslim Edildi
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                ordersList.appendChild(card);
+            });
+        }
+        
+        function updateOrderStatus(orderId, newStatus) {
+            const orders = getOrders();
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            
+            if (orderIndex !== -1) {
+                orders[orderIndex].status = newStatus;
+                saveOrders(orders);
+                
+                const users = getUsers();
+                const customer = users.find(u => u.id === orders[orderIndex].customerId);
+                
+                const statusMessages = {
+                    approved: 'onaylandı',
+                    rejected: 'reddedildi',
+                    preparing: 'hazırlanmaya başlandı',
+                    delivered: 'teslim edildi'
+                };
+                
+                showToast(`Sipariş durumu güncellendi: ${statusMessages[newStatus]}`, 'success');
+                
+                // Simulate email notification
+                setTimeout(() => {
+                    showToast(`📧 ${customer.name} müşterisine mail gönderildi: Siparişiniz ${statusMessages[newStatus]}`, 'info');
+                }, 500);
+                
+                loadCompanyOrders();
+            }
+        }
+        
+        // ========================================
+        // ADMIN PANEL
+        // ========================================
+        
+        function loadAdminData() {
+            loadAdminStats();
+            loadCompanyManagement();
+            loadAdminOrders();
+        }
+        
+        function loadAdminStats() {
+            const orders = getOrders();
+            const companies = getCompanies();
+            const users = getUsers();
+            
+            const totalOrders = orders.length;
+            const pendingOrders = orders.filter(o => o.status === 'pending').length;
+            const completedOrders = orders.filter(o => o.status === 'delivered').length;
+            const totalRevenue = orders.reduce((sum, o) => sum + o.price, 0);
+            const settings = getSettings();
+            const commission = totalRevenue * (settings.commissionRate / 100);
+            
+            const statsContainer = document.getElementById('adminStats');
+            statsContainer.innerHTML = `
+                <div class="flex justify-between items-center p-4 bg-purple-50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-600">Toplam Sipariş</p>
+                        <p class="text-2xl font-bold text-purple-600">${totalOrders}</p>
+                    </div>
+                    <i class="fas fa-shopping-cart text-3xl text-purple-600"></i>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-yellow-50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-600">Bekleyen</p>
+                        <p class="text-2xl font-bold text-yellow-600">${pendingOrders}</p>
+                    </div>
+                    <i class="fas fa-clock text-3xl text-yellow-600"></i>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-600">Tamamlanan</p>
+                        <p class="text-2xl font-bold text-green-600">${completedOrders}</p>
+                    </div>
+                    <i class="fas fa-check-circle text-3xl text-green-600"></i>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-600">Toplam Ciro</p>
+                        <p class="text-2xl font-bold text-blue-600">₺${totalRevenue.toLocaleString()}</p>
+                    </div>
+                    <i class="fas fa-money-bill-wave text-3xl text-blue-600"></i>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-pink-50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-600">Komisyon (%${settings.commissionRate})</p>
+                        <p class="text-2xl font-bold text-pink-600">₺${commission.toLocaleString()}</p>
+                    </div>
+                    <i class="fas fa-percent text-3xl text-pink-600"></i>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-indigo-50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-600">Toplam Firma</p>
+                        <p class="text-2xl font-bold text-indigo-600">${companies.length}</p>
+                    </div>
+                    <i class="fas fa-store text-3xl text-indigo-600"></i>
+                </div>
+            `;
+        }
+        
+        function loadCompanyManagement() {
+            const companies = getCompanies();
+            const list = document.getElementById('companyManagementList');
+            list.innerHTML = '';
+            
+            companies.forEach(company => {
+                const card = document.createElement('div');
+                card.className = 'p-3 border border-gray-300 rounded-lg';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h5 class="font-semibold">${company.name}</h5>
+                            <p class="text-sm text-gray-600">${company.city}</p>
+                        </div>
+                        <button onclick="deleteCompany(${company.id})" 
+                                class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+        
+        function showAddCompanyForm() {
+            document.getElementById('addCompanyModal').classList.remove('hidden');
+        }
+        
+        function closeAddCompanyModal() {
+            document.getElementById('addCompanyModal').classList.add('hidden');
+        }
+        
+        function addCompany() {
+            const name = document.getElementById('newCompanyName').value;
+            const city = document.getElementById('newCompanyCity').value;
+            const email = document.getElementById('newCompanyEmail').value;
+            const phone = document.getElementById('newCompanyPhone').value;
+            
+            if (!name || !email) {
+                showToast('Lütfen firma adı ve email girin', 'error');
+                return;
+            }
+            
+            const companies = getCompanies();
+            const newCompany = {
+                id: Math.max(...companies.map(c => c.id), 0) + 1,
+                name,
+                city,
+                email,
+                phone,
+                rating: 5.0
+            };
+            
+            companies.push(newCompany);
+            saveCompanies(companies);
+            
+            showToast('Firma başarıyla eklendi', 'success');
+            closeAddCompanyModal();
+            loadCompanyManagement();
+            
+            // Clear form
+            document.getElementById('newCompanyName').value = '';
+            document.getElementById('newCompanyEmail').value = '';
+            document.getElementById('newCompanyPhone').value = '';
+        }
+        
+        function deleteCompany(companyId) {
+            if (!confirm('Bu firmayı silmek istediğinizden emin misiniz?')) {
+                return;
+            }
+            
+            let companies = getCompanies();
+            companies = companies.filter(c => c.id !== companyId);
+            saveCompanies(companies);
+            
+            showToast('Firma silindi', 'success');
+            loadCompanyManagement();
+        }
+        
+        function loadAdminOrders() {
+            const orders = getOrders();
+            const ordersList = document.getElementById('adminOrdersList');
+            ordersList.innerHTML = '';
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p class="text-gray-500 text-center py-8">Henüz sipariş bulunmuyor</p>';
+                return;
+            }
+            
+            orders.reverse().forEach(order => {
+                const statusColors = {
+                    pending: 'bg-yellow-100 text-yellow-800',
+                    approved: 'bg-green-100 text-green-800',
+                    rejected: 'bg-red-100 text-red-800',
+                    preparing: 'bg-blue-100 text-blue-800',
+                    delivered: 'bg-purple-100 text-purple-800'
+                };
+                
+                const statusTexts = {
+                    pending: 'Beklemede',
+                    approved: 'Onaylandı',
+                    rejected: 'Reddedildi',
+                    preparing: 'Hazırlanıyor',
+                    delivered: 'Teslim Edildi'
+                };
+                
+                const card = document.createElement('div');
+                card.className = 'border border-gray-300 rounded-lg p-4';
+                card.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+                        <div>
+                            <img src="${order.customImage}" alt="Pasta" class="rounded-lg shadow">
+                        </div>
+                        <div>
+                            <h5 class="font-semibold">${order.cakeTypeName}</h5>
+                            <p class="text-sm text-gray-600">Sipariş #${order.id}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Firma</p>
+                            <p class="font-semibold">${order.companyName}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Fiyat</p>
+                            <p class="font-bold text-green-600">₺${order.price}</p>
+                        </div>
+                        <div>
+                            <span class="px-3 py-1 rounded-full text-sm font-semibold ${statusColors[order.status]}">
+                                ${statusTexts[order.status]}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                ordersList.appendChild(card);
+            });
+        }
+        
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-${type === 'success' ? 'check-circle text-green-600' : type === 'error' ? 'exclamation-circle text-red-600' : 'info-circle text-blue-600'} text-xl"></i>
+                    <p class="font-semibold">${message}</p>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
         }
     </script>
 </body>
 </html>
-`
