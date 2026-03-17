@@ -595,8 +595,8 @@
                 <div class="section">
                     <div class="section-title">🎨 Kaplama Rengi</div>
                     <div class="color-grid">
-                        <div class="color-option active" style="background: #FFB6C1;" onclick="selectColor('#FFB6C1')"></div>
-                        <div class="color-option" style="background: #FFFFFF; border: 1px solid #ccc;" onclick="selectColor('#FFFFFF')"></div>
+                        <div class="color-option" style="background: #FFB6C1;" onclick="selectColor('#FFB6C1')"></div>
+                        <div class="color-option active" style="background: #FFFFFF; border: 1px solid #ccc;" onclick="selectColor('#FFFFFF')"></div>
                         <div class="color-option" style="background: #D4AF37;" onclick="selectColor('#D4AF37')"></div>
                         <div class="color-option" style="background: #8B4513;" onclick="selectColor('#8B4513')"></div>
                         <div class="color-option" style="background: #FFE4E1;" onclick="selectColor('#FFE4E1')"></div>
@@ -700,7 +700,7 @@
                 <div class="section">
                     <div class="section-title">🌹 Süsleme Seç</div>
                     <div class="decoration-chips">
-                        <div class="chip active" onclick="toggleDecoration('roses')">🌹 Güller</div>
+                        <div class="chip" onclick="toggleDecoration('roses')">🌹 Güller</div>
                         <div class="chip" onclick="toggleDecoration('flowers')">🌸 Çiçekler</div>
                         <div class="chip" onclick="toggleDecoration('fruits')">🍓 Meyveler</div>
                         <div class="chip" onclick="toggleDecoration('gold')">✨ Altın</div>
@@ -797,16 +797,16 @@
             mode: '2d', // '2d' or '3d'
             tiers: 1,
             size: 4,
-            coatingColor: '#FFB6C1',
+            coatingColor: '#FFFFFF', // Başlangıçta beyaz
             flavor: 'vanilla',
-            text: '',
+            text: '', // Boş
             textColor: '#D4AF37',
             textSize: 48,
             font: 'Dancing Script',
             image: null,
             imageSize: 50,
             imageOpacity: 100,
-            decorations: ['roses']
+            decorations: [] // Boş - kullanıcı ekleyecek
         };
 
         let scene, camera, renderer, controls, cake;
