@@ -2,385 +2,1854 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SARAY PASTA DÜNYASI</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SARAY PASTA DÜNYASI — Türkiye'nin En Seçkin Pasta Pazaryeri</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Petit+Formal+Script&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--gold:#D4AF37;--gold-dark:#B8941F;--gold-light:#E8C96A;--brown:#2C1810;--brown-light:#6B5D57;--pink:#FFB6C1;--cream:#FFF9F0;--white:#FFFFFF;--shadow:0 10px 40px rgba(44,24,16,.12);--shadow-lg:0 20px 60px rgba(44,24,16,.18);--r:16px;--r-lg:24px}
-body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--brown)}
+:root{
+  --gold:#C9A84C;--gold2:#E8C97A;--gold3:#F5E4B0;
+  --brown:#2A1A0E;--brown2:#5C3D1E;--brown3:#8B6340;
+  --cream:#FBF6EE;--cream2:#F5ECD8;--cream3:#EFE0C0;
+  --rose:#C47F8A;--rose2:#E8B4BC;--rose3:#F5D8DC;
+  --sage:#7A9B7A;--sage2:#A8C4A8;
+  --white:#FFFFFF;
+  --shadow:0 8px 32px rgba(42,26,14,.12);
+  --shadow-lg:0 20px 60px rgba(42,26,14,.18);
+  --r:14px;--r-lg:22px;--r-xl:32px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--brown);overflow-x:hidden}
 .screen{display:none;min-height:100vh}
 .screen.active{display:block}
-.navbar{background:#fff;padding:0 32px;height:70px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(44,24,16,.08);position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(212,175,55,.2)}
-.nav-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold);cursor:pointer;letter-spacing:.5px}
-.nav-actions{display:flex;align-items:center;gap:12px}
-.btn{padding:10px 22px;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .25s;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
-.btn-gold{background:var(--gold);color:#fff;box-shadow:0 4px 15px rgba(212,175,55,.35)}
-.btn-gold:hover{background:var(--gold-dark);transform:translateY(-1px)}
+
+/* ══ UTILS ══ */
+.serif{font-family:'Cormorant Garamond',serif}
+.script{font-family:'Petit Formal Script',cursive}
+.flex{display:flex;align-items:center}
+.gap8{gap:8px}.gap12{gap:12px}.gap16{gap:16px}.gap20{gap:20px}
+.w100{width:100%}
+.center{text-align:center}
+.hidden{display:none!important}
+
+/* ══ BUTTONS ══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 26px;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .25s;text-decoration:none;white-space:nowrap}
+.btn-gold{background:var(--gold);color:#fff;box-shadow:0 4px 18px rgba(201,168,76,.4)}
+.btn-gold:hover{background:#B8941F;transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.5)}
+.btn-dark{background:var(--brown);color:#fff}
+.btn-dark:hover{background:var(--brown2);transform:translateY(-2px)}
 .btn-outline{background:transparent;border:2px solid var(--gold);color:var(--gold)}
 .btn-outline:hover{background:var(--gold);color:#fff}
-.btn-white{background:rgba(255,255,255,.15);color:#fff;backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.3)}
-.btn-white:hover{background:rgba(255,255,255,.25)}
-.btn-sm{padding:8px 16px;font-size:13px}
-.btn-block{width:100%;justify-content:center;border-radius:var(--r);padding:14px;font-size:15px}
-.hero{height:100vh;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
-.hero-bg{position:absolute;inset:0;background-image:url('https://cdn.abacus.ai/images/fd6f5a84-2be2-4f3d-b89d-d3c1e16fcc2d.png');background-size:cover;background-position:center}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.6),rgba(0,0,0,.4),rgba(0,0,0,.7))}
-.hero-content{position:relative;z-index:10;max-width:800px;padding:0 24px}
-.hero-icon{font-size:48px;margin-bottom:20px}
-.hero h1{font-family:'Playfair Display',serif;font-size:clamp(40px,7vw,80px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:20px;letter-spacing:-1px}
-.hero p{font-size:18px;color:rgba(255,255,255,.9);margin-bottom:36px;font-weight:300;line-height:1.6;max-width:560px;margin-left:auto;margin-right:auto}
-.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.features-section{background:#fff;padding:80px 24px}
-.section-center{text-align:center;margin-bottom:56px}
-.section-title{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);font-weight:700;color:var(--brown);margin-bottom:12px}
-.section-sub{font-size:16px;color:var(--brown-light)}
-.features-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
-.feature-card{background:linear-gradient(135deg,var(--cream),#fff);border:1px solid rgba(212,175,55,.2);border-radius:var(--r-lg);padding:36px 28px;transition:all .3s}
-.feature-card:hover{box-shadow:var(--shadow);transform:translateY(-4px)}
-.feature-icon-wrap{width:64px;height:64px;background:rgba(255,182,193,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:28px}
-.feature-card h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--brown);margin-bottom:10px}
-.feature-card p{color:var(--brown-light);line-height:1.7;font-size:15px}
-.showcase{background:linear-gradient(to bottom,var(--cream),#fff);padding:80px 24px}
-.showcase-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-@media(max-width:768px){.showcase-inner{grid-template-columns:1fr}}
-.showcase-img{border-radius:var(--r-lg);overflow:hidden;height:480px;box-shadow:var(--shadow-lg)}
-.showcase-img img{width:100%;height:100%;object-fit:cover}
-.showcase-text h2{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:var(--brown);margin-bottom:16px;line-height:1.25}
-.showcase-text p{color:var(--brown-light);font-size:16px;line-height:1.7;margin-bottom:20px}
-.check-list{list-style:none;margin-bottom:32px}
-.check-list li{display:flex;align-items:center;gap:12px;padding:8px 0;color:var(--brown);font-size:15px}
-.check-dot{width:20px;height:20px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:#fff}
-footer{background:var(--brown);color:#fff;padding:60px 24px 32px}
-.footer-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:40px}
-@media(max-width:640px){.footer-grid{grid-template-columns:1fr}}
-.footer-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);font-weight:700;margin-bottom:12px}
-.footer-col h4{color:var(--gold);font-size:14px;font-weight:600;margin-bottom:14px;letter-spacing:.5px}
-.footer-col p,.footer-col li{color:rgba(255,255,255,.65);font-size:14px;line-height:1.8;list-style:none}
-.footer-bottom{max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);text-align:center;color:rgba(255,255,255,.4);font-size:13px}
-#catalog .catalog-wrapper{max-width:1200px;margin:0 auto;padding:48px 24px}
-.page-header{margin-bottom:36px}
-.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--brown-light);font-size:14px;cursor:pointer;margin-bottom:16px;background:none;border:none;font-family:'Inter',sans-serif;padding:0}
-.back-link:hover{color:var(--brown)}
-.page-header h1{font-family:'Playfair Display',serif;font-size:40px;font-weight:700;color:var(--brown);margin-bottom:8px}
-.page-header p{color:var(--brown-light);font-size:16px}
-.page-header a{color:var(--gold);font-weight:600;cursor:pointer;text-decoration:none}
-.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}
-.catalog-card{background:#fff;border-radius:var(--r-lg);overflow:hidden;border:1px solid rgba(212,175,55,.2);box-shadow:var(--shadow);cursor:pointer;transition:all .3s}
-.catalog-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
-.catalog-card-img{height:220px;overflow:hidden;background:var(--cream)}
-.catalog-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
-.catalog-card:hover .catalog-card-img img{transform:scale(1.06)}
-.catalog-card-body{padding:18px}
-.catalog-card-body h3{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:10px}
-.catalog-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
-.catalog-price{font-size:16px;font-weight:700;color:var(--gold)}
-.catalog-shape{font-size:12px;color:var(--brown-light)}
-.auth-page{min-height:100vh;background:linear-gradient(135deg,var(--cream) 0%,#FFE4E1 50%,#FFF0F5 100%);display:flex;align-items:center;justify-content:center;padding:40px 20px}
-.auth-card{background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-lg);padding:44px;width:100%;max-width:440px;border:1px solid rgba(212,175,55,.2)}
-.auth-icon-wrap{width:72px;height:72px;background:rgba(255,182,193,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:30px}
-.auth-card h1{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--brown);text-align:center;margin-bottom:6px}
-.auth-card .sub{text-align:center;color:var(--brown-light);font-size:14px;margin-bottom:28px}
-.role-tabs-auth{display:flex;gap:6px;background:var(--cream);padding:5px;border-radius:12px;margin-bottom:22px}
-.role-tab-auth{flex:1;padding:10px 8px;border-radius:9px;border:none;background:none;font-size:13px;font-weight:600;color:var(--brown-light);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;text-align:center}
-.role-tab-auth.active{background:#fff;color:var(--brown);box-shadow:0 2px 10px rgba(0,0,0,.08)}
-.form-group{margin-bottom:18px}
-.form-label{display:block;font-size:13px;font-weight:600;color:var(--brown);margin-bottom:7px}
-.form-input-wrap{position:relative}
-.form-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--brown-light);pointer-events:none}
-.form-input{width:100%;padding:12px 14px 12px 40px;border:1.5px solid #E5D5CD;border-radius:10px;font-size:14px;font-family:'Inter',sans-serif;color:var(--brown);background:#fff;transition:border-color .2s}
-.form-input:focus{outline:none;border-color:var(--gold)}
-.auth-toggle{text-align:center;margin-top:18px;font-size:13px;color:var(--brown-light)}
-.auth-toggle a{color:var(--gold);font-weight:700;cursor:pointer;text-decoration:none}
-.auth-back{text-align:center;margin-top:12px;font-size:13px}
-.auth-back a{color:var(--brown-light);cursor:pointer;text-decoration:none}
-.auth-back a:hover{color:var(--brown)}
-.error-msg{background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px}
-.dash-header{background:#fff;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;box-shadow:0 2px 20px rgba(44,24,16,.08);border-bottom:1px solid rgba(212,175,55,.2);position:sticky;top:0;z-index:100}
-.dash-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold);cursor:pointer}
-.dash-body{max-width:1100px;margin:0 auto;padding:36px 24px}
-.welcome-banner{background:linear-gradient(135deg,rgba(255,182,193,.2),rgba(212,175,55,.2));border:1px solid rgba(212,175,55,.2);border-radius:var(--r-lg);padding:32px;margin-bottom:28px;display:flex;align-items:center;gap:20px}
-.welcome-avatar{width:60px;height:60px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:var(--shadow);flex-shrink:0}
-.welcome-text h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:4px}
-.welcome-text p{color:var(--brown-light);font-size:14px}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{background:#fff;border-radius:var(--r-lg);padding:24px;border:1px solid rgba(212,175,55,.15);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px}
-.stat-icon-wrap{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.stat-info p:first-child{font-size:28px;font-weight:700;color:var(--brown);font-family:'Playfair Display',serif}
-.stat-info p:last-child{font-size:12px;color:var(--brown-light);margin-top:2px}
-.panel-card{background:#fff;border-radius:var(--r-lg);border:1px solid rgba(212,175,55,.15);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
-.panel-card-header{padding:20px 24px;border-bottom:1px solid rgba(212,175,55,.1);display:flex;align-items:center;justify-content:space-between}
-.panel-card-header h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--brown)}
-.panel-card-body{padding:24px}
-.order-item{border:1.5px solid #EDE5DF;border-radius:12px;padding:18px;margin-bottom:12px;transition:border-color .2s}
-.order-item:hover{border-color:rgba(212,175,55,.4)}
-.order-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.order-item-header span:first-child{font-weight:600;color:var(--brown);font-size:15px}
-.status-badge{padding:4px 12px;border-radius:50px;font-size:12px;font-weight:600}
-.status-pending{background:#FEF3C7;color:#92400E}
-.status-confirmed{background:#DBEAFE;color:#1E40AF}
-.status-preparing{background:#E0F2FE;color:#0369A1}
-.status-delivered{background:#D1FAE5;color:#065F46}
-.status-cancelled{background:#FEE2E2;color:#991B1B}
-.order-item-meta{font-size:13px;color:var(--brown-light);display:flex;gap:16px;flex-wrap:wrap}
-.order-actions{display:flex;gap:8px;margin-top:12px}
-.btn-approve{padding:7px 16px;background:#D1FAE5;color:#065F46;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s}
-.btn-approve:hover{background:#A7F3D0}
-.btn-reject{padding:7px 16px;background:#FEE2E2;color:#991B1B;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s}
-.btn-reject:hover{background:#FECACA}
-.empty-state{text-align:center;padding:60px 20px}
-.empty-state .empty-icon{font-size:56px;margin-bottom:14px;opacity:.4;display:block}
-.empty-state h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--brown);margin-bottom:8px}
-.empty-state p{color:var(--brown-light);font-size:14px;margin-bottom:20px}
-.admin-table{width:100%;border-collapse:collapse}
-.admin-table th{padding:12px 16px;background:var(--cream);font-size:12px;font-weight:700;color:var(--brown-light);text-transform:uppercase;letter-spacing:.5px;text-align:left}
-.admin-table td{padding:14px 16px;border-bottom:1px solid #F0E8E2;font-size:14px;color:var(--brown)}
-.admin-table tr:hover td{background:var(--cream)}
-.toggle{position:relative;width:44px;height:24px;display:inline-block}
-.toggle input{opacity:0;width:0;height:0}
+.btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3);backdrop-filter:blur(8px)}
+.btn-ghost:hover{background:rgba(255,255,255,.22)}
+.btn-rose{background:var(--rose);color:#fff}
+.btn-rose:hover{background:#B06070}
+.btn-sm{padding:8px 18px;font-size:13px}
+.btn-lg{padding:16px 36px;font-size:16px;border-radius:16px}
+.btn-block{width:100%;border-radius:var(--r)}
+
+/* ══ NAVBAR ══ */
+.navbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:rgba(251,246,238,.95);backdrop-filter:blur(20px);position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(201,168,76,.2);box-shadow:0 2px 20px rgba(42,26,14,.06)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;color:var(--brown);cursor:pointer;letter-spacing:.5px;line-height:1}
+.nav-logo small{display:block;font-size:10px;font-weight:400;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-family:'DM Sans',sans-serif;margin-top:2px}
+.nav-links{display:flex;align-items:center;gap:6px}
+@media(max-width:680px){.nav-links .hide-mob{display:none}.navbar{padding:0 16px}}
+
+/* ══ LANDING ══ */
+/* Hero */
+.hero-section{height:100vh;min-height:600px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:url('https://cdn.abacus.ai/images/fd6f5a84-2be2-4f3d-b89d-d3c1e16fcc2d.png') center/cover}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(42,26,14,.75) 0%,rgba(42,26,14,.5) 50%,rgba(92,61,30,.7) 100%)}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:820px;padding:0 24px;animation:fadeUp .8s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);color:var(--gold2);padding:8px 20px;border-radius:50px;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,8vw,88px);font-weight:700;color:#fff;line-height:1.05;margin-bottom:20px;letter-spacing:-1px}
+.hero h1 em{color:var(--gold2);font-style:italic}
+.hero p{font-size:18px;color:rgba(255,255,255,.85);margin-bottom:36px;font-weight:300;line-height:1.7;max-width:560px;margin-left:auto;margin-right:auto}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero-stats{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;gap:40px;z-index:2}
+.hero-stat{text-align:center;color:#fff}
+.hero-stat strong{display:block;font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--gold2)}
+.hero-stat span{font-size:12px;opacity:.7;letter-spacing:1px}
+@media(max-width:600px){.hero-stats{gap:20px;bottom:20px}.hero-stat strong{font-size:22px}}
+
+/* How it works */
+.how-section{background:#fff;padding:80px 40px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,46px);font-weight:700;color:var(--brown);margin-bottom:14px;line-height:1.2}
+.section-sub{color:var(--brown3);font-size:16px;line-height:1.7}
+.how-grid{max-width:960px;margin:56px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+@media(max-width:700px){.how-grid{grid-template-columns:1fr;gap:24px}}
+.how-step{text-align:center;position:relative}
+.how-step::after{content:'→';position:absolute;right:-20px;top:28px;font-size:22px;color:var(--gold3);font-weight:300}
+.how-step:last-child::after{display:none}
+.how-num{width:56px;height:56px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#fff;margin:0 auto 16px;box-shadow:0 8px 20px rgba(201,168,76,.35)}
+.how-step h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--brown);margin-bottom:8px}
+.how-step p{color:var(--brown3);font-size:14px;line-height:1.6}
+
+/* Showcase / catalog preview */
+.showcase-section{background:linear-gradient(to bottom,var(--cream),var(--cream2));padding:80px 40px}
+.showcase-grid{max-width:1200px;margin:56px auto 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px}
+.showcase-card{background:#fff;border-radius:var(--r-lg);overflow:hidden;border:1px solid rgba(201,168,76,.15);box-shadow:var(--shadow);cursor:pointer;transition:all .3s;position:relative}
+.showcase-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg)}
+.showcase-card-img{height:220px;overflow:hidden;background:var(--cream2);position:relative}
+.showcase-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.showcase-card:hover .showcase-card-img img{transform:scale(1.07)}
+.card-fav{position:absolute;top:12px;right:12px;width:36px;height:36px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;border:none;transition:all .2s;z-index:2}
+.card-fav:hover{transform:scale(1.15)}
+.card-fav.active{background:var(--rose3);color:var(--rose)}
+.card-badge{position:absolute;top:12px;left:12px;background:var(--gold);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:50px;letter-spacing:1px;text-transform:uppercase}
+.showcase-card-body{padding:18px}
+.showcase-card-body h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--brown);margin-bottom:6px}
+.card-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-rating{font-size:12px;color:var(--brown3);display:flex;align-items:center;gap:4px}
+.card-price{font-size:17px;font-weight:700;color:var(--gold);font-family:'Cormorant Garamond',serif}
+
+/* Testimonials */
+.testi-section{background:var(--brown);padding:80px 40px}
+.testi-grid{max-width:1100px;margin:56px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.testi-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-lg);padding:28px}
+.testi-stars{color:var(--gold2);font-size:14px;margin-bottom:12px}
+.testi-text{color:rgba(255,255,255,.85);font-size:15px;line-height:1.7;margin-bottom:16px;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:17px}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-avatar{width:40px;height:40px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:16px}
+.testi-name{color:rgba(255,255,255,.9);font-size:14px;font-weight:600}
+.testi-city{color:rgba(255,255,255,.45);font-size:12px}
+
+/* Featured bakeries */
+.bakeries-section{background:#fff;padding:80px 40px}
+.bakeries-row{max-width:1100px;margin:56px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.bakery-card{border:1.5px solid var(--cream3);border-radius:var(--r-lg);padding:24px;text-align:center;transition:all .25s;cursor:pointer}
+.bakery-card:hover{border-color:var(--gold);box-shadow:var(--shadow);transform:translateY(-4px)}
+.bakery-logo{font-size:36px;margin-bottom:10px}
+.bakery-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--brown);margin-bottom:4px}
+.bakery-city{font-size:12px;color:var(--brown3);margin-bottom:8px}
+.bakery-stars{font-size:13px;color:var(--gold)}
+
+/* Footer */
+.footer{background:var(--brown);color:#fff;padding:64px 40px 28px}
+.footer-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+@media(max-width:700px){.footer-grid{grid-template-columns:1fr 1fr}}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold2);margin-bottom:10px}
+.footer-col h4{color:var(--gold2);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.footer-col ul{list-style:none}
+.footer-col li{color:rgba(255,255,255,.55);font-size:14px;line-height:2;cursor:pointer}
+.footer-col li:hover{color:rgba(255,255,255,.9)}
+.footer-col p{color:rgba(255,255,255,.55);font-size:14px;line-height:1.8}
+.footer-bottom{max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-bottom p{color:rgba(255,255,255,.35);font-size:13px}
+
+/* ══ CATALOG PAGE ══ */
+.page-wrap{max-width:1200px;margin:0 auto;padding:40px 24px}
+.page-top{margin-bottom:32px}
+.page-top h1{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:700;color:var(--brown);margin-bottom:8px}
+.page-top p{color:var(--brown3);font-size:15px}
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.filter-chip{padding:8px 18px;border-radius:50px;border:1.5px solid var(--cream3);background:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--brown3);font-family:'DM Sans',sans-serif}
+.filter-chip.active,.filter-chip:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
+
+/* ══ EDITOR ══ */
+.editor-layout{display:grid;grid-template-columns:1fr 400px;min-height:calc(100vh - 72px);gap:0}
+@media(max-width:920px){.editor-layout{grid-template-columns:1fr;grid-template-rows:auto auto}}
+.editor-stage{background:linear-gradient(145deg,#1A0D08,#2A1A0E 50%,#3D2010);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden;min-height:560px}
+.editor-stage::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(201,168,76,.1) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(196,127,138,.07) 0%,transparent 50%)}
+.stage-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(232,201,122,.5);margin-bottom:20px;z-index:1}
+#topViewCake{z-index:1;filter:drop-shadow(0 20px 50px rgba(0,0,0,.5));transition:all .4s ease;cursor:default}
+.serving-info{z-index:1;margin-top:20px;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(232,201,122,.2);border-radius:50px;padding:10px 22px}
+.serving-info span{font-size:13px;color:rgba(255,255,255,.65);font-weight:300}
+.serving-info strong{color:var(--gold2);font-size:15px}
+.editor-panel{background:#fff;overflow-y:auto;max-height:calc(100vh - 72px);border-left:1px solid var(--cream3)}
+.ep-header{padding:24px 24px 0;border-bottom:1px solid var(--cream3);position:sticky;top:0;background:#fff;z-index:10}
+.ep-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:4px}
+.ep-sub{font-size:13px;color:var(--brown3);margin-bottom:16px}
+.ep-tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;padding-bottom:0}
+.ep-tabs::-webkit-scrollbar{display:none}
+.ep-tab{padding:10px 14px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--brown3);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;transition:all .2s}
+.ep-tab.active{color:var(--brown);border-bottom-color:var(--gold)}
+.ep-tab:hover{color:var(--rose)}
+.ep-body{padding:22px 24px}
+.ep-section{margin-bottom:26px}
+.ep-section-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--brown3);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ep-section-title::after{content:'';flex:1;height:1px;background:var(--cream3)}
+
+/* Serving selector */
+.serving-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sv-btn{padding:10px 4px;border-radius:10px;border:1.5px solid var(--cream3);background:#fff;font-size:12px;font-weight:700;color:var(--brown3);cursor:pointer;text-align:center;transition:all .2s;font-family:'DM Sans',sans-serif}
+.sv-btn span{display:block;font-size:10px;font-weight:400;margin-top:2px;color:inherit;opacity:.7}
+.sv-btn.active{background:var(--brown);color:#fff;border-color:var(--brown)}
+
+/* Shape selector */
+.shape-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sh-btn{padding:14px 6px;border-radius:12px;border:1.5px solid var(--cream3);background:#fff;cursor:pointer;text-align:center;transition:all .2s;font-family:'DM Sans',sans-serif}
+.sh-btn .sh-icon{font-size:24px;display:block;margin-bottom:6px}
+.sh-btn .sh-name{font-size:11px;font-weight:700;color:var(--brown3)}
+.sh-btn.active{border-color:var(--gold);background:rgba(201,168,76,.06)}
+.sh-btn:hover{border-color:var(--rose2)}
+
+/* Cream colors */
+.cream-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.cc-swatch{aspect-ratio:1;border-radius:12px;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative;overflow:hidden}
+.cc-swatch::after{content:attr(data-name);position:absolute;inset:0;background:rgba(0,0,0,.5);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;text-align:center;padding:2px;transform:translateY(100%);transition:transform .2s;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:.5px}
+.cc-swatch:hover::after{transform:translateY(0)}
+.cc-swatch.active{border-color:var(--brown);transform:scale(1.1)}
+
+/* Toppings */
+.topping-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tp-chip{padding:10px 6px;border:1.5px solid var(--cream3);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.tp-chip:hover{border-color:var(--rose2)}
+.tp-chip.active{border-color:var(--gold);background:rgba(201,168,76,.07)}
+.tp-chip .tp-icon{font-size:20px;display:block;margin-bottom:4px}
+.tp-chip .tp-name{font-size:11px;font-weight:600;color:var(--brown)}
+
+/* Inscription */
+.insc-box{background:var(--cream2);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.ep-input{width:100%;padding:12px 14px;border:1.5px solid #E8DDD5;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--brown);background:#fff;transition:border-color .2s}
+.ep-input:focus{outline:none;border-color:var(--gold)}
+.ep-input.script-input{font-family:'Petit Formal Script',cursive;font-size:16px}
+.char-count{font-size:11px;color:var(--brown3);text-align:right;margin-top:-6px}
+.font-row{display:flex;gap:8px}
+.font-btn{flex:1;padding:10px;border:1.5px solid var(--cream3);border-radius:10px;cursor:pointer;text-align:center;transition:all .2s;background:#fff;color:var(--brown);font-size:14px}
+.font-btn:hover{border-color:var(--rose2)}
+.font-btn.active{border-color:var(--gold);background:rgba(201,168,76,.06)}
+.font-btn.f-script{font-family:'Petit Formal Script',cursive;font-size:16px}
+.font-btn.f-serif{font-family:'Cormorant Garamond',serif;font-size:15px}
+.font-btn.f-sans{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px}
+
+/* Price card */
+.price-card{background:var(--brown);border-radius:var(--r-lg);padding:20px}
+.pr-row{display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,.55);margin-bottom:8px}
+.pr-row.total{border-top:1px solid rgba(255,255,255,.12);margin-top:12px;padding-top:12px;font-size:19px;color:#fff;font-family:'Cormorant Garamond',serif;font-weight:600;margin-bottom:0}
+.pr-row.total span:last-child{color:var(--gold2);font-size:24px}
+
+/* Gift options */
+.gift-toggle{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--cream2);border-radius:12px;cursor:pointer;margin-bottom:10px}
+.gift-toggle-label{font-size:14px;font-weight:600;color:var(--brown);display:flex;align-items:center;gap:8px}
+.toggle-sw{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle-sw input{opacity:0;width:0;height:0}
 .toggle-track{position:absolute;inset:0;background:#DDD;border-radius:50px;cursor:pointer;transition:background .3s}
-.toggle-track::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .3s}
+.toggle-track::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .3s;box-shadow:0 2px 6px rgba(0,0,0,.15)}
 input:checked+.toggle-track{background:var(--gold)}
 input:checked+.toggle-track::before{transform:translateX(20px)}
+
+/* Preset tags */
+.preset-tags{display:flex;flex-wrap:wrap;gap:6px}
+.preset-tag{padding:5px 12px;background:var(--cream2);border-radius:50px;font-size:12px;color:var(--brown3);font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .2s}
+.preset-tag:hover{border-color:var(--gold);color:var(--brown)}
+
+/* ══ CHECKOUT / PAYMENT ══ */
+.checkout-layout{max-width:900px;margin:0 auto;padding:40px 24px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+@media(max-width:760px){.checkout-layout{grid-template-columns:1fr}}
+.checkout-card{background:#fff;border-radius:var(--r-lg);padding:28px;box-shadow:var(--shadow);border:1px solid rgba(201,168,76,.12);margin-bottom:16px}
+.checkout-card h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--brown);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--cream3)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--brown3);margin-bottom:6px}
+.form-input{width:100%;padding:12px 14px;border:1.5px solid #E8DDD5;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--brown);background:#fff;transition:border-color .2s}
+.form-input:focus{outline:none;border-color:var(--gold)}
+.form-select{width:100%;padding:12px 14px;border:1.5px solid #E8DDD5;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--brown);background:#fff;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;transition:border-color .2s}
+.form-select:focus{outline:none;border-color:var(--gold)}
+
+/* Payment card UI */
+.card-visual{background:linear-gradient(135deg,var(--brown),var(--brown2));border-radius:16px;padding:24px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;min-height:160px}
+.card-visual::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(201,168,76,.15)}
+.card-visual::after{content:'';position:absolute;bottom:-40px;left:-20px;width:120px;height:120px;border-radius:50%;background:rgba(201,168,76,.1)}
+.card-chip{width:36px;height:28px;background:linear-gradient(135deg,var(--gold2),var(--gold));border-radius:5px;margin-bottom:20px;position:relative;z-index:1}
+.card-num{font-size:18px;letter-spacing:4px;margin-bottom:16px;opacity:.9;position:relative;z-index:1}
+.card-footer{display:flex;justify-content:space-between;font-size:13px;opacity:.7;position:relative;z-index:1}
+.card-brand{position:absolute;right:24px;top:24px;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold2);z-index:1}
+
+/* Order summary */
+.order-summary-card{background:var(--cream2);border-radius:var(--r-lg);padding:24px;border:1px solid var(--cream3)}
+.os-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--brown);margin-bottom:16px}
+.os-cake-preview{background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;display:flex;gap:14px;align-items:center;border:1px solid rgba(201,168,76,.15)}
+.os-cake-thumb{width:64px;height:64px;background:var(--cream3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden}
+.os-cake-thumb svg{width:64px;height:64px}
+.os-cake-info h4{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--brown);margin-bottom:4px}
+.os-cake-info p{font-size:12px;color:var(--brown3);line-height:1.5}
+.os-rows{border-top:1px solid var(--cream3);padding-top:14px;margin-top:4px}
+.os-row{display:flex;justify-content:space-between;font-size:13px;color:var(--brown3);margin-bottom:8px}
+.os-row.total{font-size:17px;color:var(--brown);font-weight:700;margin-top:10px;padding-top:10px;border-top:1px solid var(--cream3);font-family:'Cormorant Garamond',serif}
+.os-row.total span:last-child{color:var(--gold)}
+
+/* Vendor list */
+.vendor-card{background:#fff;border-radius:var(--r-lg);padding:20px 24px;border:1px solid var(--cream3);box-shadow:var(--shadow);margin-bottom:14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:18px}
+.vendor-card:hover{border-color:var(--gold);transform:translateX(6px)}
+.vendor-card.selected{border-color:var(--gold);background:rgba(201,168,76,.04)}
+.vendor-avatar{width:56px;height:56px;background:linear-gradient(135deg,var(--cream2),var(--cream3));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.vendor-info{flex:1;min-width:0}
+.vendor-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--brown);margin-bottom:4px}
+.vendor-meta{font-size:12px;color:var(--brown3);display:flex;gap:12px;flex-wrap:wrap}
+.vendor-right{text-align:right;flex-shrink:0}
+.vendor-eta{font-size:12px;color:var(--sage);font-weight:700;margin-bottom:4px}
+.vendor-range{font-size:12px;color:var(--brown3)}
+.vendor-select-btn{padding:8px 16px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif;transition:background .2s}
+.vendor-select-btn:hover{background:#B8941F}
+
+/* ══ AUTH ══ */
+.auth-page{min-height:100vh;background:linear-gradient(135deg,var(--cream) 0%,rgba(196,127,138,.1) 50%,var(--cream2) 100%);display:flex;align-items:center;justify-content:center;padding:40px 16px}
+.auth-card{background:#fff;border-radius:var(--r-xl);box-shadow:var(--shadow-lg);padding:44px 40px;width:100%;max-width:460px;border:1px solid rgba(201,168,76,.15)}
+.auth-logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--brown);text-align:center;margin-bottom:6px}
+.auth-logo small{display:block;font-size:11px;font-weight:400;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-family:'DM Sans',sans-serif;margin-top:4px}
+.auth-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--brown);text-align:center;margin-bottom:4px;margin-top:20px}
+.auth-sub{text-align:center;color:var(--brown3);font-size:14px;margin-bottom:28px}
+.role-tabs{display:flex;gap:5px;background:var(--cream2);padding:5px;border-radius:12px;margin-bottom:22px}
+.role-tab{flex:1;padding:10px 6px;border-radius:9px;border:none;background:none;font-size:12px;font-weight:700;color:var(--brown3);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;text-align:center;letter-spacing:.3px}
+.role-tab.active{background:#fff;color:var(--brown);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.auth-input-wrap{position:relative}
+.auth-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--brown3);pointer-events:none}
+.auth-input{width:100%;padding:13px 14px 13px 42px;border:1.5px solid #E8DDD5;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--brown);background:#fff;transition:border-color .2s}
+.auth-input:focus{outline:none;border-color:var(--gold)}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--brown3);font-size:12px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--cream3)}
+.auth-toggle{text-align:center;margin-top:16px;font-size:13px;color:var(--brown3)}
+.auth-toggle a{color:var(--gold);font-weight:700;cursor:pointer;text-decoration:none}
+.auth-back{text-align:center;margin-top:10px;font-size:13px}
+.auth-back a{color:var(--brown3);cursor:pointer;text-decoration:none}
+.auth-back a:hover{color:var(--brown)}
+.coupon-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;margin:0 auto 16px;display:flex;justify-content:center}
+
+/* ══ DASHBOARD ══ */
+.dash-header{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(251,246,238,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,168,76,.2);box-shadow:0 2px 16px rgba(42,26,14,.06);position:sticky;top:0;z-index:100}
+.dash-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--brown);cursor:pointer;letter-spacing:.5px}
+.dash-body{max-width:1100px;margin:0 auto;padding:32px 24px}
+.welcome-card{background:linear-gradient(135deg,var(--brown),var(--brown2));border-radius:var(--r-xl);padding:32px;margin-bottom:24px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden}
+.welcome-card::after{content:'🎂';position:absolute;right:32px;font-size:80px;opacity:.08}
+.welcome-avatar{width:64px;height:64px;background:rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;border:2px solid rgba(201,168,76,.3)}
+.welcome-text h1{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:4px}
+.welcome-text p{color:rgba(255,255,255,.6);font-size:14px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:var(--r-lg);padding:22px;border:1px solid rgba(201,168,76,.12);box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
+.stat-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.stat-value{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--brown);line-height:1}
+.stat-label{font-size:12px;color:var(--brown3);margin-top:4px}
+.dash-tabs{display:flex;gap:4px;background:#fff;padding:5px;border-radius:14px;box-shadow:var(--shadow);width:fit-content;margin-bottom:20px}
+.dash-tab{padding:10px 18px;border-radius:11px;border:none;background:none;font-size:13px;font-weight:600;color:var(--brown3);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.dash-tab.active{background:var(--gold);color:#fff;box-shadow:0 4px 12px rgba(201,168,76,.35)}
+.panel-card{background:#fff;border-radius:var(--r-lg);border:1px solid rgba(201,168,76,.12);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+.panel-head{padding:20px 24px;border-bottom:1px solid var(--cream3);display:flex;align-items:center;justify-content:space-between}
+.panel-head h2{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--brown)}
+.panel-body{padding:22px}
+.order-row{border:1.5px solid var(--cream3);border-radius:12px;padding:16px;margin-bottom:10px;transition:border-color .2s}
+.order-row:hover{border-color:rgba(201,168,76,.4)}
+.order-row-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:10px}
+.order-id{font-size:13px;font-weight:700;color:var(--brown)}
+.order-cake{font-size:15px;color:var(--brown);margin-bottom:4px;font-family:'Cormorant Garamond',serif;font-weight:600}
+.order-meta{font-size:12px;color:var(--brown3);display:flex;gap:12px;flex-wrap:wrap}
+.order-actions{display:flex;gap:8px;margin-top:12px}
+.btn-approve{padding:7px 16px;background:#D1FAE5;color:#065F46;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.btn-approve:hover{background:#A7F3D0}
+.btn-reject{padding:7px 16px;background:#FEE2E2;color:#991B1B;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.btn-reject:hover{background:#FECACA}
+
+/* Status badges */
+.badge{padding:4px 12px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.badge-pending{background:#FEF3C7;color:#92400E}
+.badge-confirmed{background:#DBEAFE;color:#1E40AF}
+.badge-preparing{background:#E0F2FE;color:#0369A1}
+.badge-delivered{background:#D1FAE5;color:#065F46}
+.badge-cancelled{background:#FEE2E2;color:#991B1B}
+
+/* Progress tracker */
+.progress-track{padding:20px 0}
+.steps{display:flex;justify-content:space-between;position:relative}
+.steps::before{content:'';position:absolute;top:18px;left:12px;right:12px;height:2px;background:var(--cream3);z-index:0}
+.step-fill{position:absolute;top:18px;left:12px;height:2px;background:var(--gold);transition:width .5s ease;z-index:1}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2}
+.step-dot{width:36px;height:36px;border-radius:50%;background:var(--cream3);display:flex;align-items:center;justify-content:center;font-size:14px;border:3px solid #fff;transition:all .3s}
+.step-item.done .step-dot{background:var(--gold)}
+.step-item.active .step-dot{background:var(--rose);box-shadow:0 0 0 5px rgba(196,127,138,.2)}
+.step-label{font-size:10px;font-weight:700;color:var(--brown3);text-align:center;max-width:60px}
+.step-item.done .step-label,.step-item.active .step-label{color:var(--brown)}
+
+/* Messaging */
+.msg-thread{height:320px;overflow-y:auto;padding:14px;background:var(--cream2);border-radius:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.msg-bubble{max-width:80%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5}
+.msg-bubble.me{background:var(--brown);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.msg-bubble.them{background:#fff;color:var(--brown);align-self:flex-start;border-bottom-left-radius:4px;box-shadow:var(--shadow)}
+.msg-time{font-size:10px;opacity:.6;margin-top:4px}
+.msg-input-row{display:flex;gap:8px}
+.msg-input{flex:1;padding:10px 14px;border:1.5px solid #E8DDD5;border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--brown);background:#fff}
+.msg-input:focus{outline:none;border-color:var(--gold)}
+
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+.cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px}
+.cal-day-name{font-size:10px;font-weight:700;text-align:center;color:var(--brown3);letter-spacing:.5px}
+.cal-day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .2s;background:#fff;color:var(--brown3)}
+.cal-day:hover{border-color:var(--gold)}
+.cal-day.available{color:var(--brown)}
+.cal-day.busy{background:var(--cream2);color:var(--brown3);cursor:default;text-decoration:line-through;opacity:.5}
+.cal-day.selected{background:var(--gold);color:#fff;border-color:var(--gold)}
+.cal-day.today{border-color:var(--rose2)}
+.cal-day.empty{cursor:default;background:none}
+
+/* Admin table */
+.admin-tbl{width:100%;border-collapse:collapse}
+.admin-tbl th{padding:12px 16px;background:var(--cream2);font-size:11px;font-weight:700;color:var(--brown3);text-transform:uppercase;letter-spacing:.5px;text-align:left}
+.admin-tbl td{padding:14px 16px;border-bottom:1px solid var(--cream3);font-size:13px;color:var(--brown)}
+.admin-tbl tr:hover td{background:var(--cream2)}
+
+/* Coupon input */
+.coupon-row{display:flex;gap:8px}
+.coupon-input{flex:1;padding:12px 14px;border:1.5px solid #E8DDD5;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--brown)}
+.coupon-input:focus{outline:none;border-color:var(--gold)}
+
+/* Commission slider */
+.comm-slider{width:100%;accent-color:var(--gold);margin:12px 0}
+.comm-preview{background:var(--cream2);border-radius:14px;padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.comm-item{text-align:center}
+.comm-value{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--gold)}
+.comm-label{font-size:11px;color:var(--brown3);margin-top:4px}
+
+/* Rating stars */
+.star-rating{display:flex;gap:4px;font-size:24px;cursor:pointer}
+.star{color:var(--cream3);transition:color .15s}
+.star.active{color:var(--gold)}
+.star:hover,.star:hover~.star{color:var(--gold2)}
+
+/* Review card */
+.review-card{background:var(--cream2);border-radius:12px;padding:16px;margin-bottom:10px}
+.review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.review-name{font-weight:600;color:var(--brown);font-size:14px}
+.review-date{font-size:11px;color:var(--brown3)}
+.review-text{font-size:13px;color:var(--brown3);line-height:1.6;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:15px}
+
+/* Toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--brown);color:#fff;padding:14px 28px;border-radius:50px;font-size:14px;font-weight:500;box-shadow:var(--shadow-lg);z-index:9999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
-@media(max-width:640px){.navbar,.dash-header{padding:0 16px}.nav-logo,.dash-logo{font-size:16px}.dash-body{padding:20px 16px}.auth-card{padding:28px 20px}.welcome-banner{flex-direction:column;text-align:center}}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(42,26,14,.6);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--r-xl);padding:36px;max-width:480px;width:100%;box-shadow:var(--shadow-lg);position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--brown3);width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s}
+.modal-close:hover{background:var(--cream2)}
+.modal h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:16px}
+
+/* Empty state */
+.empty-state{text-align:center;padding:56px 20px}
+.empty-icon{font-size:56px;margin-bottom:14px;display:block;opacity:.4}
+.empty-state h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--brown);margin-bottom:8px}
+.empty-state p{color:var(--brown3);font-size:14px;margin-bottom:20px}
+
+@media(max-width:640px){
+  .navbar{padding:0 16px}
+  .dash-header{padding:0 16px}
+  .dash-body{padding:20px 14px}
+  .auth-card{padding:28px 20px}
+  .page-wrap{padding:24px 14px}
+  .welcome-card::after{display:none}
+  .checkout-card{padding:20px}
+}
 </style>
 </head>
 <body>
+
 <div class="toast" id="toast"></div>
 
-<!-- LANDING -->
+<!-- ══════════════════════════════════════
+     LANDING
+══════════════════════════════════════ -->
 <div class="screen active" id="landing">
-  <nav class="navbar">
-    <div class="nav-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI</div>
-    <div class="nav-actions">
-      <button class="btn btn-outline btn-sm" onclick="goto('catalog')">Katalog</button>
-      <button class="btn btn-gold btn-sm" onclick="gotoAuth('login')">Giriş Yap</button>
-    </div>
-  </nav>
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <div class="hero-icon">✨</div>
-      <h1>SARAY PASTA DÜNYASI</h1>
-      <p>Hayallerinizdeki pastayı, en iyi pastacılardan özel olarak sipariş edin</p>
-      <div class="hero-btns">
-        <button class="btn btn-gold" onclick="gotoAuth('login')">🛍 Sipariş Ver</button>
-        <button class="btn btn-white" onclick="goto('catalog')">Katalog İncele</button>
-      </div>
-    </div>
-  </section>
-  <section class="features-section">
-    <div class="section-center">
-      <h2 class="section-title">Neden SARAY PASTA DÜNYASI?</h2>
-      <p class="section-sub">İstanbul ve Ankara'nın en seçkin pastacıları bir arada</p>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card"><div class="feature-icon-wrap">🎂</div><h3>Özel Tasarım</h3><p>Gelişmiş pasta editörümüz ile hayalinizdeki pastayı tasarlayın. Şekil, boyut, renk ve süslemeler tamamen size özel.</p></div>
-      <div class="feature-card"><div class="feature-icon-wrap">⭐</div><h3>Seçkin Pastacılar</h3><p>Her iki şehirde de özenle seçilmiş, yüksek puanlı ve deneyimli pastacılardan güvenle sipariş verin.</p></div>
-      <div class="feature-card"><div class="feature-icon-wrap">👥</div><h3>Kolay Sipariş</h3><p>Katalogdan seçin veya özel tasarlayın, teslimat tarihi belirleyin, ödeme yapın. Hepsi bu kadar basit!</p></div>
-    </div>
-  </section>
-  <section class="showcase">
-    <div class="showcase-inner">
-      <div class="showcase-img"><img src="https://cdn.abacus.ai/images/dcd98002-b3f0-4c99-abf5-1f9020b01518.png" alt="Düğün Pastası"></div>
-      <div class="showcase-text">
-        <h2>Her Özel An İçin Mükemmel Pasta</h2>
-        <p>Doğum günlerinden düğünlere, yıldönümlerinden kurumsal etkinliklere kadar her özel anınızı unutulmaz kılacak pastalar.</p>
-        <ul class="check-list">
-          <li><div class="check-dot">✓</div>20+ seçkin pastacı firması</li>
-          <li><div class="check-dot">✓</div>İstanbul ve Ankara'da hızlı teslimat</li>
-          <li><div class="check-dot">✓</div>Esnek ödeme seçenekleri</li>
-        </ul>
-        <button class="btn btn-gold" onclick="gotoAuth('signup')">Hemen Başlayın →</button>
-      </div>
-    </div>
-  </section>
-  <footer>
-    <div class="footer-grid">
-      <div><div class="footer-logo">SARAY PASTA DÜNYASI</div><p style="color:rgba(255,255,255,.65);font-size:14px;line-height:1.7">Türkiye'nin en seçkin pasta sipariş platformu</p></div>
-      <div class="footer-col"><h4>Şehirler</h4><ul><li>İstanbul</li><li>Ankara</li></ul></div>
-      <div class="footer-col"><h4>İletişim</h4><p>info@saraypasta.com</p></div>
-    </div>
-    <div class="footer-bottom">&copy; 2026 SARAY PASTA DÜNYASI. Tüm hakları saklıdır.</div>
-  </footer>
-</div>
+<nav class="navbar">
+  <div class="nav-logo" onclick="goto('landing')">
+    SARAY PASTA DÜNYASI
+    <small>Türkiye'nin En Seçkin Pasta Pazaryeri</small>
+  </div>
+  <div class="nav-links">
+    <button class="btn btn-outline btn-sm hide-mob" onclick="goto('catalog')">Katalog</button>
+    <button class="btn btn-outline btn-sm hide-mob" onclick="gotoAuth('login')">Giriş Yap</button>
+    <button class="btn btn-gold btn-sm" onclick="gotoAuth('signup')">Üye Ol</button>
+  </div>
+</nav>
 
-<!-- CATALOG -->
+<!-- Hero -->
+<section class="hero-section">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✨ &nbsp;2026'nın En İyi Pasta Platformu</div>
+    <h1>Hayalindeki <em>pasta</em><br>artık bir tık uzakta</h1>
+    <p>İstanbul ve Ankara'nın seçkin pastacılarından, tamamen sana özel tasarlanmış pastalar. Sipariş ver, takip et, teslim al.</p>
+    <div class="hero-cta">
+      <button class="btn btn-gold btn-lg" onclick="goto('catalog')">🎂 Pasta Seç</button>
+      <button class="btn btn-ghost btn-lg" onclick="gotoEditor()">✏️ Pasta Tasarla</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><strong>20+</strong><span>Seçkin Firma</span></div>
+    <div class="hero-stat"><strong>4.9★</strong><span>Ortalama Puan</span></div>
+    <div class="hero-stat"><strong>2 Şehir</strong><span>Teslimat</span></div>
+    <div class="hero-stat"><strong>%100</strong><span>Memnuniyet</span></div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="how-section">
+  <div style="max-width:960px;margin:0 auto;text-align:center">
+    <div class="section-label">Nasıl Çalışır?</div>
+    <h2 class="section-title">3 adımda kapına gelsin</h2>
+    <p class="section-sub">Katalogdan seç ya da kendi pastanı tasarla, firma onaylasın, posta teslim edilsin.</p>
+  </div>
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="how-num">1</div>
+      <h3>Seç & Tasarla</h3>
+      <p>Hazır katalogdan seç ya da editörle tamamen kendine özel bir pasta tasarla. Kişi sayısı, renk, süsleme — hepsi sende.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">2</div>
+      <h3>Firma Seç</h3>
+      <p>Şehrindeki onaylı pastacılar arasından puan ve teslimat süresine göre firmani seç, siparişini ver.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">3</div>
+      <h3>Teslim Al</h3>
+      <p>Firman siparişini onaylar, hazırlar ve belirlenen tarihte kapına getirir. Her aşamayı takip edersin.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Showcase -->
+<section class="showcase-section">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-label center">Öne Çıkan Pastalar</div>
+    <h2 class="section-title center">Hazır Koleksiyonumuz</h2>
+    <p class="section-sub center" style="max-width:560px;margin:0 auto">Ustalarımız tarafından özenle hazırlanan hazır modellerden birini seçin ya da sıfırdan tasarlayın.</p>
+  </div>
+  <div class="showcase-grid" id="showcaseGrid"></div>
+  <div class="center" style="margin-top:36px">
+    <button class="btn btn-gold btn-lg" onclick="goto('catalog')">Tüm Kataloğu Gör →</button>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testi-section">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-label center" style="color:var(--gold2)">Müşteri Yorumları</div>
+    <h2 class="section-title center" style="color:#fff">Onlar ne dedi?</h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Kızımın doğum günü pastası muhteşemdi. Tam istediğimiz gibi özelleştirdik, zamanında teslim edildi. Kesinlikle tekrar kullanacağım!"</p>
+        <div class="testi-author"><div class="testi-avatar">👩</div><div><div class="testi-name">Ayşe K.</div><div class="testi-city">İstanbul · Doğum Günü Pastası</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Düğün pastamızı buradan sipariş ettik. 3 katlı, özel tasarım, inanılmaz bir işçilik. Misafirlerimiz çok etkilendi."</p>
+        <div class="testi-author"><div class="testi-avatar">👨</div><div><div class="testi-name">Mert & Selin</div><div class="testi-city">Ankara · Düğün Pastası</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Red velvet pastam üstüne isim yazdırdım, editör çok kullanışlı. Firma hızlı onayladı, çok memnun kaldım."</p>
+        <div class="testi-author"><div class="testi-avatar">👩</div><div><div class="testi-name">Fatma S.</div><div class="testi-city">İstanbul · Özel Tasarım</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bakeries -->
+<section class="bakeries-section">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-label center">Anlaşmalı Firmalar</div>
+    <h2 class="section-title center">Seçkin Pastacılarımız</h2>
+    <div class="bakeries-row">
+      <div class="bakery-card"><div class="bakery-logo">🩷</div><div class="bakery-name">Pembe Mutfak</div><div class="bakery-city">İstanbul</div><div class="bakery-stars">★★★★★ 4.9</div></div>
+      <div class="bakery-card"><div class="bakery-logo">🌸</div><div class="bakery-name">Şeker Rüyası</div><div class="bakery-city">İstanbul</div><div class="bakery-stars">★★★★★ 4.8</div></div>
+      <div class="bakery-card"><div class="bakery-logo">🍰</div><div class="bakery-name">Lezzet Atölyesi</div><div class="bakery-city">İstanbul</div><div class="bakery-stars">★★★★☆ 4.7</div></div>
+      <div class="bakery-card"><div class="bakery-logo">🎂</div><div class="bakery-name">Başkent Pasta</div><div class="bakery-city">Ankara</div><div class="bakery-stars">★★★★☆ 4.6</div></div>
+      <div class="bakery-card"><div class="bakery-logo">🌿</div><div class="bakery-name">Doğal Lezzet</div><div class="bakery-city">Ankara</div><div class="bakery-stars">★★★★★ 4.8</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">SARAY PASTA DÜNYASI</div>
+      <p style="color:rgba(255,255,255,.55);font-size:14px;line-height:1.8;margin-top:8px">Türkiye'nin en seçkin pasta sipariş ve pazaryeri platformu. Hayalinizdeki pastayı kapınıza getiriyoruz.</p>
+    </div>
+    <div class="footer-col"><h4>Platform</h4><ul><li onclick="goto('catalog')">Pasta Kataloğu</li><li onclick="gotoEditor()">Pasta Tasarla</li><li onclick="gotoAuth('login')">Giriş Yap</li><li onclick="gotoAuth('signup')">Üye Ol</li></ul></div>
+    <div class="footer-col"><h4>Şehirler</h4><ul><li>İstanbul</li><li>Ankara</li><li>Yakında: İzmir</li><li>Yakında: Bursa</li></ul></div>
+    <div class="footer-col"><h4>İletişim</h4><p>info@saraypasta.com<br>0212 XXX XX XX<br><br>Pzt–Cum 09:00–18:00</p></div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SARAY PASTA DÜNYASI. Tüm hakları saklıdır.</p>
+    <p>Güvenli ödeme · SSL korumalı</p>
+  </div>
+</footer>
+</div><!-- /landing -->
+
+<!-- ══════════════════════════════════════
+     CATALOG
+══════════════════════════════════════ -->
 <div class="screen" id="catalog">
-  <nav class="navbar">
-    <div class="nav-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI</div>
-    <div class="nav-actions"><button class="btn btn-gold btn-sm" onclick="gotoAuth('login')">Sipariş Ver</button></div>
-  </nav>
-  <div class="catalog-wrapper">
-    <div class="page-header">
-      <button class="back-link" onclick="goto('landing')">← Ana Sayfaya Dön</button>
-      <h1>Pasta Kataloğu</h1>
-      <p>Hazır modellerden seçin veya <a onclick="gotoAuth('login')">özel tasarım</a> yapın</p>
-    </div>
-    <div class="catalog-grid" id="catalogGrid"></div>
-    <div style="margin-top:40px;text-align:center"><button class="btn btn-gold" onclick="gotoAuth('login')">🎨 Kendi Pastanı Tasarla</button></div>
+<nav class="navbar">
+  <div class="nav-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI<small>Pasta Kataloğu</small></div>
+  <div class="nav-links">
+    <button class="btn btn-outline btn-sm hide-mob" onclick="gotoEditor()">✏️ Tasarla</button>
+    <button class="btn btn-gold btn-sm" onclick="gotoAuth('login')">Giriş Yap</button>
   </div>
+</nav>
+<div class="page-wrap">
+  <div class="page-top">
+    <button class="btn btn-outline btn-sm" onclick="goto('landing')" style="margin-bottom:16px">← Geri</button>
+    <h1>Pasta Kataloğu</h1>
+    <p>Hazır modellerden sipariş verin ya da <a style="color:var(--gold);cursor:pointer;font-weight:600" onclick="gotoEditor()">kendi pastanızı tasarlayın →</a></p>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-chip active" onclick="filterCatalog('all',this)">Tümü</button>
+    <button class="filter-chip" onclick="filterCatalog('doğum',this)">🎂 Doğum Günü</button>
+    <button class="filter-chip" onclick="filterCatalog('düğün',this)">💍 Düğün</button>
+    <button class="filter-chip" onclick="filterCatalog('çikolata',this)">🍫 Çikolatalı</button>
+    <button class="filter-chip" onclick="filterCatalog('meyve',this)">🍓 Meyveli</button>
+    <button class="filter-chip" onclick="filterCatalog('özel',this)">✨ Özel</button>
+  </div>
+  <div class="catalog-grid" id="mainCatalogGrid"></div>
+</div>
 </div>
 
-<!-- AUTH -->
+<!-- ══════════════════════════════════════
+     EDITOR
+══════════════════════════════════════ -->
+<div class="screen" id="editor">
+<nav class="navbar">
+  <div class="nav-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI<small>Pasta Editörü</small></div>
+  <div class="nav-links">
+    <button class="btn btn-outline btn-sm" onclick="goto('catalog')">← Katalog</button>
+  </div>
+</nav>
+<div class="editor-layout">
+  <!-- Stage -->
+  <div class="editor-stage">
+    <div class="stage-label">Canlı Önizleme — Üstten Görünüm</div>
+    <svg id="topViewCake" width="360" height="360" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="cakeTopGrad" cx="40%" cy="35%" r="70%">
+          <stop offset="0%" id="topGrad1" stop-color="#FFFFFF"/>
+          <stop offset="100%" id="topGrad2" stop-color="#F0E8E0"/>
+        </radialGradient>
+        <radialGradient id="innerGrad" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0.1)"/>
+        </radialGradient>
+        <filter id="softShadow">
+          <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="rgba(0,0,0,0.4)"/>
+        </filter>
+      </defs>
+      <!-- Shadow -->
+      <ellipse cx="182" cy="338" rx="130" ry="18" fill="rgba(0,0,0,0.3)"/>
+      <!-- Main cake body (top view) - round by default -->
+      <g id="cakeShape" filter="url(#softShadow)">
+        <ellipse id="cakeEllipse" cx="180" cy="180" rx="145" ry="145" fill="url(#cakeTopGrad)"/>
+      </g>
+      <!-- Frosting border ring -->
+      <ellipse id="frostRing" cx="180" cy="180" rx="145" ry="145" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="12" stroke-dasharray="none"/>
+      <!-- Inner highlight -->
+      <ellipse cx="180" cy="180" rx="145" ry="145" fill="url(#innerGrad)"/>
+      <!-- Drip group -->
+      <g id="dripGroup" opacity="0.85">
+        <path d="M180 35 Q175 55 178 70" stroke="#8B4513" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M220 40 Q217 62 219 78" stroke="#8B4513" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M255 58 Q253 80 255 95" stroke="#8B4513" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M140 40 Q137 60 139 76" stroke="#8B4513" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M105 58 Q102 78 104 93" stroke="#8B4513" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M280 90 Q278 108 280 120" stroke="#8B4513" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M80 90 Q77 108 79 120" stroke="#8B4513" stroke-width="5" fill="none" stroke-linecap="round"/>
+      </g>
+      <!-- Rosette decorations border -->
+      <g id="rosetteGroup">
+        <circle cx="180" cy="50" r="10" fill="none" stroke="#FFB6C1" stroke-width="3"/>
+        <circle cx="180" cy="50" r="5" fill="#FFB6C1"/>
+        <circle cx="242" cy="68" r="9" fill="none" stroke="#FF9AAA" stroke-width="2.5"/>
+        <circle cx="242" cy="68" r="4" fill="#FF9AAA"/>
+        <circle cx="290" cy="118" r="9" fill="none" stroke="#FFB6C1" stroke-width="2.5"/>
+        <circle cx="290" cy="118" r="4" fill="#FFB6C1"/>
+        <circle cx="118" cy="68" r="9" fill="none" stroke="#FF9AAA" stroke-width="2.5"/>
+        <circle cx="118" cy="68" r="4" fill="#FF9AAA"/>
+        <circle cx="70" cy="118" r="9" fill="none" stroke="#FFB6C1" stroke-width="2.5"/>
+        <circle cx="70" cy="118" r="4" fill="#FFB6C1"/>
+        <circle cx="310" cy="180" r="8" fill="none" stroke="#FFB6C1" stroke-width="2.5"/>
+        <circle cx="310" cy="180" r="4" fill="#FFB6C1"/>
+        <circle cx="50" cy="180" r="8" fill="none" stroke="#FF9AAA" stroke-width="2.5"/>
+        <circle cx="50" cy="180" r="4" fill="#FF9AAA"/>
+      </g>
+      <!-- Topping group -->
+      <g id="toppingGroup">
+        <!-- Strawberries default -->
+        <ellipse cx="180" cy="140" rx="14" ry="16" fill="#E8203C"/>
+        <path d="M173 130 Q180 123 187 130" fill="#4CAF50"/>
+        <ellipse cx="148" cy="170" rx="12" ry="14" fill="#E8203C"/>
+        <path d="M142 161 Q148 155 154 161" fill="#4CAF50"/>
+        <ellipse cx="212" cy="170" rx="12" ry="14" fill="#E8203C"/>
+        <path d="M206 161 Q212 155 218 161" fill="#4CAF50"/>
+        <ellipse cx="165" cy="205" rx="11" ry="13" fill="#E8203C"/>
+        <path d="M159 197 Q165 191 171 197" fill="#4CAF50"/>
+        <ellipse cx="200" cy="205" rx="11" ry="13" fill="#E8203C"/>
+        <path d="M194 197 Q200 191 206 197" fill="#4CAF50"/>
+      </g>
+      <!-- Gold leaf accents -->
+      <g id="goldAccents" opacity="0.7">
+        <ellipse cx="155" cy="100" rx="6" ry="2.5" fill="#C4934A" transform="rotate(-45 155 100)"/>
+        <ellipse cx="205" cy="100" rx="6" ry="2.5" fill="#C4934A" transform="rotate(45 205 100)"/>
+        <ellipse cx="250" cy="140" rx="6" ry="2.5" fill="#C4934A" transform="rotate(20 250 140)"/>
+        <ellipse cx="110" cy="140" rx="6" ry="2.5" fill="#C4934A" transform="rotate(-20 110 140)"/>
+        <ellipse cx="270" cy="200" rx="5" ry="2" fill="#C4934A" transform="rotate(10 270 200)"/>
+        <ellipse cx="90" cy="200" rx="5" ry="2" fill="#C4934A" transform="rotate(-10 90 200)"/>
+      </g>
+      <!-- Inscription area -->
+      <ellipse cx="180" cy="240" rx="100" ry="30" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+      <!-- Inscription text -->
+      <text id="svgInscription" x="180" y="247" font-family="'Petit Formal Script',cursive" font-size="16" fill="#E8C47A" text-anchor="middle" dominant-baseline="middle" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.3))">İyi ki Doğdun!</text>
+      <!-- Center decoration -->
+      <circle cx="180" cy="180" r="28" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+      <text x="180" y="185" font-size="28" text-anchor="middle" dominant-baseline="middle">🎂</text>
+    </svg>
+    <div class="serving-info">
+      <span>🍽</span>
+      <span>Bu pasta</span>
+      <strong id="servingLabel">8-10 kişilik</strong>
+      <span>·</span>
+      <strong id="sizeLabel">22cm</strong>
+    </div>
+  </div>
+
+  <!-- Panel -->
+  <div class="editor-panel">
+    <div class="ep-header">
+      <div class="ep-title">Pastanı Tasarla</div>
+      <div class="ep-sub">Her detayı özelleştir, anlık gör</div>
+      <div class="ep-tabs">
+        <button class="ep-tab active" onclick="epTab('temel',this)">Temel</button>
+        <button class="ep-tab" onclick="epTab('krema',this)">Krema</button>
+        <button class="ep-tab" onclick="epTab('susleme',this)">Süsleme</button>
+        <button class="ep-tab" onclick="epTab('yazi',this)">Yazı</button>
+        <button class="ep-tab" onclick="epTab('hediye',this)">🎁 Hediye</button>
+        <button class="ep-tab" onclick="epTab('siparis',this)">Sipariş</button>
+      </div>
+    </div>
+    <div class="ep-body">
+
+      <!-- TAB: TEMEL -->
+      <div id="ep-temel">
+        <div class="ep-section">
+          <div class="ep-section-title">Kaç Kişilik</div>
+          <div class="serving-grid">
+            <button class="sv-btn" onclick="setServing(this,'4-6','18cm')">4-6<span>18cm</span></button>
+            <button class="sv-btn" onclick="setServing(this,'8-10','22cm')">8-10<span>22cm</span></button>
+            <button class="sv-btn active" onclick="setServing(this,'12-15','26cm')">12-15<span>26cm</span></button>
+            <button class="sv-btn" onclick="setServing(this,'20-25','30cm')">20-25<span>30cm</span></button>
+            <button class="sv-btn" onclick="setServing(this,'30+','35cm')">30+<span>35cm</span></button>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Pasta Şekli</div>
+          <div class="shape-row">
+            <button class="sh-btn active" onclick="setShape(this,'round')"><span class="sh-icon">⭕</span><span class="sh-name">Yuvarlak</span></button>
+            <button class="sh-btn" onclick="setShape(this,'square')"><span class="sh-icon">⬛</span><span class="sh-name">Kare</span></button>
+            <button class="sh-btn" onclick="setShape(this,'rect')"><span class="sh-icon">▬</span><span class="sh-name">Dikdörtgen</span></button>
+            <button class="sh-btn" onclick="setShape(this,'heart')"><span class="sh-icon">❤️</span><span class="sh-name">Kalp</span></button>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Lezzet & İç Hamur</div>
+          <div class="topping-grid">
+            <div class="tp-chip active" onclick="setFlavor(this,'Vanilyalı',0)"><span class="tp-icon">🤍</span><span class="tp-name">Vanilyalı</span></div>
+            <div class="tp-chip" onclick="setFlavor(this,'Çikolatalı',50)"><span class="tp-icon">🍫</span><span class="tp-name">Çikolatalı</span></div>
+            <div class="tp-chip" onclick="setFlavor(this,'Kırmızı Kadife',80)"><span class="tp-icon">❤️</span><span class="tp-name">Red Velvet</span></div>
+            <div class="tp-chip" onclick="setFlavor(this,'Limonlu',30)"><span class="tp-icon">🍋</span><span class="tp-name">Limonlu</span></div>
+            <div class="tp-chip" onclick="setFlavor(this,'Fıstıklı',100)"><span class="tp-icon">🌿</span><span class="tp-name">Fıstıklı</span></div>
+            <div class="tp-chip" onclick="setFlavor(this,'Tiramisu',120)"><span class="tp-icon">☕</span><span class="tp-name">Tiramisu</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: KREMA -->
+      <div id="ep-krema" style="display:none">
+        <div class="ep-section">
+          <div class="ep-section-title">Krema Rengi — 2026 Trendi</div>
+          <div class="cream-grid">
+            <div class="cc-swatch active" data-name="Beyaz" style="background:linear-gradient(135deg,#FFFFFF,#F5F0EB)" onclick="setCream(this,'#FFFFFF','#F5F0EB')"></div>
+            <div class="cc-swatch" data-name="Blushed Rose" style="background:linear-gradient(135deg,#F2C4CE,#E8A8B5)" onclick="setCream(this,'#F2C4CE','#E0A0B0')"></div>
+            <div class="cc-swatch" data-name="Sage Green" style="background:linear-gradient(135deg,#B8D4B8,#98BC98)" onclick="setCream(this,'#B8D4B8','#90B090')"></div>
+            <div class="cc-swatch" data-name="Terracotta" style="background:linear-gradient(135deg,#E8A890,#D48870)" onclick="setCream(this,'#E8A890','#D08060')"></div>
+            <div class="cc-swatch" data-name="Champagne" style="background:linear-gradient(135deg,#F0E0B0,#E0C890)" onclick="setCream(this,'#F0E0B0','#D8C080')"></div>
+            <div class="cc-swatch" data-name="Dusty Lilac" style="background:linear-gradient(135deg,#D8C8E8,#C0A8D8)" onclick="setCream(this,'#D8C8E8','#B898D0')"></div>
+            <div class="cc-swatch" data-name="Sky Blue" style="background:linear-gradient(135deg,#C0DCF0,#A0C4E0)" onclick="setCream(this,'#C0DCF0','#90B8D8')"></div>
+            <div class="cc-swatch" data-name="Caramel" style="background:linear-gradient(135deg,#D4A060,#BC8848)" onclick="setCream(this,'#D4A060','#B07840')"></div>
+            <div class="cc-swatch" data-name="Pistachio" style="background:linear-gradient(135deg,#C8DCA0,#B0C888)" onclick="setCream(this,'#C8DCA0','#A0B870')"></div>
+            <div class="cc-swatch" data-name="Midnight" style="background:linear-gradient(135deg,#4A4060,#382840)" onclick="setCream(this,'#4A4060','#302030')"></div>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Krema Tekniği</div>
+          <div class="topping-grid">
+            <div class="tp-chip active" onclick="setTechnique(this,'Düz')"><span class="tp-icon">⬜</span><span class="tp-name">Düz</span></div>
+            <div class="tp-chip" onclick="setTechnique(this,'Naked')"><span class="tp-icon">🍰</span><span class="tp-name">Naked</span></div>
+            <div class="tp-chip" onclick="setTechnique(this,'Drip')"><span class="tp-icon">💧</span><span class="tp-name">Drip</span></div>
+            <div class="tp-chip" onclick="setTechnique(this,'Ombre')"><span class="tp-icon">🎨</span><span class="tp-name">Ombre</span></div>
+            <div class="tp-chip" onclick="setTechnique(this,'Dalgalı')"><span class="tp-icon">〰️</span><span class="tp-name">Dalgalı</span></div>
+            <div class="tp-chip" onclick="setTechnique(this,'Rustic')"><span class="tp-icon">🌾</span><span class="tp-name">Rustic</span></div>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Drip Rengi</div>
+          <div class="cream-grid">
+            <div class="cc-swatch active" data-name="Çikolata" style="background:linear-gradient(135deg,#5C2D0E,#3A1808)" onclick="setDrip(this,'#5C2D0E')"></div>
+            <div class="cc-swatch" data-name="Altın" style="background:linear-gradient(135deg,#C4934A,#A07030)" onclick="setDrip(this,'#C4934A')"></div>
+            <div class="cc-swatch" data-name="Çilek" style="background:linear-gradient(135deg,#DC143C,#A00020)" onclick="setDrip(this,'#DC143C')"></div>
+            <div class="cc-swatch" data-name="Karamel" style="background:linear-gradient(135deg,#C08040,#906020)" onclick="setDrip(this,'#C08040')"></div>
+            <div class="cc-swatch" data-name="Beyaz" style="background:linear-gradient(135deg,#FFF8DC,#F0E0A0)" onclick="setDrip(this,'#D4C060')"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: SÜSLEME -->
+      <div id="ep-susleme" style="display:none">
+        <div class="ep-section">
+          <div class="ep-section-title">Üst Süsleme</div>
+          <div class="topping-grid">
+            <div class="tp-chip active" onclick="setTopping(this,'strawberry','🍓')"><span class="tp-icon">🍓</span><span class="tp-name">Çilek</span></div>
+            <div class="tp-chip" onclick="setTopping(this,'blueberry','🫐')"><span class="tp-icon">🫐</span><span class="tp-name">Yaban Mersini</span></div>
+            <div class="tp-chip" onclick="setTopping(this,'flowers','🌸')"><span class="tp-icon">🌸</span><span class="tp-name">Yenilebilir Çiçek</span></div>
+            <div class="tp-chip" onclick="setTopping(this,'macaron','🟣')"><span class="tp-icon">🟣</span><span class="tp-name">Makaron</span></div>
+            <div class="tp-chip" onclick="setTopping(this,'choco','🍫')"><span class="tp-icon">🍫</span><span class="tp-name">Çikolata</span></div>
+            <div class="tp-chip" onclick="setTopping(this,'gold','✨')"><span class="tp-icon">✨</span><span class="tp-name">Altın Varak</span></div>
+            <div class="tp-chip" onclick="setTopping(this,'mango','🥭')"><span class="tp-icon">🥭</span><span class="tp-name">Mango</span></div>
+            <div class="tp-chip" onclick="setTopping(this,'fig','🍈')"><span class="tp-icon">🍈</span><span class="tp-name">İncir</span></div>
+            <div class="tp-chip" onclick="setTopping(this,'mixed','🎊')"><span class="tp-icon">🎊</span><span class="tp-name">Karışık</span></div>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Kenar Süsü</div>
+          <div class="topping-grid">
+            <div class="tp-chip active" onclick="setEdge(this,'Rozet')"><span class="tp-icon">🌹</span><span class="tp-name">Rozet</span></div>
+            <div class="tp-chip" onclick="setEdge(this,'İnci')"><span class="tp-icon">⚪</span><span class="tp-name">İnci Boncuk</span></div>
+            <div class="tp-chip" onclick="setEdge(this,'Rüfle')"><span class="tp-icon">🎀</span><span class="tp-name">Rüfle</span></div>
+            <div class="tp-chip" onclick="setEdge(this,'Leopar')"><span class="tp-icon">🐆</span><span class="tp-name">Leopar</span></div>
+            <div class="tp-chip" onclick="setEdge(this,'Boru')"><span class="tp-icon">🌀</span><span class="tp-name">Boru Süsü</span></div>
+            <div class="tp-chip" onclick="setEdge(this,'Yok')"><span class="tp-icon">✖️</span><span class="tp-name">Yok</span></div>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Ekstra Detaylar</div>
+          <div class="preset-tags" id="extraTags">
+            <span class="preset-tag active-tag" onclick="toggleExtra(this,'Altın Toz',50)" style="background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--brown)">✨ Altın Toz +₺50</span>
+            <span class="preset-tag" onclick="toggleExtra(this,'Gümüş İnci',40)">⚪ Gümüş İnci +₺40</span>
+            <span class="preset-tag" onclick="toggleExtra(this,'Kelebek Figurü',60)">🦋 Kelebek +₺60</span>
+            <span class="preset-tag" onclick="toggleExtra(this,'Unicorn',80)">🦄 Unicorn +₺80</span>
+            <span class="preset-tag" onclick="toggleExtra(this,'Fotoğraf Baskı',120)">📸 Fotoğraf +₺120</span>
+            <span class="preset-tag" onclick="toggleExtra(this,'Çiçek Buketi',90)">💐 Çiçek Buketi +₺90</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: YAZI -->
+      <div id="ep-yazi" style="display:none">
+        <div class="ep-section">
+          <div class="ep-section-title">Pasta Üstü Yazı</div>
+          <div class="insc-box">
+            <input class="ep-input script-input" type="text" id="inscInput" placeholder="İyi ki Doğdun Ayşe! 🎂" maxlength="30" oninput="updateInscription()">
+            <div class="char-count"><span id="inscCount">0</span>/30</div>
+            <input class="ep-input" type="text" id="nameInput" placeholder="İsim (opsiyonel)" maxlength="20" oninput="updateName()">
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Yazı Fontu</div>
+          <div class="font-row">
+            <button class="font-btn f-script active" onclick="setFont(this,'script')">Script</button>
+            <button class="font-btn f-serif" onclick="setFont(this,'serif')">Serif</button>
+            <button class="font-btn f-sans" onclick="setFont(this,'sans')">CLEAN</button>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Yazı Rengi</div>
+          <div class="cream-grid">
+            <div class="cc-swatch active" data-name="Altın" style="background:linear-gradient(135deg,#E8C47A,#C4934A)" onclick="setTextColor(this,'#E8C47A')"></div>
+            <div class="cc-swatch" data-name="Beyaz" style="background:linear-gradient(135deg,#FFF,#EEE)" onclick="setTextColor(this,'#FFFFFF')"></div>
+            <div class="cc-swatch" data-name="Koyu" style="background:linear-gradient(135deg,#3A1808,#2A0E04)" onclick="setTextColor(this,'#3A1808')"></div>
+            <div class="cc-swatch" data-name="Pembe" style="background:linear-gradient(135deg,#FF69B4,#FF1493)" onclick="setTextColor(this,'#FF69B4')"></div>
+            <div class="cc-swatch" data-name="Gümüş" style="background:linear-gradient(135deg,#E0E0E0,#A0A0A0)" onclick="setTextColor(this,'#C0C0C0')"></div>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Hazır Mesajlar</div>
+          <div class="preset-tags">
+            <span class="preset-tag" onclick="setPreset('İyi ki Doğdun! 🎂')">İyi ki Doğdun</span>
+            <span class="preset-tag" onclick="setPreset('Tebrikler! 🥂')">Tebrikler</span>
+            <span class="preset-tag" onclick="setPreset('Mutlu Yıllar ✨')">Mutlu Yıllar</span>
+            <span class="preset-tag" onclick="setPreset('Sevgilerle 💕')">Sevgilerle</span>
+            <span class="preset-tag" onclick="setPreset('Evlilik Yıldönümü 💍')">Yıldönümü</span>
+            <span class="preset-tag" onclick="setPreset('Sürpriz! 🎉')">Sürpriz</span>
+            <span class="preset-tag" onclick="setPreset('Emekliliğin Kutlu! 🎊')">Emeklilik</span>
+            <span class="preset-tag" onclick="setPreset('Hoş Geldin Bebek 👶')">Bebek</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: HEDİYE -->
+      <div id="ep-hediye" style="display:none">
+        <div class="ep-section">
+          <div class="ep-section-title">Hediye Seçenekleri</div>
+          <div class="gift-toggle" onclick="toggleGift('surprise')">
+            <div class="gift-toggle-label">🎁 Sürpriz Teslimat</div>
+            <label class="toggle-sw"><input type="checkbox" id="giftSurprise"><div class="toggle-track"></div></label>
+          </div>
+          <div class="gift-toggle" onclick="toggleGift('hidePrice')">
+            <div class="gift-toggle-label">💰 Fiyatı Gizle (Hediye Faturası)</div>
+            <label class="toggle-sw"><input type="checkbox" id="giftHidePrice"><div class="toggle-track"></div></label>
+          </div>
+          <div class="gift-toggle" onclick="toggleGift('reminder')">
+            <div class="gift-toggle-label">🔔 Özel Gün Hatırlatıcısı</div>
+            <label class="toggle-sw"><input type="checkbox" id="giftReminder"><div class="toggle-track"></div></label>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Hediye Notu</div>
+          <div class="insc-box">
+            <textarea class="ep-input" rows="3" id="giftNote" placeholder="Sevgili Ayşe, nice mutlu yıllara... 💕" maxlength="200" style="resize:none;font-family:'DM Sans',sans-serif"></textarea>
+            <div class="char-count"><span id="giftNoteCount">0</span>/200</div>
+          </div>
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">Özel Gün Tarihi</div>
+          <input class="ep-input" type="date" id="reminderDate" style="padding:12px 14px">
+        </div>
+        <div class="ep-section">
+          <div class="ep-section-title">İndirim Kuponu</div>
+          <div class="coupon-row">
+            <input class="coupon-input" type="text" id="couponInput" placeholder="SARAY2026" style="text-transform:uppercase">
+            <button class="btn btn-gold btn-sm" onclick="applyCoupon()">Uygula</button>
+          </div>
+          <div id="couponMsg" style="margin-top:8px;font-size:12px;color:var(--sage)"></div>
+        </div>
+      </div>
+
+      <!-- TAB: SİPARİŞ -->
+      <div id="ep-siparis" style="display:none">
+        <div class="ep-section">
+          <div class="ep-section-title">Sipariş Özeti</div>
+          <div id="orderSummaryBlock" style="background:var(--cream2);border-radius:12px;padding:16px;font-size:13px;color:var(--brown3);line-height:2"></div>
+        </div>
+        <div class="price-card">
+          <div class="pr-row"><span>Temel Pasta</span><span id="pr-base">₺550</span></div>
+          <div class="pr-row"><span>Kişi Çarpanı</span><span id="pr-mult">x1.0</span></div>
+          <div class="pr-row"><span>Lezzet Eklentisi</span><span id="pr-flavor">+₺0</span></div>
+          <div class="pr-row"><span>Süsleme & Ekstralar</span><span id="pr-decor">+₺50</span></div>
+          <div class="pr-row" id="pr-coupon-row" style="display:none"><span>Kupon İndirimi</span><span id="pr-coupon" style="color:#A7F3D0">-₺0</span></div>
+          <div class="pr-row total"><span>Toplam</span><span id="pr-total">₺600</span></div>
+          <button class="btn btn-gold w100" style="margin-top:16px;border-radius:12px;padding:14px" onclick="proceedToCheckout()">Siparişe Devam →</button>
+        </div>
+      </div>
+
+    </div><!-- /ep-body -->
+  </div><!-- /editor-panel -->
+</div><!-- /editor-layout -->
+</div><!-- /editor -->
+
+<!-- ══════════════════════════════════════
+     CHECKOUT
+══════════════════════════════════════ -->
+<div class="screen" id="checkout">
+<nav class="navbar">
+  <div class="nav-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI<small>Sipariş Tamamla</small></div>
+  <div class="nav-links"><button class="btn btn-outline btn-sm" onclick="goto('editor')">← Geri</button></div>
+</nav>
+<div class="checkout-layout">
+  <div>
+    <!-- Address -->
+    <div class="checkout-card">
+      <h3>📍 Teslimat Bilgileri</h3>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Ad Soyad</label><input class="form-input" id="co-name" placeholder="Ayşe Yılmaz"></div>
+        <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="co-phone" placeholder="0532 xxx xx xx"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Şehir</label>
+        <select class="form-select" id="co-city" onchange="loadVendors()">
+          <option value="">Şehir Seçin</option>
+          <option>İstanbul</option><option>Ankara</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Tam Adres</label><input class="form-input" id="co-address" placeholder="Mahalle, cadde, bina no, daire..."></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Teslimat Tarihi</label><input class="form-input" type="date" id="co-date"></div>
+        <div class="form-group"><label class="form-label">Saat Aralığı</label>
+          <select class="form-select" id="co-time">
+            <option>09:00 – 12:00</option><option>12:00 – 15:00</option>
+            <option>15:00 – 18:00</option><option>18:00 – 21:00</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vendor selection -->
+    <div class="checkout-card">
+      <h3>🏪 Firma Seç</h3>
+      <div id="vendorListArea"><p style="color:var(--brown3);font-size:14px">Lütfen önce şehir seçin.</p></div>
+    </div>
+
+    <!-- Payment -->
+    <div class="checkout-card">
+      <h3>💳 Ödeme</h3>
+      <div class="card-visual">
+        <div class="card-brand">SARAY</div>
+        <div class="card-chip"></div>
+        <div class="card-num" id="cardNumDisplay">**** **** **** ****</div>
+        <div class="card-footer">
+          <span id="cardNameDisplay">AD SOYAD</span>
+          <span id="cardExpDisplay">MM/YY</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kart Numarası</label>
+        <input class="form-input" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Kart Üzerindeki İsim</label><input class="form-input" id="cardName" placeholder="AYŞE YILMAZ" style="text-transform:uppercase" oninput="document.getElementById('cardNameDisplay').textContent=this.value||'AD SOYAD'"></div>
+        <div class="form-group"><label class="form-label">Son Kullanma</label><input class="form-input" id="cardExp" placeholder="MM/YY" maxlength="5" oninput="formatExp(this)"></div>
+      </div>
+      <div class="form-group"><label class="form-label">CVV</label><input class="form-input" id="cardCvv" placeholder="***" maxlength="3" type="password" style="max-width:100px"></div>
+    </div>
+
+    <button class="btn btn-gold btn-lg w100" onclick="placeOrder()" style="margin-top:4px">🎂 Siparişi Onayla & Öde</button>
+    <p style="text-align:center;margin-top:12px;font-size:12px;color:var(--brown3)">🔒 256-bit SSL şifreli güvenli ödeme · Firma onayından sonra tahsilat</p>
+  </div>
+
+  <!-- Summary -->
+  <div>
+    <div class="order-summary-card">
+      <div class="os-title">Sipariş Özeti</div>
+      <div class="os-cake-preview">
+        <div class="os-cake-thumb" id="checkoutThumb">🎂</div>
+        <div class="os-cake-info">
+          <h4 id="checkoutCakeName">Özel Tasarım Pasta</h4>
+          <p id="checkoutCakeDetails">Vanilyalı · 12-15 kişilik · Düz krema</p>
+        </div>
+      </div>
+      <div class="os-rows">
+        <div class="os-row"><span>Pasta</span><span id="os-base">₺550</span></div>
+        <div class="os-row"><span>Süsleme</span><span id="os-decor">+₺50</span></div>
+        <div class="os-row" id="os-coupon-row" style="display:none"><span>İndirim</span><span id="os-coupon" style="color:var(--sage)">-₺0</span></div>
+        <div class="os-row total"><span>Ödenecek Tutar</span><span id="os-total">₺600</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /checkout -->
+
+<!-- ══════════════════════════════════════
+     AUTH
+══════════════════════════════════════ -->
 <div class="screen" id="auth">
-  <div class="auth-page">
-    <div class="auth-card">
-      <div class="auth-icon-wrap">✨</div>
-      <h1 id="authTitle">Hoş Geldiniz</h1>
-      <p class="sub" id="authSub">SARAY PASTA DÜNYASI'na giriş yapın</p>
-      <div class="role-tabs-auth">
-        <button class="role-tab-auth active" onclick="setRole('customer',this)">👤 Müşteri</button>
-        <button class="role-tab-auth" onclick="setRole('bakery',this)">🏪 Pastacı</button>
-        <button class="role-tab-auth" onclick="setRole('admin',this)">🛡 Admin</button>
-      </div>
-      <div id="authError" class="error-msg" style="display:none"></div>
-      <div class="form-group" id="nameGroup" style="display:none">
-        <label class="form-label">Ad Soyad</label>
-        <div class="form-input-wrap"><span class="form-icon">👤</span><input class="form-input" type="text" id="authName" placeholder="Adınız Soyadınız"></div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">E-posta</label>
-        <div class="form-input-wrap"><span class="form-icon">✉️</span><input class="form-input" type="email" id="authEmail" placeholder="ornek@email.com"></div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Şifre</label>
-        <div class="form-input-wrap"><span class="form-icon">🔒</span><input class="form-input" type="password" id="authPassword" placeholder="••••••••"></div>
-      </div>
-      <button class="btn btn-gold btn-block" onclick="doAuth()"><span id="authBtnText">🔑 Giriş Yap</span></button>
-      <div class="auth-toggle"><span id="authToggleText">Hesabınız yok mu?</span> <a onclick="toggleAuthMode()"><span id="authToggleLink">Kayıt Olun</span></a></div>
-      <div class="auth-back"><a onclick="goto('landing')">← Ana Sayfaya Dön</a></div>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">SARAY PASTA DÜNYASI<small>Türkiye'nin En Seçkin Pasta Pazaryeri</small></div>
+    <h2 class="auth-title" id="authTitle">Hoş Geldiniz</h2>
+    <p class="auth-sub" id="authSub">Hesabınıza giriş yapın</p>
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="setRole('customer',this)">👤 Müşteri</button>
+      <button class="role-tab" onclick="setRole('bakery',this)">🏪 Firma</button>
+      <button class="role-tab" onclick="setRole('admin',this)">🛡 Admin</button>
     </div>
+    <div id="authError" style="display:none;background:#FEE2E2;border:1px solid #FECACA;color:#991B1B;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:14px"></div>
+    <div id="authSignupFields" style="display:none">
+      <div class="form-group"><div class="auth-input-wrap"><span class="auth-icon">👤</span><input class="auth-input" type="text" id="authName" placeholder="Ad Soyad"></div></div>
+    </div>
+    <div class="form-group"><div class="auth-input-wrap"><span class="auth-icon">✉️</span><input class="auth-input" type="email" id="authEmail" placeholder="E-posta adresi"></div></div>
+    <div class="form-group"><div class="auth-input-wrap"><span class="auth-icon">🔒</span><input class="auth-input" type="password" id="authPassword" placeholder="Şifreniz"></div></div>
+    <div id="couponSignup" style="display:none">
+      <div class="coupon-badge">🎁 Yeni üyelere %10 ilk sipariş indirimi!</div>
+    </div>
+    <button class="btn btn-gold btn-block" onclick="doAuth()"><span id="authBtnTxt">🔑 Giriş Yap</span></button>
+    <div class="auth-divider">veya</div>
+    <button class="btn btn-dark btn-block" onclick="quickDemo()">⚡ Demo ile Hızlı Giriş</button>
+    <div class="auth-toggle" style="margin-top:16px"><span id="authToggleTxt">Hesabın yok mu?</span> <a onclick="toggleAuth()"><span id="authToggleLink">Kayıt Ol</span></a></div>
+    <div class="auth-back"><a onclick="goto('landing')">← Ana sayfaya dön</a></div>
   </div>
 </div>
+</div>
 
-<!-- CUSTOMER DASH -->
+<!-- ══════════════════════════════════════
+     CUSTOMER DASHBOARD
+══════════════════════════════════════ -->
 <div class="screen" id="customer-dash">
-  <header class="dash-header">
-    <div class="dash-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI</div>
-    <div style="display:flex;gap:10px;align-items:center">
-      <button class="btn btn-gold btn-sm" onclick="goto('catalog')">Yeni Sipariş</button>
-      <button class="btn btn-outline btn-sm" onclick="logout()">Çıkış</button>
-    </div>
-  </header>
-  <div class="dash-body">
-    <div class="welcome-banner">
-      <div class="welcome-avatar">👤</div>
-      <div class="welcome-text"><h1 id="customerName">Hoş Geldiniz</h1><p>Müşteri Paneli</p></div>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:rgba(255,182,193,.2)">🛍</div><div class="stat-info"><p id="cTotal">0</p><p>Toplam Sipariş</p></div></div>
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:#FEF3C7">⏳</div><div class="stat-info"><p id="cPending">0</p><p>Bekleyen</p></div></div>
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:#D1FAE5">✅</div><div class="stat-info"><p id="cDone">0</p><p>Tamamlanan</p></div></div>
-    </div>
-    <div class="panel-card">
-      <div class="panel-card-header"><h2>Siparişlerim</h2></div>
-      <div class="panel-card-body" id="customerOrders"></div>
+<header class="dash-header">
+  <div class="dash-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI</div>
+  <div class="flex gap12">
+    <button class="btn btn-gold btn-sm" onclick="goto('catalog')">+ Yeni Sipariş</button>
+    <button class="btn btn-outline btn-sm" onclick="logout()">Çıkış</button>
+  </div>
+</header>
+<div class="dash-body">
+  <div class="welcome-card">
+    <div class="welcome-avatar">👤</div>
+    <div class="welcome-text">
+      <h1 id="custWelcome">Hoş Geldiniz!</h1>
+      <p>Müşteri Paneli · Siparişlerinizi yönetin</p>
     </div>
   </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(201,168,76,.12)">🛍</div><div><div class="stat-value" id="cs-total">0</div><div class="stat-label">Toplam Sipariş</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#FEF3C7">⏳</div><div><div class="stat-value" id="cs-pending">0</div><div class="stat-label">Bekleyen</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">✅</div><div><div class="stat-value" id="cs-done">0</div><div class="stat-label">Tamamlanan</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(196,127,138,.15)">⭐</div><div><div class="stat-value" id="cs-fav">0</div><div class="stat-label">Favori</div></div></div>
+  </div>
+  <div class="dash-tabs">
+    <button class="dash-tab active" onclick="custTab('orders',this)">📦 Siparişlerim</button>
+    <button class="dash-tab" onclick="custTab('favorites',this)">❤️ Favoriler</button>
+    <button class="dash-tab" onclick="custTab('reviews',this)">⭐ Yorumlarım</button>
+    <button class="dash-tab" onclick="custTab('reminder',this)">🔔 Hatırlatıcılar</button>
+  </div>
+  <div id="custContent"></div>
+</div>
 </div>
 
-<!-- BAKERY DASH -->
+<!-- ══════════════════════════════════════
+     BAKERY DASHBOARD
+══════════════════════════════════════ -->
 <div class="screen" id="bakery-dash">
-  <header class="dash-header">
-    <div class="dash-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI</div>
-    <button class="btn btn-outline btn-sm" onclick="logout()">Çıkış</button>
-  </header>
-  <div class="dash-body">
-    <div class="welcome-banner">
-      <div class="welcome-avatar">🏪</div>
-      <div class="welcome-text"><h1 id="bakeryName">Pastacı Paneli</h1><p>Firma Yönetim Paneli</p></div>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:rgba(255,182,193,.2)">📦</div><div class="stat-info"><p id="bTotal">0</p><p>Toplam Sipariş</p></div></div>
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:#FEF3C7">⏳</div><div class="stat-info"><p id="bPending">0</p><p>Bekleyen</p></div></div>
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:#D1FAE5">✅</div><div class="stat-info"><p id="bDone">0</p><p>Tamamlanan</p></div></div>
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:#F0FDF4">💰</div><div class="stat-info"><p id="bRev">₺0</p><p>Bu Ay Ciro</p></div></div>
-    </div>
-    <div class="panel-card">
-      <div class="panel-card-header"><h2>Gelen Siparişler</h2><span style="font-size:12px;color:var(--brown-light)">Onaylayın veya reddedin</span></div>
-      <div class="panel-card-body" id="bakeryOrders"></div>
+<header class="dash-header">
+  <div class="dash-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI</div>
+  <button class="btn btn-outline btn-sm" onclick="logout()">Çıkış</button>
+</header>
+<div class="dash-body">
+  <div class="welcome-card">
+    <div class="welcome-avatar">🏪</div>
+    <div class="welcome-text">
+      <h1 id="bakeryWelcome">Firma Paneli</h1>
+      <p>Siparişleri yönetin · Ürün ekleyin · Takvimi düzenleyin</p>
     </div>
   </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(201,168,76,.12)">📦</div><div><div class="stat-value" id="bk-total">0</div><div class="stat-label">Toplam Sipariş</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#FEF3C7">⏳</div><div><div class="stat-value" id="bk-pending">0</div><div class="stat-label">Bekleyen</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">✅</div><div><div class="stat-value" id="bk-done">0</div><div class="stat-label">Tamamlanan</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#F0FDF4">💰</div><div><div class="stat-value" id="bk-rev">₺0</div><div class="stat-label">Bu Ay Ciro</div></div></div>
+  </div>
+  <div class="dash-tabs">
+    <button class="dash-tab active" onclick="bakTab('orders',this)">📦 Siparişler</button>
+    <button class="dash-tab" onclick="bakTab('products',this)">🎂 Ürünlerim</button>
+    <button class="dash-tab" onclick="bakTab('calendar',this)">📅 Takvim</button>
+    <button class="dash-tab" onclick="bakTab('messages',this)">💬 Mesajlar</button>
+    <button class="dash-tab" onclick="bakTab('earnings',this)">💰 Kazanç</button>
+  </div>
+  <div id="bakContent"></div>
+</div>
 </div>
 
-<!-- ADMIN DASH -->
+<!-- ══════════════════════════════════════
+     ADMIN DASHBOARD
+══════════════════════════════════════ -->
 <div class="screen" id="admin-dash">
-  <header class="dash-header">
-    <div class="dash-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI</div>
-    <button class="btn btn-outline btn-sm" onclick="logout()">Çıkış</button>
-  </header>
-  <div class="dash-body">
-    <div class="welcome-banner">
-      <div class="welcome-avatar">🛡</div>
-      <div class="welcome-text"><h1>Yönetici Paneli</h1><p>Platform Genel İstatistikleri</p></div>
+<header class="dash-header">
+  <div class="dash-logo" onclick="goto('landing')">SARAY PASTA DÜNYASI</div>
+  <button class="btn btn-outline btn-sm" onclick="logout()">Çıkış</button>
+</header>
+<div class="dash-body">
+  <div class="welcome-card">
+    <div class="welcome-avatar">🛡</div>
+    <div class="welcome-text"><h1>Yönetici Paneli</h1><p>Platform geneli istatistikler ve yönetim</p></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-icon" style="background:#DBEAFE">🏪</div><div><div class="stat-value" id="ad-firms">8</div><div class="stat-label">Aktif Firma</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(201,168,76,.12)">👥</div><div><div class="stat-value">247</div><div class="stat-label">Toplam Üye</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#FEF3C7">📦</div><div><div class="stat-value" id="ad-orders">0</div><div class="stat-label">Toplam Sipariş</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">💰</div><div><div class="stat-value" id="ad-rev">₺0</div><div class="stat-label">Platform Geliri</div></div></div>
+  </div>
+  <div class="dash-tabs">
+    <button class="dash-tab active" onclick="adminTab('firms',this)">🏪 Firmalar</button>
+    <button class="dash-tab" onclick="adminTab('orders',this)">📦 Siparişler</button>
+    <button class="dash-tab" onclick="adminTab('commission',this)">💰 Komisyon</button>
+    <button class="dash-tab" onclick="adminTab('reviews',this)">⭐ Yorumlar</button>
+  </div>
+  <div id="adminContent"></div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SUCCESS MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal" style="text-align:center">
+    <div style="font-size:64px;margin-bottom:16px">🎉</div>
+    <h2>Siparişiniz Alındı!</h2>
+    <p style="color:var(--brown3);font-size:15px;line-height:1.7;margin-bottom:20px">Firma bildirim aldı ve en kısa sürede onay verecek. Sipariş durumunuzu takip edebilirsiniz.</p>
+    <div style="background:var(--cream2);border-radius:12px;padding:16px;margin-bottom:20px">
+      <div style="font-size:13px;color:var(--brown3)">Sipariş No</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--gold)" id="orderNumDisplay">#SPD-0000</div>
     </div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:#DBEAFE">🏪</div><div class="stat-info"><p id="aFirms">8</p><p>Aktif Firma</p></div></div>
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:rgba(255,182,193,.2)">👥</div><div class="stat-info"><p>124</p><p>Toplam Üye</p></div></div>
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:#FEF3C7">📦</div><div class="stat-info"><p id="aOrders">0</p><p>Toplam Sipariş</p></div></div>
-      <div class="stat-card"><div class="stat-icon-wrap" style="background:#D1FAE5">💰</div><div class="stat-info"><p id="aRev">₺0</p><p>Platform Geliri (%15)</p></div></div>
-    </div>
-    <div style="display:flex;gap:6px;margin-bottom:20px;background:#fff;padding:6px;border-radius:14px;box-shadow:var(--shadow);width:fit-content">
-      <button class="btn btn-gold btn-sm" id="tabF" onclick="adminTab('firms',this)">🏪 Firmalar</button>
-      <button class="btn btn-sm" id="tabO" onclick="adminTab('orders',this)" style="background:var(--cream);color:var(--brown)">📦 Siparişler</button>
-      <button class="btn btn-sm" id="tabC" onclick="adminTab('commission',this)" style="background:var(--cream);color:var(--brown)">💰 Komisyon</button>
-    </div>
-    <div id="adminContent"></div>
+    <button class="btn btn-gold w100" onclick="closeModal();goto('customer-dash')">📦 Siparişimi Takip Et</button>
+    <button class="btn btn-outline w100" style="margin-top:8px" onclick="closeModal();goto('landing')">Ana Sayfaya Dön</button>
   </div>
 </div>
 
 <script>
-const CATALOG=[
-  {id:1,name:'Çikolatalı Doğum Günü Pastası',img:'https://cdn.abacus.ai/images/50327022-23c0-4f27-b3c4-99a2bead6c8e.png',shape:'Yuvarlak',price:450},
-  {id:2,name:'Çilekli Kremalı Pasta',img:'https://cdn.abacus.ai/images/079430c6-bba5-4c40-84c1-b2d41981c0e1.png',shape:'Yuvarlak',price:420},
-  {id:3,name:'Vanilyalı Kutlama Pastası',img:'https://cdn.abacus.ai/images/d33cb075-7221-4f19-8e11-04b4821cde40.png',shape:'Kare',price:400},
-  {id:4,name:'Red Velvet Pasta',img:'https://cdn.abacus.ai/images/f1f3403d-64f7-41e4-88a2-00c59abdf360.png',shape:'Yuvarlak',price:480},
-  {id:5,name:'Karamelli Pasta',img:'https://cdn.abacus.ai/images/e8753ad6-35da-4ab9-ac76-bd50b92e32d8.png',shape:'Dikdörtgen',price:460},
-  {id:6,name:'Black Forest Pasta',img:'https://cdn.abacus.ai/images/57561f6d-e0c4-4b94-9c6a-9a6621f45ae8.png',shape:'Yuvarlak',price:490},
-  {id:7,name:'Meyveli Süslü Pasta',img:'https://cdn.abacus.ai/images/e5491751-68bd-4202-98b0-5c509b8e2103.png',shape:'Yuvarlak',price:520},
-  {id:8,name:'Gökkuşağı Pasta',img:'https://cdn.abacus.ai/images/e2f8e562-b993-44af-a877-58cec92e33ca.png',shape:'Yuvarlak',price:500},
-  {id:9,name:'Tiramisu Pasta',img:'https://cdn.abacus.ai/images/5e003849-6cb9-4bea-b838-c10f385c132a.png',shape:'Kare',price:440},
-  {id:10,name:'Cheesecake',img:'https://cdn.abacus.ai/images/ad617020-026d-48e6-a8c7-338ca5e09922.png',shape:'Yuvarlak',price:430},
-  {id:11,name:'Çikolatalı Mousse Pasta',img:'https://cdn.abacus.ai/images/10008313-9a1b-463f-961b-f7b555397ba1.png',shape:'Dikdörtgen',price:470},
-  {id:12,name:'Özel Tasarım Pasta',img:'https://cdn.abacus.ai/images/508bbdfc-9824-4676-b08c-830d21ce7ef1.png',shape:'Yuvarlak',price:550},
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const CATALOG_DATA = [
+  {id:1,name:'Çikolatalı Doğum Günü Pastası',img:'https://cdn.abacus.ai/images/50327022-23c0-4f27-b3c4-99a2bead6c8e.png',cat:'doğum',price:450,rating:4.9,shape:'Yuvarlak'},
+  {id:2,name:'Çilekli Kremalı Pasta',img:'https://cdn.abacus.ai/images/079430c6-bba5-4c40-84c1-b2d41981c0e1.png',cat:'meyve',price:420,rating:4.8,shape:'Yuvarlak'},
+  {id:3,name:'Vanilyalı Kutlama Pastası',img:'https://cdn.abacus.ai/images/d33cb075-7221-4f19-8e11-04b4821cde40.png',cat:'doğum',price:400,rating:4.7,shape:'Kare'},
+  {id:4,name:'Red Velvet Pasta',img:'https://cdn.abacus.ai/images/f1f3403d-64f7-41e4-88a2-00c59abdf360.png',cat:'özel',price:480,rating:4.9,shape:'Yuvarlak'},
+  {id:5,name:'Karamelli Pasta',img:'https://cdn.abacus.ai/images/e8753ad6-35da-4ab9-ac76-bd50b92e32d8.png',cat:'özel',price:460,rating:4.6,shape:'Dikdörtgen'},
+  {id:6,name:'Black Forest Pasta',img:'https://cdn.abacus.ai/images/57561f6d-e0c4-4b94-9c6a-9a6621f45ae8.png',cat:'çikolata',price:490,rating:4.8,shape:'Yuvarlak'},
+  {id:7,name:'Meyveli Süslü Pasta',img:'https://cdn.abacus.ai/images/e5491751-68bd-4202-98b0-5c509b8e2103.png',cat:'meyve',price:520,rating:4.9,shape:'Yuvarlak'},
+  {id:8,name:'Gökkuşağı Pasta',img:'https://cdn.abacus.ai/images/e2f8e562-b993-44af-a877-58cec92e33ca.png',cat:'doğum',price:500,rating:4.7,shape:'Yuvarlak'},
+  {id:9,name:'Tiramisu Pasta',img:'https://cdn.abacus.ai/images/5e003849-6cb9-4bea-b838-c10f385c132a.png',cat:'özel',price:440,rating:4.8,shape:'Kare'},
+  {id:10,name:'Cheesecake',img:'https://cdn.abacus.ai/images/ad617020-026d-48e6-a8c7-338ca5e09922.png',cat:'özel',price:430,rating:4.6,shape:'Yuvarlak'},
+  {id:11,name:'Çikolatalı Mousse',img:'https://cdn.abacus.ai/images/10008313-9a1b-463f-961b-f7b555397ba1.png',cat:'çikolata',price:470,rating:4.7,shape:'Dikdörtgen'},
+  {id:12,name:'Düğün Pastası',img:'https://cdn.abacus.ai/images/dcd98002-b3f0-4c99-abf5-1f9020b01518.png',cat:'düğün',price:850,rating:5.0,shape:'3 Katlı'},
 ];
-const FIRMS=[
-  {id:'f1',name:'Pembe Mutfak',city:'İstanbul',rating:4.9,active:true},
-  {id:'f2',name:'Lezzet Atölyesi',city:'İstanbul',rating:4.7,active:true},
-  {id:'f3',name:'Şeker Rüyası',city:'Ankara',rating:4.8,active:true},
-  {id:'f4',name:'Başkent Pasta',city:'Ankara',rating:4.6,active:false},
-  {id:'f5',name:'Ege Pastacılık',city:'İstanbul',rating:4.5,active:true},
+
+const VENDORS = {
+  'İstanbul':[
+    {id:'v1',name:'Pembe Mutfak',emoji:'🩷',rating:4.9,reviews:218,delivery:'2-4 saat',priceRange:'₺350–₺1200',city:'İstanbul'},
+    {id:'v2',name:'Şeker Rüyası',emoji:'🌸',rating:4.8,reviews:156,delivery:'1-3 saat',priceRange:'₺400–₺1500',city:'İstanbul'},
+    {id:'v3',name:'Lezzet Atölyesi',emoji:'🍰',rating:4.7,reviews:98,delivery:'3-5 saat',priceRange:'₺280–₺900',city:'İstanbul'},
+  ],
+  'Ankara':[
+    {id:'v4',name:'Başkent Pasta',emoji:'🎂',rating:4.6,reviews:67,delivery:'2-4 saat',priceRange:'₺300–₺950',city:'Ankara'},
+    {id:'v5',name:'Doğal Lezzet',emoji:'🌿',rating:4.8,reviews:89,delivery:'2-3 saat',priceRange:'₺320–₺1100',city:'Ankara'},
+  ]
+};
+
+let ORDERS = [
+  {id:'SPD-2401',cake:'Çikolatalı Doğum Günü Pastası',customer:'Ayşe K.',date:'17 Mar 2026',amount:500,status:'pending',vendorId:'v1',inscription:'İyi ki Doğdun!'},
+  {id:'SPD-2400',cake:'Red Velvet Pasta',customer:'Mehmet T.',date:'16 Mar 2026',amount:530,status:'confirmed',vendorId:'v2',inscription:'Tebrikler'},
+  {id:'SPD-2399',cake:'Tiramisu Pasta',customer:'Fatma S.',date:'15 Mar 2026',amount:490,status:'delivered',vendorId:'v1',inscription:'Sevgilerle'},
 ];
-let ORDERS=[
-  {id:'SPD-2401',cake:'Çikolatalı Doğum Günü Pastası',customer:'Ayşe Kaya',date:'17 Mar 2026',amount:500,status:'pending',vendorId:'f1'},
-  {id:'SPD-2400',cake:'Red Velvet Pasta',customer:'Mehmet Yılmaz',date:'16 Mar 2026',amount:530,status:'confirmed',vendorId:'f1'},
-  {id:'SPD-2399',cake:'Tiramisu Pasta',customer:'Fatma Şahin',date:'15 Mar 2026',amount:490,status:'delivered',vendorId:'f2'},
-  {id:'SPD-2398',cake:'Black Forest Pasta',customer:'Ali Demir',date:'14 Mar 2026',amount:540,status:'cancelled',vendorId:'f3'},
+
+let FAVORITES = [
+  {id:4,name:'Red Velvet Pasta',img:'https://cdn.abacus.ai/images/f1f3403d-64f7-41e4-88a2-00c59abdf360.png',price:480},
+  {id:7,name:'Meyveli Süslü Pasta',img:'https://cdn.abacus.ai/images/e5491751-68bd-4202-98b0-5c509b8e2103.png',price:520},
 ];
-let currentUser=null,authMode='login',selectedRole='customer';
-function goto(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));const el=document.getElementById(s);if(el)el.classList.add('active');window.scrollTo(0,0);if(s==='catalog')renderCatalog();if(s==='customer-dash')renderCustomerDash();if(s==='bakery-dash')renderBakeryDash();if(s==='admin-dash')renderAdminDash();}
+
+const MESSAGES = [
+  {from:'them',text:'Merhaba! Siparişinizi aldık, onaylıyoruz.',time:'14:32'},
+  {from:'me',text:'Harika, teşekkürler! Teslimat saati kesinleşince haber verir misiniz?',time:'14:35'},
+  {from:'them',text:'Tabii, sizi arayacağız. Pasta 18:00 civarı hazır olacak.',time:'14:37'},
+];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let S = {
+  serving:'12-15',size:'26cm',servingMult:1.4,
+  shape:'round',flavor:'Vanilyalı',flavorExtra:0,
+  cream1:'#FFFFFF',cream2:'#F5F0EB',
+  technique:'Düz',dripColor:'#5C2D0E',
+  topping:'strawberry',edge:'Rozet',
+  extras:{},extraTotal:50,
+  inscription:'',name:'',
+  font:'script',textColor:'#E8C47A',
+  basePrice:550,coupon:0,
+  giftSurprise:false,giftHidePrice:false,giftReminder:false,
+};
+let currentUser=null,authMode='login',selectedRole='customer',selectedVendor=null;
+const servingMap={'4-6':{label:'4-6 kişilik',size:'18cm',mult:0.8},'8-10':{label:'8-10 kişilik',size:'22cm',mult:1.0},'12-15':{label:'12-15 kişilik',size:'26cm',mult:1.4},'20-25':{label:'20-25 kişilik',size:'30cm',mult:2.0},'30+':{label:'30+ kişilik',size:'35cm',mult:2.8}};
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function goto(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='catalog')renderCatalog();
+  if(id==='customer-dash')renderCustomerDash();
+  if(id==='bakery-dash')renderBakeryDash();
+  if(id==='admin-dash')renderAdminDash();
+  if(id==='checkout'){setDefaultDate();updateOrderSummaryBlock();}
+}
 function gotoAuth(m){authMode=m;updateAuthUI();goto('auth');}
-function logout(){currentUser=null;showToast('👋 Çıkış yapıldı');goto('landing');}
-function renderCatalog(){document.getElementById('catalogGrid').innerHTML=CATALOG.map(c=>`<div class="catalog-card" onclick="gotoAuth('login')"><div class="catalog-card-img"><img src="${c.img}" alt="${c.name}" loading="lazy"></div><div class="catalog-card-body"><h3>${c.name}</h3><div class="catalog-card-footer"><span class="catalog-shape">${c.shape}</span><span class="catalog-price">${c.price} TL</span></div><button class="btn btn-gold btn-block" style="margin-top:12px;border-radius:10px;padding:10px">Sipariş Ver</button></div></div>`).join('');}
-function setRole(r,btn){selectedRole=r;document.querySelectorAll('.role-tab-auth').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
-function updateAuthUI(){const l=authMode==='login';document.getElementById('authTitle').textContent=l?'Hoş Geldiniz':'Hesap Oluşturun';document.getElementById('authSub').textContent=l?"SARAY PASTA DÜNYASI'na giriş yapın":'Hemen üye olun, sipariş verin';document.getElementById('authBtnText').textContent=l?'🔑 Giriş Yap':'🎂 Kayıt Ol';document.getElementById('authToggleText').textContent=l?'Hesabınız yok mu?':'Zaten hesabınız var mı?';document.getElementById('authToggleLink').textContent=l?'Kayıt Olun':'Giriş Yapın';document.getElementById('nameGroup').style.display=l?'none':'block';document.getElementById('authError').style.display='none';}
-function toggleAuthMode(){authMode=authMode==='login'?'signup':'login';updateAuthUI();}
-function doAuth(){const email=document.getElementById('authEmail').value,pass=document.getElementById('authPassword').value;if(!email||!pass){const e=document.getElementById('authError');e.textContent='Lütfen tüm alanları doldurun.';e.style.display='block';return;}const name=document.getElementById('authName').value||email.split('@')[0];currentUser={name,email,role:selectedRole};showToast(authMode==='login'?'✅ Giriş yapıldı!':'🎉 Hesap oluşturuldu!');if(selectedRole==='customer')goto('customer-dash');else if(selectedRole==='bakery')goto('bakery-dash');else goto('admin-dash');}
-function renderCustomerDash(){document.getElementById('customerName').textContent='Hoş Geldiniz, '+(currentUser?.name||'Müşteri');document.getElementById('cTotal').textContent=ORDERS.length;document.getElementById('cPending').textContent=ORDERS.filter(o=>o.status==='pending').length;document.getElementById('cDone').textContent=ORDERS.filter(o=>o.status==='delivered').length;document.getElementById('customerOrders').innerHTML=ORDERS.length?ORDERS.map(o=>`<div class="order-item"><div class="order-item-header"><span>${o.id} — ${o.cake}</span><span class="status-badge status-${o.status}">${statusLabel(o.status)}</span></div><div class="order-item-meta"><span>💰 ${o.amount} TL</span><span>📅 ${o.date}</span></div></div>`).join(''):`<div class="empty-state"><span class="empty-icon">🛍</span><h3>Henüz sipariş yok</h3><p>İlk siparişinizi verin</p><button class="btn btn-gold" onclick="goto('catalog')">Kataloğa Git →</button></div>`;}
-function renderBakeryDash(){document.getElementById('bakeryName').textContent=currentUser?.name||'Pastacı Paneli';document.getElementById('bTotal').textContent=ORDERS.length;document.getElementById('bPending').textContent=ORDERS.filter(o=>o.status==='pending').length;document.getElementById('bDone').textContent=ORDERS.filter(o=>o.status==='delivered').length;document.getElementById('bRev').textContent='₺'+ORDERS.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+o.amount,0).toLocaleString();document.getElementById('bakeryOrders').innerHTML=ORDERS.map(o=>`<div class="order-item"><div class="order-item-header"><span>${o.id} — ${o.cake}</span><span class="status-badge status-${o.status}">${statusLabel(o.status)}</span></div><div class="order-item-meta"><span>👤 ${o.customer}</span><span>💰 ${o.amount} TL</span><span>📅 ${o.date}</span></div>${o.status==='pending'?`<div class="order-actions"><button class="btn-approve" onclick="approveOrder('${o.id}')">✓ Onayla</button><button class="btn-reject" onclick="rejectOrder('${o.id}')">✕ Reddet</button></div>`:''}</div>`).join('');}
-function approveOrder(id){const o=ORDERS.find(x=>x.id===id);if(o){o.status='confirmed';showToast('✅ Sipariş onaylandı!');renderBakeryDash();}}
-function rejectOrder(id){const o=ORDERS.find(x=>x.id===id);if(o){o.status='cancelled';showToast('❌ Sipariş reddedildi.');renderBakeryDash();}}
-function renderAdminDash(){document.getElementById('aOrders').textContent=ORDERS.length;const rev=ORDERS.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+o.amount,0);document.getElementById('aRev').textContent='₺'+Math.round(rev*.15).toLocaleString();adminTab('firms',document.getElementById('tabF'));}
-function adminTab(tab,btn){['tabF','tabO','tabC'].forEach(id=>{const b=document.getElementById(id);b.style.background='var(--cream)';b.style.color='var(--brown)';});btn.style.background='var(--gold)';btn.style.color='#fff';const c=document.getElementById('adminContent');if(tab==='firms'){c.innerHTML=`<div class="panel-card"><div class="panel-card-header"><h2>Firma Yönetimi</h2></div><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>#</th><th>Firma</th><th>Şehir</th><th>Puan</th><th>Durum</th></tr></thead><tbody>${FIRMS.map((f,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${f.name}</td><td>${f.city}</td><td>⭐ ${f.rating}</td><td><label class="toggle"><input type="checkbox" ${f.active?'checked':''} onchange="toggleFirm('${f.id}',this.checked)"><div class="toggle-track"></div></label></td></tr>`).join('')}</tbody></table></div></div>`;}else if(tab==='orders'){c.innerHTML=`<div class="panel-card"><div class="panel-card-header"><h2>Tüm Siparişler</h2></div><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>Sipariş</th><th>Pasta</th><th>Müşteri</th><th>Tarih</th><th>Tutar</th><th>Durum</th></tr></thead><tbody>${ORDERS.map(o=>`<tr><td style="font-weight:600">${o.id}</td><td>${o.cake}</td><td>${o.customer}</td><td>${o.date}</td><td>₺${o.amount}</td><td><span class="status-badge status-${o.status}">${statusLabel(o.status)}</span></td></tr>`).join('')}</tbody></table></div></div>`;}else{c.innerHTML=`<div class="panel-card"><div class="panel-card-header"><h2>Komisyon Ayarları</h2></div><div class="panel-card-body"><div style="margin-bottom:24px"><label style="font-weight:600;color:var(--brown);display:block;margin-bottom:8px">Genel Komisyon Oranı: <strong style="color:var(--gold)" id="cLbl">%15</strong></label><input type="range" min="5" max="35" value="15" style="width:100%;accent-color:var(--gold)" oninput="updateComm(this.value)"></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;background:var(--cream);border-radius:14px;padding:20px"><div style="text-align:center"><p style="font-size:28px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif" id="cPct">%15</p><p style="font-size:12px;color:var(--brown-light)">Oran</p></div><div style="text-align:center"><p style="font-size:28px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif" id="cEx">₺75</p><p style="font-size:12px;color:var(--brown-light)">₺500'den komisyon</p></div><div style="text-align:center"><p style="font-size:28px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif" id="cMon">₺3.675</p><p style="font-size:12px;color:var(--brown-light)">Bu ay tahmini</p></div></div><button class="btn btn-gold" style="margin-top:20px" onclick="showToast('✅ Komisyon oranı kaydedildi!')">Kaydet</button></div></div>`;}}
-function updateComm(v){document.getElementById('cLbl').textContent='%'+v;document.getElementById('cPct').textContent='%'+v;document.getElementById('cEx').textContent='₺'+Math.round(500*v/100);document.getElementById('cMon').textContent='₺'+Math.round(24500*v/100).toLocaleString();}
-function toggleFirm(id,a){const f=FIRMS.find(x=>x.id===id);if(f){f.active=a;showToast(a?'✅ Firma aktif edildi':'⏸ Firma durduruldu');}}
+function gotoEditor(){goto('editor');setTimeout(()=>updatePrice(),100);}
+function logout(){currentUser=null;toast('👋 Çıkış yapıldı');goto('landing');}
+
+// ═══════════════════════════════════════════
+// CATALOG RENDER
+// ═══════════════════════════════════════════
+let currentFilter='all';
+function renderCatalog(filter){
+  if(filter)currentFilter=filter;
+  const data=currentFilter==='all'?CATALOG_DATA:CATALOG_DATA.filter(c=>c.cat===currentFilter||c.name.toLowerCase().includes(currentFilter));
+  const grid=document.getElementById('mainCatalogGrid');
+  if(grid)grid.innerHTML=data.map(c=>catalogCardHTML(c)).join('');
+}
+function filterCatalog(f,btn){
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCatalog(f);
+}
+function catalogCardHTML(c){
+  const isFav=FAVORITES.some(f=>f.id===c.id);
+  return`<div class="showcase-card">
+    <div class="showcase-card-img">
+      <button class="card-fav ${isFav?'active':''}" onclick="toggleFav(event,${c.id})">${isFav?'❤️':'🤍'}</button>
+      ${c.price>800?'<div class="card-badge">Premium</div>':''}
+      <img src="${c.img}" alt="${c.name}" loading="lazy">
+    </div>
+    <div class="showcase-card-body">
+      <h3>${c.name}</h3>
+      <div class="card-meta">
+        <span class="card-rating">⭐ ${c.rating} · ${c.shape}</span>
+        <span class="card-price">₺${c.price}</span>
+      </div>
+      <button class="btn btn-gold w100" style="border-radius:10px;padding:10px" onclick="orderCatalogItem(${c.id})">Sipariş Ver</button>
+    </div>
+  </div>`;
+}
+function renderShowcase(){
+  const grid=document.getElementById('showcaseGrid');
+  if(grid)grid.innerHTML=CATALOG_DATA.slice(0,8).map(c=>catalogCardHTML(c)).join('');
+}
+function toggleFav(e,id){
+  e.stopPropagation();
+  const idx=FAVORITES.findIndex(f=>f.id===id);
+  if(idx>-1){FAVORITES.splice(idx,1);toast('❤️ Favorilerden çıkarıldı');}
+  else{const c=CATALOG_DATA.find(c=>c.id===id);if(c)FAVORITES.push(c);toast('❤️ Favorilere eklendi!');}
+  renderCatalog();
+}
+function orderCatalogItem(id){
+  if(!currentUser){gotoAuth('login');return;}
+  toast('🎂 Pasta seçildi, siparişe devam edin');
+  proceedToCheckout();
+}
+
+// ═══════════════════════════════════════════
+// EDITOR
+// ═══════════════════════════════════════════
+function epTab(tab,btn){
+  ['temel','krema','susleme','yazi','hediye','siparis'].forEach(t=>{
+    const el=document.getElementById('ep-'+t);
+    if(el)el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('.ep-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(tab==='siparis')updateOrderSummaryBlock();
+}
+
+function setServing(btn,key,size){
+  S.serving=key;const m=servingMap[key];
+  S.size=m.size;S.servingMult=m.mult;
+  document.querySelectorAll('.sv-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('servingLabel').textContent=m.label;
+  document.getElementById('sizeLabel').textContent=m.size;
+  updatePrice();
+}
+
+function setShape(btn,shape){
+  S.shape=shape;
+  document.querySelectorAll('.sh-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const el=document.getElementById('cakeEllipse');
+  if(shape==='round'){el.setAttribute('rx','145');el.setAttribute('ry','145');el.setAttribute('cx','180');el.setAttribute('cy','180');}
+  else if(shape==='square'){el.setAttribute('rx','130');el.setAttribute('ry','130');el.setAttribute('cx','180');el.setAttribute('cy','180');}
+  else if(shape==='rect'){el.setAttribute('rx','155');el.setAttribute('ry','110');el.setAttribute('cx','180');el.setAttribute('cy','190');}
+  else if(shape==='heart'){el.setAttribute('rx','130');el.setAttribute('ry','130');}
+  toast('🎂 '+btn.querySelector('.sh-name').textContent+' şekli seçildi');
+}
+
+function setFlavor(el,name,extra){
+  S.flavor=name;S.flavorExtra=extra;
+  document.querySelectorAll('#ep-temel .tp-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  updatePrice();toast('😋 '+name+' lezzeti seçildi');
+}
+
+function setCream(el,c1,c2){
+  S.cream1=c1;S.cream2=c2;
+  document.querySelectorAll('#ep-krema .cc-swatch').forEach(s=>{if(s.parentElement.parentElement.querySelector('.ep-section-title').textContent.includes('Krema Rengi'))s.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('topGrad1').setAttribute('stop-color',c1);
+  document.getElementById('topGrad2').setAttribute('stop-color',c2);
+  toast('🎨 Krema rengi güncellendi');
+}
+
+function setTechnique(el,t){
+  S.technique=t;
+  document.querySelectorAll('#ep-krema .tp-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const drip=document.getElementById('dripGroup');
+  drip.style.opacity=t==='Drip'?'1':t==='Naked'?'0':'0.85';
+  toast('✨ '+t+' tekniği seçildi');
+}
+
+function setDrip(el,color){
+  S.dripColor=color;
+  el.parentElement.querySelectorAll('.cc-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#dripGroup path').forEach(p=>p.setAttribute('stroke',color));
+}
+
+const toppingEmojis={strawberry:'🍓',blueberry:'🫐',flowers:'🌸',macaron:'🟣',choco:'🍫',gold:'✨',mango:'🥭',fig:'🍈',mixed:'🎊'};
+function setTopping(el,type,emoji){
+  S.topping=type;
+  document.querySelectorAll('#ep-susleme .ep-section:first-child .tp-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const center=document.querySelector('#topViewCake text:last-of-type');
+  document.querySelector('#topViewCake text[font-size="28"]').textContent=emoji||'🎂';
+  toast('🍓 '+el.querySelector('.tp-name').textContent+' süsleme seçildi');
+}
+
+function setEdge(el,e){
+  S.edge=e;
+  document.querySelectorAll('#ep-susleme .ep-section:nth-child(2) .tp-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleExtra(el,name,price){
+  if(S.extras[name]){delete S.extras[name];el.style.background='';el.style.borderColor='transparent';el.style.color='';}
+  else{S.extras[name]=price;el.style.background='rgba(201,168,76,.1)';el.style.borderColor='var(--gold)';el.style.color='var(--brown)';}
+  S.extraTotal=50+Object.values(S.extras).reduce((a,b)=>a+b,0);
+  updatePrice();
+}
+
+function updateInscription(){
+  const v=document.getElementById('inscInput').value;
+  S.inscription=v;
+  document.getElementById('inscCount').textContent=v.length;
+  const el=document.getElementById('svgInscription');
+  el.textContent=v||'İyi ki Doğdun!';
+}
+
+function updateName(){S.name=document.getElementById('nameInput').value;}
+
+function setFont(btn,font){
+  S.font=font;
+  document.querySelectorAll('.font-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const el=document.getElementById('svgInscription');
+  const fonts={script:"'Petit Formal Script',cursive",serif:"'Cormorant Garamond',serif",sans:"'DM Sans',sans-serif"};
+  el.style.fontFamily=fonts[font];
+  el.setAttribute('font-size',font==='script'?'16':font==='serif'?'15':'13');
+}
+
+function setTextColor(el,color){
+  S.textColor=color;
+  el.parentElement.querySelectorAll('.cc-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('svgInscription').setAttribute('fill',color);
+}
+
+function setPreset(text){
+  document.getElementById('inscInput').value=text;
+  S.inscription=text;
+  document.getElementById('inscCount').textContent=text.length;
+  document.getElementById('svgInscription').textContent=text;
+  document.getElementById('svgInscription').setAttribute('fill',S.textColor);
+  toast('✍️ Hazır mesaj uygulandı');
+}
+
+function toggleGift(id){
+  const cb=document.getElementById('gift'+id.charAt(0).toUpperCase()+id.slice(1));
+  if(cb)cb.checked=!cb.checked;
+}
+
+document.getElementById('giftNote')?.addEventListener('input',function(){
+  document.getElementById('giftNoteCount').textContent=this.value.length;
+});
+
+function applyCoupon(){
+  const code=document.getElementById('couponInput').value.trim().toUpperCase();
+  const codes={'SARAY2026':10,'ILKSIPARIS':15,'HEDIYE20':20};
+  if(codes[code]){
+    const pct=codes[code];S.coupon=pct;
+    document.getElementById('couponMsg').textContent='✅ %'+pct+' indirim uygulandı!';
+    document.getElementById('pr-coupon-row').style.display='flex';
+    document.getElementById('os-coupon-row').style.display='flex';
+    updatePrice();toast('🎉 Kupon uygulandı: %'+pct+' indirim!');
+  }else{document.getElementById('couponMsg').textContent='❌ Geçersiz kupon kodu.';document.getElementById('couponMsg').style.color='#DC2626';}
+}
+
+function updatePrice(){
+  const base=S.basePrice;
+  const mult=S.servingMult;
+  const raw=Math.round(base*mult+S.flavorExtra+S.extraTotal);
+  const disc=S.coupon?Math.round(raw*S.coupon/100):0;
+  const total=raw-disc;
+  document.getElementById('pr-base').textContent='₺'+base;
+  document.getElementById('pr-mult').textContent='x'+mult.toFixed(1);
+  document.getElementById('pr-flavor').textContent='+₺'+S.flavorExtra;
+  document.getElementById('pr-decor').textContent='+₺'+S.extraTotal;
+  document.getElementById('pr-coupon').textContent='-₺'+disc;
+  document.getElementById('pr-total').textContent='₺'+total;
+  document.getElementById('os-base').textContent='₺'+Math.round(base*mult+S.flavorExtra);
+  document.getElementById('os-decor').textContent='+₺'+S.extraTotal;
+  document.getElementById('os-coupon').textContent='-₺'+disc;
+  document.getElementById('os-total').textContent='₺'+total;
+}
+
+function updateOrderSummaryBlock(){
+  updatePrice();
+  const extras=Object.keys(S.extras);
+  document.getElementById('orderSummaryBlock').innerHTML=`
+    <div>🎂 <strong>${S.flavor}</strong> pasta · ${S.serving} kişilik (${S.size})</div>
+    <div>🎨 ${S.technique} krema · Kenar: ${S.edge}</div>
+    <div>🍓 ${S.topping} süsleme</div>
+    <div>✍️ "${S.inscription||'İyi ki Doğdun!'}"</div>
+    ${extras.length?'<div>✨ Ekstralar: '+extras.join(', ')+'</div>':''}
+  `;
+  document.getElementById('checkoutCakeName').textContent=(S.inscription||'Özel Tasarım')+' Pasta';
+  document.getElementById('checkoutCakeDetails').textContent=S.flavor+' · '+S.serving+' kişilik · '+S.technique+' krema';
+}
+
+function proceedToCheckout(){
+  if(!currentUser){gotoAuth('login');return;}
+  updateOrderSummaryBlock();
+  goto('checkout');
+}
+
+// ═══════════════════════════════════════════
+// CHECKOUT
+// ═══════════════════════════════════════════
+function setDefaultDate(){
+  const d=new Date();d.setDate(d.getDate()+2);
+  const el=document.getElementById('co-date');
+  if(el)el.valueAsDate=d;
+}
+
+function loadVendors(){
+  const city=document.getElementById('co-city').value;
+  const vendors=VENDORS[city]||[];
+  const area=document.getElementById('vendorListArea');
+  if(!vendors.length){area.innerHTML='<p style="color:var(--brown3);font-size:14px">Bu şehirde henüz firma yok.</p>';return;}
+  area.innerHTML=vendors.map(v=>`
+    <div class="vendor-card ${selectedVendor===v.id?'selected':''}" onclick="selectVendor('${v.id}',this)">
+      <div class="vendor-avatar">${v.emoji}</div>
+      <div class="vendor-info">
+        <div class="vendor-name">${v.name}</div>
+        <div class="vendor-meta"><span>⭐ ${v.rating}</span><span>💬 ${v.reviews} yorum</span><span>📍 ${v.city}</span></div>
+      </div>
+      <div class="vendor-right">
+        <div class="vendor-eta">🚀 ${v.delivery}</div>
+        <div class="vendor-range">${v.priceRange}</div>
+        <button class="vendor-select-btn">${selectedVendor===v.id?'✓ Seçildi':'Seç'}</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectVendor(id,card){
+  selectedVendor=id;
+  document.querySelectorAll('.vendor-card').forEach(c=>{c.classList.remove('selected');c.querySelector('.vendor-select-btn').textContent='Seç';});
+  card.classList.add('selected');
+  card.querySelector('.vendor-select-btn').textContent='✓ Seçildi';
+  toast('🏪 Firma seçildi');
+}
+
+function formatCard(el){
+  let v=el.value.replace(/\D/g,'').slice(0,16);
+  el.value=v.replace(/(.{4})/g,'$1 ').trim();
+  const masked=v?v.replace(/(.{4})/g,'$1 ').trim():'**** **** **** ****';
+  document.getElementById('cardNumDisplay').textContent=masked.length>4?masked.slice(0,masked.length-4).replace(/\d/g,'*')+masked.slice(-4):'**** **** **** ****';
+}
+
+function formatExp(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>=2)v=v.slice(0,2)+'/'+v.slice(2,4);
+  el.value=v;
+  document.getElementById('cardExpDisplay').textContent=v||'MM/YY';
+}
+
+function placeOrder(){
+  const name=document.getElementById('co-name').value;
+  const address=document.getElementById('co-address').value;
+  if(!name||!address){toast('❗ Lütfen teslimat bilgilerini doldurun');return;}
+  if(!selectedVendor){toast('❗ Lütfen bir firma seçin');return;}
+  const cardNum=document.getElementById('cardNum').value;
+  if(!cardNum||cardNum.replace(/\s/g,'').length<16){toast('❗ Geçerli bir kart numarası girin');return;}
+
+  const orderId='SPD-'+Math.floor(2400+Math.random()*100);
+  ORDERS.unshift({
+    id:orderId,cake:S.inscription||'Özel Pasta',customer:currentUser?.name||'Müşteri',
+    date:new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'short',year:'numeric'}),
+    amount:parseInt(document.getElementById('pr-total').textContent.replace('₺','')),
+    status:'pending',vendorId:selectedVendor,inscription:S.inscription
+  });
+  document.getElementById('orderNumDisplay').textContent=orderId;
+  document.getElementById('successModal').classList.add('open');
+}
+
+function closeModal(){document.getElementById('successModal').classList.remove('open');}
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+function setRole(role,btn){
+  selectedRole=role;
+  document.querySelectorAll('.role-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('couponSignup').style.display=(role==='customer'&&authMode==='signup')?'block':'none';
+}
+
+function updateAuthUI(){
+  const isL=authMode==='login';
+  document.getElementById('authTitle').textContent=isL?'Hoş Geldiniz':'Hesap Oluşturun';
+  document.getElementById('authSub').textContent=isL?'Hesabınıza giriş yapın':'Hemen üye olun';
+  document.getElementById('authBtnTxt').textContent=isL?'🔑 Giriş Yap':'🎂 Kayıt Ol';
+  document.getElementById('authToggleTxt').textContent=isL?'Hesabın yok mu?':'Zaten hesabın var mı?';
+  document.getElementById('authToggleLink').textContent=isL?'Kayıt Ol':'Giriş Yap';
+  document.getElementById('authSignupFields').style.display=isL?'none':'block';
+  document.getElementById('couponSignup').style.display=(!isL&&selectedRole==='customer')?'block':'none';
+  document.getElementById('authError').style.display='none';
+}
+
+function toggleAuth(){
+  authMode=authMode==='login'?'signup':'login';
+  updateAuthUI();
+}
+
+function doAuth(){
+  const email=document.getElementById('authEmail').value;
+  const pass=document.getElementById('authPassword').value;
+  if(!email||!pass){
+    const e=document.getElementById('authError');
+    e.textContent='Lütfen tüm alanları doldurun.';e.style.display='block';return;
+  }
+  const name=document.getElementById('authName').value||email.split('@')[0];
+  currentUser={name,email,role:selectedRole};
+  toast(authMode==='login'?'✅ Giriş yapıldı!':'🎉 Hoş geldiniz, '+name+'!');
+  if(selectedRole==='customer')goto('customer-dash');
+  else if(selectedRole==='bakery')goto('bakery-dash');
+  else goto('admin-dash');
+}
+
+function quickDemo(){
+  const demos={'customer':{name:'Demo Müşteri',email:'musteri@demo.com',role:'customer'},'bakery':{name:'Pembe Mutfak',email:'firma@demo.com',role:'bakery'},'admin':{name:'Admin',email:'admin@demo.com',role:'admin'}};
+  currentUser=demos[selectedRole]||demos.customer;
+  toast('⚡ Demo girişi yapıldı!');
+  if(currentUser.role==='customer')goto('customer-dash');
+  else if(currentUser.role==='bakery')goto('bakery-dash');
+  else goto('admin-dash');
+}
+
+// ═══════════════════════════════════════════
+// CUSTOMER DASHBOARD
+// ═══════════════════════════════════════════
+function renderCustomerDash(){
+  document.getElementById('custWelcome').textContent='Hoş Geldiniz, '+(currentUser?.name||'Müşteri')+'!';
+  document.getElementById('cs-total').textContent=ORDERS.length;
+  document.getElementById('cs-pending').textContent=ORDERS.filter(o=>o.status==='pending').length;
+  document.getElementById('cs-done').textContent=ORDERS.filter(o=>o.status==='delivered').length;
+  document.getElementById('cs-fav').textContent=FAVORITES.length;
+  custTab('orders',document.querySelector('#customer-dash .dash-tab'));
+}
+
+function custTab(tab,btn){
+  document.querySelectorAll('#customer-dash .dash-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const c=document.getElementById('custContent');
+  if(tab==='orders'){
+    c.innerHTML=ORDERS.length?ORDERS.map(o=>orderRowHTML(o,true)).join(''):`<div class="empty-state"><span class="empty-icon">🛍</span><h3>Henüz sipariş yok</h3><p>İlk siparişinizi verin!</p><button class="btn btn-gold" onclick="goto('catalog')">Kataloğa Git →</button></div>`;
+  }else if(tab==='favorites'){
+    c.innerHTML=FAVORITES.length?`<div class="catalog-grid">${FAVORITES.map(f=>`<div class="showcase-card"><div class="showcase-card-img"><img src="${f.img}" alt="${f.name}" loading="lazy"></div><div class="showcase-card-body"><h3>${f.name}</h3><div class="card-meta"><span class="card-price">₺${f.price}</span></div><button class="btn btn-gold w100" style="border-radius:10px;padding:10px" onclick="proceedToCheckout()">Tekrar Sipariş</button></div></div>`).join('')}</div>`:`<div class="empty-state"><span class="empty-icon">❤️</span><h3>Favori yok</h3><p>Beğendiğiniz pastalar burada görünür.</p></div>`;
+  }else if(tab==='reviews'){
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Değerlendirmelerim</h2></div><div class="panel-body">
+      <div class="review-card"><div class="review-header"><div class="review-name">Çikolatalı Pasta</div><div class="review-date">15 Mar 2026</div></div><div style="color:var(--gold);margin-bottom:6px">★★★★★</div><p class="review-text">"Muhteşemdi, tam istediğim gibi geldi!"</p></div>
+      <div style="margin-top:20px"><div class="ep-section-title">Yeni Değerlendirme</div><div class="star-rating" id="starRating">${[1,2,3,4,5].map(i=>`<span class="star" onclick="rateStar(${i})">★</span>`).join('')}</div><textarea class="ep-input" style="margin-top:10px;resize:none;width:100%" rows="3" placeholder="Deneyiminizi paylaşın..."></textarea><button class="btn btn-gold btn-sm" style="margin-top:8px" onclick="toast('⭐ Yorumunuz gönderildi!')">Gönder</button></div>
+    </div></div>`;
+  }else if(tab==='reminder'){
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Özel Gün Hatırlatıcıları</h2><button class="btn btn-gold btn-sm" onclick="toast('➕ Hatırlatıcı eklendi!')">+ Ekle</button></div><div class="panel-body">
+      <div class="order-row"><div class="order-row-head"><div><div class="order-cake">🎂 Ayşe'nin Doğum Günü</div><div class="order-meta"><span>📅 15 Nisan 2026</span><span>🔔 7 gün önce bildir</span></div></div><span class="badge badge-confirmed">Aktif</span></div></div>
+      <div class="order-row"><div class="order-row-head"><div><div class="order-cake">💍 Evlilik Yıldönümü</div><div class="order-meta"><span>📅 22 Mayıs 2026</span><span>🔔 14 gün önce bildir</span></div></div><span class="badge badge-confirmed">Aktif</span></div></div>
+    </div></div>`;
+  }
+}
+
+function rateStar(n){
+  document.querySelectorAll('#starRating .star').forEach((s,i)=>{s.classList.toggle('active',i<n);});
+}
+
+function orderRowHTML(o,showTrack=false){
+  const stepN={pending:0,confirmed:1,preparing:2,delivered:3};
+  const sn=stepN[o.status]??0;
+  const pct=sn/3*100;
+  return`<div class="panel-card"><div class="panel-head"><div><div class="order-id">${o.id}</div><div class="order-cake">${o.cake}</div></div><span class="badge badge-${o.status}">${statusLabel(o.status)}</span></div>
+    <div class="panel-body">
+      ${o.inscription?`<p style="font-size:13px;color:var(--brown3);margin-bottom:12px;font-style:italic">"${o.inscription}"</p>`:''}
+      <div class="order-meta" style="margin-bottom:12px"><span>💰 ${o.amount} TL</span><span>📅 ${o.date}</span><span>👤 ${o.customer}</span></div>
+      ${showTrack&&o.status!=='cancelled'?`<div class="progress-track">
+        <div class="steps">
+          <div class="step-fill" style="width:calc(${pct}% - 32px + ${sn>0?16:0}px)"></div>
+          ${['📋 Sipariş','✅ Onaylandı','👩‍🍳 Hazırlanıyor','🚀 Teslim'].map((s,i)=>`<div class="step-item ${i<sn?'done':i===sn?'active':''}"><div class="step-dot">${i<sn?'✓':s.split(' ')[0]}</div><div class="step-label">${s.split(' ').slice(1).join(' ')}</div></div>`).join('')}
+        </div>
+      </div>`:''}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// BAKERY DASHBOARD
+// ═══════════════════════════════════════════
+function renderBakeryDash(){
+  document.getElementById('bakeryWelcome').textContent=(currentUser?.name||'Firma')+" Paneli";
+  document.getElementById('bk-total').textContent=ORDERS.length;
+  document.getElementById('bk-pending').textContent=ORDERS.filter(o=>o.status==='pending').length;
+  document.getElementById('bk-done').textContent=ORDERS.filter(o=>o.status==='delivered').length;
+  const rev=ORDERS.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+o.amount,0);
+  document.getElementById('bk-rev').textContent='₺'+rev.toLocaleString('tr-TR');
+  bakTab('orders',document.querySelector('#bakery-dash .dash-tab'));
+}
+
+function bakTab(tab,btn){
+  document.querySelectorAll('#bakery-dash .dash-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const c=document.getElementById('bakContent');
+
+  if(tab==='orders'){
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Gelen Siparişler</h2></div><div class="panel-body">${
+      ORDERS.map(o=>`<div class="order-row">
+        <div class="order-row-head"><div><div class="order-id">${o.id}</div><div class="order-cake">${o.cake}</div></div><span class="badge badge-${o.status}">${statusLabel(o.status)}</span></div>
+        <div class="order-meta"><span>👤 ${o.customer}</span><span>💰 ${o.amount} TL</span><span>📅 ${o.date}</span></div>
+        ${o.status==='pending'?`<div class="order-actions"><button class="btn-approve" onclick="approveOrder('${o.id}')">✓ Onayla</button><button class="btn-reject" onclick="rejectOrder('${o.id}')">✕ Reddet</button><button class="btn btn-outline btn-sm" onclick="bakTab('messages',null)">💬 Mesaj</button></div>`:''}
+      </div>`).join('')
+    }</div></div>`;
+  }else if(tab==='products'){
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Ürünlerim</h2><button class="btn btn-gold btn-sm" onclick="toast('➕ Ürün ekleme sayfası açılıyor...')">+ Ürün Ekle</button></div><div class="panel-body">
+      ${CATALOG_DATA.slice(0,4).map(c=>`<div class="order-row"><div class="order-row-head"><div style="display:flex;align-items:center;gap:12px"><img src="${c.img}" style="width:48px;height:48px;border-radius:10px;object-fit:cover"><div><div class="order-cake">${c.name}</div><div class="order-meta"><span>₺${c.price}</span><span>⭐ ${c.rating}</span></div></div></div><div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="toast('✏️ Ürün düzenleniyor...')">Düzenle</button><button class="btn-reject" onclick="toast('🗑 Ürün silindi')">Sil</button></div></div></div>`).join('')}
+    </div></div>`;
+  }else if(tab==='calendar'){
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Teslimat Takvimi — Mart 2026</h2></div><div class="panel-body">
+      <div class="cal-header">${['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'].map(d=>`<div class="cal-day-name">${d}</div>`).join('')}</div>
+      <div class="cal-grid">${generateCalendar()}</div>
+      <div style="display:flex;gap:14px;margin-top:14px;font-size:12px;color:var(--brown3)"><span><span style="width:12px;height:12px;background:var(--cream3);border-radius:3px;display:inline-block;margin-right:4px"></span>Meşgul</span><span><span style="width:12px;height:12px;background:var(--gold);border-radius:3px;display:inline-block;margin-right:4px"></span>Seçili</span><span><span style="width:12px;height:12px;border:2px solid var(--rose2);border-radius:3px;display:inline-block;margin-right:4px"></span>Bugün</span></div>
+    </div></div>`;
+  }else if(tab==='messages'){
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Müşteri Mesajları</h2></div><div class="panel-body">
+      <div style="margin-bottom:12px;font-size:13px;font-weight:600;color:var(--brown)">SPD-2401 · Ayşe K.</div>
+      <div class="msg-thread">${MESSAGES.map(m=>`<div class="msg-bubble ${m.from}"><div>${m.text}</div><div class="msg-time">${m.time}</div></div>`).join('')}</div>
+      <div class="msg-input-row"><input class="msg-input" id="msgInput" placeholder="Mesajınızı yazın..." onkeypress="if(event.key==='Enter')sendMsg()"><button class="btn btn-gold btn-sm" onclick="sendMsg()">Gönder</button></div>
+    </div></div>`;
+  }else if(tab==='earnings'){
+    const rev=ORDERS.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+o.amount,0);
+    const comm=Math.round(rev*0.15);
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Kazanç Raporu</h2></div><div class="panel-body">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">💰</div><div><div class="stat-value">₺${rev.toLocaleString()}</div><div class="stat-label">Brüt Ciro</div></div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#FEE2E2">📊</div><div><div class="stat-value">₺${comm.toLocaleString()}</div><div class="stat-label">Platform Komisyonu (%15)</div></div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(201,168,76,.12)">🏆</div><div><div class="stat-value">₺${(rev-comm).toLocaleString()}</div><div class="stat-label">Net Kazanç</div></div></div>
+      </div>
+      <div style="background:var(--cream2);border-radius:12px;padding:16px;margin-top:8px">
+        <div style="font-size:13px;font-weight:700;color:var(--brown);margin-bottom:10px">Sipariş Detayları</div>
+        ${ORDERS.filter(o=>o.status!=='cancelled').map(o=>`<div style="display:flex;justify-content:space-between;font-size:13px;color:var(--brown3);padding:6px 0;border-bottom:1px solid var(--cream3)"><span>${o.id} · ${o.cake}</span><span style="color:var(--brown);font-weight:600">₺${o.amount}</span></div>`).join('')}
+      </div>
+    </div></div>`;
+  }
+}
+
+function sendMsg(){
+  const inp=document.getElementById('msgInput');
+  if(!inp||!inp.value.trim())return;
+  MESSAGES.push({from:'me',text:inp.value.trim(),time:new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})});
+  inp.value='';
+  bakTab('messages',null);
+  setTimeout(()=>{const t=document.querySelector('.msg-thread');if(t)t.scrollTop=t.scrollHeight;},100);
+}
+
+function generateCalendar(){
+  const days=[];const busy=[5,10,15,18,22,25];const selected=[17,20,24];
+  for(let i=0;i<1;i++)days.push(`<div class="cal-day empty"></div>`);
+  for(let d=1;d<=31;d++){
+    const isB=busy.includes(d),isSel=selected.includes(d),isT=d===17;
+    days.push(`<div class="cal-day ${isB?'busy':''} ${isSel?'selected':''} ${isT?'today':!isB?'available':''}" onclick="${!isB?`toggleCalDay(this,${d})`:'return'}">${d}</div>`);
+  }
+  return days.join('');
+}
+
+function toggleCalDay(el,d){
+  el.classList.toggle('selected');
+  toast(el.classList.contains('selected')?`📅 ${d} Mart müsait olarak işaretlendi`:`📅 ${d} Mart müsaitlik kaldırıldı`);
+}
+
+function approveOrder(id){
+  const o=ORDERS.find(x=>x.id===id);if(o){o.status='confirmed';toast('✅ Sipariş onaylandı! Müşteriye bildirim gönderildi.');bakTab('orders',null);}
+}
+function rejectOrder(id){
+  const o=ORDERS.find(x=>x.id===id);if(o){o.status='cancelled';toast('❌ Sipariş reddedildi.');bakTab('orders',null);}
+}
+
+// ═══════════════════════════════════════════
+// ADMIN DASHBOARD
+// ═══════════════════════════════════════════
+function renderAdminDash(){
+  document.getElementById('ad-orders').textContent=ORDERS.length;
+  const rev=ORDERS.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+o.amount,0);
+  document.getElementById('ad-rev').textContent='₺'+Math.round(rev*.15).toLocaleString('tr-TR');
+  adminTab('firms',document.querySelector('#admin-dash .dash-tab'));
+}
+
+let commRate=15;
+function adminTab(tab,btn){
+  document.querySelectorAll('#admin-dash .dash-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const c=document.getElementById('adminContent');
+  if(tab==='firms'){
+    const firms=[
+      {name:'Pembe Mutfak',city:'İstanbul',rating:4.9,orders:12,active:true},
+      {name:'Şeker Rüyası',city:'İstanbul',rating:4.8,orders:8,active:true},
+      {name:'Lezzet Atölyesi',city:'İstanbul',rating:4.7,orders:5,active:true},
+      {name:'Başkent Pasta',city:'Ankara',rating:4.6,orders:7,active:false},
+      {name:'Doğal Lezzet',city:'Ankara',rating:4.8,orders:9,active:true},
+    ];
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Firma Yönetimi</h2><button class="btn btn-gold btn-sm" onclick="toast('➕ Firma davet edildi!')">+ Firma Davet Et</button></div><div style="overflow-x:auto"><table class="admin-tbl">
+      <thead><tr><th>#</th><th>Firma</th><th>Şehir</th><th>Puan</th><th>Sipariş</th><th>Aktif</th></tr></thead>
+      <tbody>${firms.map((f,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${f.name}</td><td>${f.city}</td><td>⭐ ${f.rating}</td><td>${f.orders}</td><td><label class="toggle-sw"><input type="checkbox" ${f.active?'checked':''} onchange="toast(this.checked?'✅ Firma aktif edildi':'⏸ Firma durduruldu')"><div class="toggle-track"></div></label></td></tr>`).join('')}
+      </tbody></table></div></div>`;
+  }else if(tab==='orders'){
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Tüm Siparişler</h2></div><div style="overflow-x:auto"><table class="admin-tbl">
+      <thead><tr><th>Sipariş</th><th>Pasta</th><th>Müşteri</th><th>Tarih</th><th>Tutar</th><th>Durum</th></tr></thead>
+      <tbody>${ORDERS.map(o=>`<tr><td style="font-weight:700">${o.id}</td><td>${o.cake}</td><td>${o.customer}</td><td>${o.date}</td><td>₺${o.amount}</td><td><span class="badge badge-${o.status}">${statusLabel(o.status)}</span></td></tr>`).join('')}
+      </tbody></table></div></div>`;
+  }else if(tab==='commission'){
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Komisyon Ayarları</h2></div><div class="panel-body">
+      <div style="margin-bottom:16px"><label style="font-weight:700;color:var(--brown);font-size:14px">Genel Komisyon Oranı: <strong style="color:var(--gold)" id="commLbl">%${commRate}</strong></label>
+      <input type="range" class="comm-slider" min="5" max="40" value="${commRate}" oninput="updateComm(this.value)"></div>
+      <div class="comm-preview">
+        <div class="comm-item"><div class="comm-value" id="cPct">%${commRate}</div><div class="comm-label">Oran</div></div>
+        <div class="comm-item"><div class="comm-value" id="cEx">₺${Math.round(500*commRate/100)}</div><div class="comm-label">₺500'den komisyon</div></div>
+        <div class="comm-item"><div class="comm-value" id="cMon">₺${Math.round(24500*commRate/100).toLocaleString()}</div><div class="comm-label">Bu ay tahmini</div></div>
+      </div>
+      <button class="btn btn-gold" style="margin-top:16px" onclick="toast('✅ Komisyon oranı kaydedildi!')">Kaydet</button>
+    </div></div>`;
+  }else if(tab==='reviews'){
+    c.innerHTML=`<div class="panel-card"><div class="panel-head"><h2>Müşteri Yorumları</h2></div><div class="panel-body">
+      <div class="review-card"><div class="review-header"><div class="review-name">Ayşe K. · Pembe Mutfak</div><div class="review-date">17 Mar 2026</div></div><div style="color:var(--gold);margin-bottom:6px">★★★★★</div><p class="review-text">"Pasta tam hayal ettiğim gibiydi!"</p></div>
+      <div class="review-card"><div class="review-header"><div class="review-name">Mehmet T. · Şeker Rüyası</div><div class="review-date">16 Mar 2026</div></div><div style="color:var(--gold);margin-bottom:6px">★★★★☆</div><p class="review-text">"Güzeldi ama teslimat biraz geç oldu."</p></div>
+    </div></div>`;
+  }
+}
+
+function updateComm(v){
+  commRate=parseInt(v);
+  document.getElementById('commLbl').textContent='%'+v;
+  document.getElementById('cPct').textContent='%'+v;
+  document.getElementById('cEx').textContent='₺'+Math.round(500*v/100);
+  document.getElementById('cMon').textContent='₺'+Math.round(24500*v/100).toLocaleString('tr-TR');
+}
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
 function statusLabel(s){return{pending:'Bekliyor',confirmed:'Onaylandı',preparing:'Hazırlanıyor',ready:'Hazır',delivered:'Teslim Edildi',cancelled:'İptal Edildi'}[s]||s;}
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800);}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+renderShowcase();
 renderCatalog();
+updateAuthUI();
+updatePrice();
 </script>
 </body>
 </html>
