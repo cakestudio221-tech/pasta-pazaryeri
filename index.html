@@ -1,147 +1,1515 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saray Patisserie — Bespoke Artisan Cakes</title>
-<meta name="description" content="Türkiye'nin en seçkin pastacılarından lüks, ısmarlama pastalar.">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
---bg:#0a0908;--card:#141210;--border:#2a2520;
---primary-h:43;--primary-s:52%;--primary-l:53%;
---primary:hsl(43,52%,53%);--primary-fg:#0a0908;
---fg:#f5f0e8;--muted:#8a8070;--secondary:#1c1a16;
---radius:16px;
-}
-body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden}
-h1,h2,h3,.display{font-family:'Playfair Display',serif}
-.label{font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:600;color:var(--primary)}
-.loc-overlay{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.loc-overlay h1{font-size:28px;font-style:italic;margin-bottom:8px;text-align:center}
-.loc-overlay p{color:var(--muted);font-size:13px;margin-bottom:32px;text-align:center}
-.loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;max-width:400px;max-height:50vh;overflow-y:auto;padding:4px}
-.loc-btn{padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--fg);font-size:13px;font-family:'Montserrat',sans-serif;cursor:pointer;transition:all .2s;text-align:left}
-.loc-btn:hover,.loc-btn.active{border-color:var(--primary);background:hsla(43,52%,53%,.08)}
-.loc-back{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-bottom:16px;font-family:'Montserrat',sans-serif}
-.app{min-height:100vh;padding-bottom:80px}
-.topbar{padding:16px 24px 12px;display:flex;align-items:center;justify-content:space-between}
-.topbar-loc{display:flex;align-items:center;gap:8px;cursor:pointer;background:none;border:none;color:var(--fg)}
-.topbar-loc small{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);display:block}
-.topbar-loc span{font-size:13px;font-weight:600}
-.avatar{width:32px;height:32px;border-radius:50%;background:var(--secondary);display:flex;align-items:center;justify-content:center;border:1px solid var(--border);font-family:'Playfair Display',serif;font-style:italic;color:var(--primary);font-size:12px}
-.hero{margin:8px 24px 0;border-radius:20px;overflow:hidden;position:relative;aspect-ratio:16/10}
-.hero img{width:100%;height:100%;object-fit:cover}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,var(--bg),rgba(10,9,8,.4),transparent)}
-.hero-content{position:absolute;bottom:0;left:0;right:0;padding:24px}
-.hero-content h2{font-size:24px;font-style:italic;line-height:1.2;margin-top:8px}
-.hero-btn{margin-top:16px;padding:12px 24px;background:var(--primary);color:var(--primary-fg);border:none;border-radius:50px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;font-family:'Montserrat',sans-serif}
-.section-header{padding:0 24px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.section-header h2{font-size:20px}
-.see-all{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);font-weight:600;cursor:pointer;background:none;border:none}
-.carousel{display:flex;gap:16px;padding:0 24px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.carousel::-webkit-scrollbar{display:none}
-.carousel .card{min-width:85vw;max-width:400px;scroll-snap-align:center;flex-shrink:0}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.card img{width:100%;aspect-ratio:4/5;object-fit:cover}
-.card.grid-card img{aspect-ratio:1/1}
-.card-body{padding:16px}
-.card-body h3{font-size:16px;margin-bottom:4px;font-family:'Playfair Display',serif}
-.card-body .desc{font-size:12px;color:var(--muted);margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card-meta{display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:16px}
-.card-meta svg{width:14px;height:14px;vertical-align:middle;margin-right:2px}
-.card-footer{display:flex;align-items:center;justify-content:space-between}
-.card-vendor{font-size:11px;color:var(--muted)}
-.card-price{font-size:18px;font-family:'Playfair Display',serif;color:var(--primary)}
-.card-order{padding:10px 20px;background:var(--primary);color:var(--primary-fg);border:none;border-radius:50px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;cursor:pointer;font-family:'Montserrat',sans-serif}
-.card.grid-card .card-body{padding:12px}
-.card.grid-card .card-body h3{font-size:13px}
-.card.grid-card .card-price{font-size:15px}
-.rating-badge{position:absolute;top:12px;right:12px;background:rgba(10,9,8,.7);backdrop-filter:blur(8px);padding:4px 8px;border-radius:50px;font-size:11px;display:flex;align-items:center;gap:4px}
-.rating-badge .star{color:var(--primary)}
-.cat-bar{display:flex;gap:8px;padding:12px 24px;overflow-x:auto}
-.cat-bar::-webkit-scrollbar{display:none}
-.cat-btn{padding:8px 18px;border-radius:50px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;white-space:nowrap;font-family:'Montserrat',sans-serif;transition:all .2s}
-.cat-btn.active{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
-.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 24px}
-.product-grid .card{position:relative}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,18,16,.9);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom));z-index:50}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--muted);cursor:pointer;font-family:'Montserrat',sans-serif;font-size:9px;text-transform:uppercase;letter-spacing:1px}
-.nav-item.active{color:var(--primary)}
-.nav-item svg{width:20px;height:20px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>SARAY PATİSSERİE — Türkiye'nin Elite Pasta Marketi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --black: #0F0E0C;
+            --gold: #D4AF37;
+            --white: #FCFBF8;
+            --glass: rgba(212, 175, 55, 0.05);
+            --border: 0.5px solid rgba(212, 175, 55, 0.3);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        h1, h2, h3, .logo {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* ===== TOP NAVIGATION ===== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(15, 14, 12, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #D4AF37, #F4E5A1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .top-icons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .icon-btn:active {
+            transform: scale(0.9);
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--gold);
+            color: var(--black);
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        /* ===== LOCATION SELECTOR ===== */
+        .location-bar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: var(--black);
+            border-bottom: var(--border);
+            padding: 12px 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 999;
+        }
+
+        .location-bar select {
+            flex: 1;
+            background: var(--glass);
+            border: var(--border);
+            color: var(--white);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .location-bar select option {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-top: 128px;
+            padding: 0 20px 20px;
+        }
+
+        /* ===== HERO BANNER ===== */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(15, 14, 12, 0.8)),
+                        url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1600&q=90');
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            padding: 60px 30px;
+            text-align: center;
+            margin-bottom: 32px;
+            border: var(--border);
+        }
+
+        .hero-banner h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .hero-banner p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 24px;
+        }
+
+        .btn-hero {
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-hero:active {
+            transform: scale(0.95);
+        }
+
+        /* ===== CATEGORIES ===== */
+        .categories {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            margin-bottom: 32px;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-pill {
+            background: var(--glass);
+            border: var(--border);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-pill.active {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        /* ===== PRODUCTS GRID ===== */
+        .products-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr;
+        }
+
+        .product-card {
+            background: var(--glass);
+            border: var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .product-image {
+            width: 100%;
+            aspect-ratio: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .product-card:active .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--gold);
+            color: var(--black);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .product-info {
+            padding: 16px;
+        }
+
+        .vendor-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .vendor-name {
+            font-size: 12px;
+            opacity: 0.7;
+            font-weight: 500;
+        }
+
+        .vendor-rating {
+            font-size: 12px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .product-features {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .feature-tag {
+            background: rgba(212, 175, 55, 0.1);
+            border: 0.5px solid rgba(212, 175, 55, 0.3);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        .delivery-time {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .btn-add {
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-add:active {
+            transform: scale(0.9);
+        }
+
+        /* ===== BOTTOM NAVIGATION ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(15, 14, 12, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 8px 12px;
+        }
+
+        .nav-item.active {
+            color: var(--gold);
+        }
+
+        .nav-item:active {
+            transform: scale(0.9);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* ===== MODALS ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--black);
+            border: var(--border);
+            border-radius: 24px;
+            padding: 32px 24px;
+            max-width: 420px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .btn-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--glass);
+            border: var(--border);
+            color: var(--white);
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-input::placeholder {
+            color: rgba(252, 251, 248, 0.4);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .link-text {
+            color: var(--gold);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* ===== STUDIO CANVAS ===== */
+        .studio-container {
+            padding: 20px;
+        }
+
+        .studio-header {
+            margin-bottom: 20px;
+        }
+
+        .studio-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .studio-tab {
+            flex: 1;
+            background: var(--glass);
+            border: var(--border);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .studio-tab.active {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--glass);
+            border: var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #designCanvas {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+        }
+
+        #threeDPreview {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        .studio-tools {
+            display: grid;
+            gap: 16px;
+        }
+
+        .tool-section {
+            background: var(--glass);
+            border: var(--border);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .tool-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .base-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .base-option {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .base-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .base-option.active {
+            border-color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        .size-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .size-btn {
+            background: var(--glass);
+            border: var(--border);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .size-btn.active {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        .text-controls {
+            display: grid;
+            gap: 12px;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .color-option.active {
+            border-color: var(--gold);
+            transform: scale(1.1);
+        }
+
+        /* ===== CART DRAWER ===== */
+        .cart-drawer {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background: var(--black);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            border: var(--border);
+            padding: 24px;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1500;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .cart-drawer.open {
+            bottom: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            background: var(--glass);
+            border: var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-total {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: var(--border);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .total-row.grand {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-<div id="app"></div>
-<script>
-const PRODUCTS=[
-{id:"1",name:"Altın Yaprak Ganache",desc:"24 ayar yenilebilir altın yaprakla süslenmiş, %70 kakao Belçika çikolatası ganache",price:2450,img:"https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&h=750&fit=crop",vendor:"Maison Dorée Patisserie",rating:4.9,time:"90 dk",cat:"Özel Tasarım",min:8,featured:true},
-{id:"2",name:"Red Velvet Royale",desc:"Kırmızı kadife dokusu, krem peynir dolgulu, altın tozu detaylı",price:1850,img:"https://images.unsplash.com/photo-1616541823729-00fe0aacd32c?w=600&h=750&fit=crop",vendor:"Bebek Artisan Bakery",rating:4.8,time:"60 dk",cat:"Klasik",min:4},
-{id:"3",name:"Geometric Elegance",desc:"5 katlı düğün pastası, geometrik altın çizgiler, el yapımı şeker hamuruyla kaplanmış",price:8900,img:"https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600&h=750&fit=crop",vendor:"Saray Grand Atelier",rating:5.0,time:"Randevulu",cat:"Düğün",min:20,featured:true},
-{id:"4",name:"Baroque Truffle",desc:"Barok stil çikolata oymaları, altın tozu ve kakao nibs ile süslenmiş",price:2100,img:"https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?w=600&h=750&fit=crop",vendor:"Nişantaşı Çikolata Evi",rating:4.7,time:"75 dk",cat:"Çikolata",min:6},
-{id:"5",name:"Rose Macaron Tower",desc:"El yapımı gül aromalı makaron kulesi, rose gold detaylar",price:3200,img:"https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=600&h=750&fit=crop",vendor:"Pâtisserie Lumière",rating:4.9,time:"120 dk",cat:"Özel Tasarım",min:12},
-{id:"6",name:"Tarte aux Fruits d'Or",desc:"Mevsim meyveli tart, altın yaprak dekorasyonlu, tereyağlı hamur",price:950,img:"https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&h=750&fit=crop",vendor:"Bebek Artisan Bakery",rating:4.8,time:"45 dk",cat:"Tart",min:4}
-];
-const CATEGORIES=["Tümü","Özel Tasarım","Klasik","Düğün","Çikolata","Tart"];
-const CITIES=[
-{name:"İstanbul",districts:["Beşiktaş","Kadıköy","Bakırköy","Şişli","Üsküdar","Beyoğlu","Sarıyer","Ataşehir"]},
-{name:"Ankara",districts:["Çankaya","Keçiören","Yenimahalle","Mamak","Etimesgut"]},
-{name:"İzmir",districts:["Konak","Karşıyaka","Bornova","Buca","Alsancak"]},
-{name:"Bursa",districts:["Osmangazi","Nilüfer","Yıldırım","Mudanya"]},
-{name:"Antalya",districts:["Muratpaşa","Konyaaltı","Kepez","Lara"]},
-{name:"Adana",districts:["Seyhan","Çukurova","Yüreğir","Sarıçam"]}
-];
-const state={step:"city",city:"",district:"",activeCat:"Tümü",tab:"home"};
-const starSVG='<svg viewBox="0 0 24 24" fill="currentColor" class="star"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-const clockSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
-const usersSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
-const pinSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
-function fmt(n){return n.toLocaleString('tr-TR')}
+    <!-- TOP NAVIGATION -->
+    <div class="top-nav">
+        <div class="logo">SARAY</div>
+        <div class="top-icons">
+            <div class="icon-btn" onclick="openAuth()">
+                <span id="authIcon">👤</span>
+            </div>
+            <div class="icon-btn" onclick="toggleCart()">
+                🛍
+                <span class="badge" id="cartBadge">0</span>
+            </div>
+        </div>
+    </div>
 
-function render(){
-  const app=document.getElementById('app');
-  if(!state.district){app.innerHTML=renderLocation()}
-  else{app.innerHTML=renderMain()}
-}
+    <!-- LOCATION SELECTOR -->
+    <div class="location-bar">
+        <select id="citySelect" onchange="loadDistricts()">
+            <option value="">📍 Şehir Seçin</option>
+            <option value="istanbul">İstanbul</option>
+            <option value="ankara">Ankara</option>
+            <option value="izmir">İzmir</option>
+            <option value="bursa">Bursa</option>
+            <option value="antalya">Antalya</option>
+            <option value="adana">Adana</option>
+        </select>
+        <select id="districtSelect">
+            <option value="">İlçe</option>
+        </select>
+    </div>
 
-function renderLocation(){
-  if(state.step==='city'){
-    return '<div class="loc-overlay"><p class="label" style="margin-bottom:16px">SARAY PATISSERIE</p><h1 class="display" style="font-style:italic">Teslimat Konumunuz</h1><p>Lütfen ilinizi seçin</p><div class="loc-grid">'+CITIES.map(function(c){return '<button class="loc-btn" data-city="'+c.name+'">'+c.name+'</button>'}).join('')+'</div></div>';
-  }
-  var city=CITIES.find(function(c){return c.name===state.city});
-  return '<div class="loc-overlay"><button class="loc-back" data-back>← '+state.city+' değiştir</button><h1 class="display" style="font-style:italic">'+state.city+'</h1><p>İlçenizi seçin</p><div class="loc-grid">'+city.districts.map(function(d){return '<button class="loc-btn" data-district="'+d+'">'+d+'</button>'}).join('')+'</div></div>';
-}
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- HERO BANNER -->
+        <div class="hero-banner">
+            <h1>Türkiye'nin <span style="color: var(--gold)">En Elite</span> Pasta Deneyimi</h1>
+            <p>81 ilden seçkin pastaneler, 4 kişiden başlayan özel tasarımlar</p>
+            <button class="btn-hero" onclick="openStudio()">🎨 Pastanı Sen Tasarla</button>
+        </div>
 
-function renderMain(){
-  var featured=PRODUCTS.filter(function(p){return p.featured});
-  var filtered=state.activeCat==='Tümü'?PRODUCTS:PRODUCTS.filter(function(p){return p.cat===state.activeCat});
-  return '<div class="app"><div class="topbar"><button class="topbar-loc" data-changeloc>'+pinSVG+'<div><small>Teslimat Adresi</small><span>'+state.district+', '+state.city+'</span></div></button><div class="avatar">S</div></div><div class="hero"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&h=500&fit=crop" alt="Saray Patisserie"><div class="hero-overlay"></div><div class="hero-content"><p class="label">SARAY APPROVED</p><h2>Bespoke Artistry,<br>Delivered.</h2><button class="hero-btn">Koleksiyonu Keşfet</button></div></div><section style="margin-top:32px"><div class="section-header"><h2>Öne Çıkanlar</h2><button class="see-all">Tümünü Gör</button></div><div class="carousel">'+featured.map(function(p){return renderCard(p,'hero')}).join('')+'</div></section><section style="margin-top:32px"><div class="section-header" style="flex-direction:column;align-items:flex-start;gap:4px"><h2>Master Pâtissiers</h2><p style="font-size:13px;color:var(--muted)">Saray onaylı zanaatkârlardan seçmeler</p></div><div class="cat-bar">'+CATEGORIES.map(function(c){return '<button class="cat-btn'+(state.activeCat===c?' active':'')+'" data-cat="'+c+'">'+c+'</button>'}).join('')+'</div><div class="product-grid">'+filtered.map(function(p){return renderCard(p,'grid')}).join('')+'</div></section><nav class="bottom-nav">'+navItem('home','Ana Sayfa','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>')+navItem('search','Keşfet','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>')+navItem('orders','Siparişler','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>')+navItem('profile','Profil','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>')+'</nav></div>';
-}
+        <!-- CATEGORIES -->
+        <div class="categories" id="categories">
+            <div class="category-pill active" onclick="filterCategory('all')">Hepsi</div>
+            <div class="category-pill" onclick="filterCategory('chocolate')">Çikolata</div>
+            <div class="category-pill" onclick="filterCategory('fruit')">Meyveli</div>
+            <div class="category-pill" onclick="filterCategory('classic')">Klasik</div>
+        </div>
 
-function renderCard(p,type){
-  if(type==='hero'){
-    return '<div class="card"><img src="'+p.img+'" alt="'+p.name+'" loading="lazy"><div class="card-body"><span class="label">'+p.cat+'</span><h3>'+p.name+'</h3><p class="desc">'+p.desc+'</p><div class="card-meta"><span>'+starSVG+' '+p.rating+'</span><span>'+clockSVG+' '+p.time+'</span><span>'+usersSVG+' Min '+p.min+' kişi</span></div><div class="card-footer"><div><p class="card-vendor">'+p.vendor+'</p><p class="card-price">₺'+fmt(p.price)+'</p></div><button class="card-order">Sipariş Ver</button></div></div></div>';
-  }
-  return '<div class="card grid-card"><div style="position:relative"><img src="'+p.img+'" alt="'+p.name+'" loading="lazy"><div class="rating-badge">'+starSVG+' '+p.rating+'</div></div><div class="card-body"><h3>'+p.name+'</h3><p class="card-vendor">'+p.vendor+'</p><div class="card-footer" style="margin-top:8px"><p class="card-price">₺'+fmt(p.price)+'</p><span style="font-size:10px;color:var(--muted)">'+clockSVG+' '+p.time+'</span></div></div></div>';
-}
+        <!-- PRODUCTS GRID -->
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
 
-function navItem(id,label,icon){
-  return '<button class="nav-item'+(state.tab===id?' active':'')+'" data-tab="'+id+'">'+icon+'<span>'+label+'</span></button>';
-}
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Ana Sayfa</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('search')">
+            <div class="nav-icon">🔍</div>
+            <div class="nav-label">Keşfet</div>
+        </div>
+        <div class="nav-item" onclick="openStudio()">
+            <div class="nav-icon">🎨</div>
+            <div class="nav-label">Tasarla</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('orders')">
+            <div class="nav-icon">📦</div>
+            <div class="nav-label">Siparişler</div>
+        </div>
+        <div class="nav-item" onclick="openAuth()">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">Hesap</div>
+        </div>
+    </div>
 
-document.getElementById('app').addEventListener('click',function(e){
-  var btn=e.target.closest('[data-city],[data-district],[data-back],[data-changeloc],[data-cat],[data-tab]');
-  if(!btn)return;
-  if(btn.dataset.city!==undefined){state.step='district';state.city=btn.dataset.city;render()}
-  else if(btn.dataset.district!==undefined){state.district=btn.dataset.district;render()}
-  else if(btn.dataset.back!==undefined){state.step='city';state.city='';render()}
-  else if(btn.dataset.changeloc!==undefined){state.district='';state.step='city';state.city='';render()}
-  else if(btn.dataset.cat!==undefined){state.activeCat=btn.dataset.cat;render()}
-  else if(btn.dataset.tab!==undefined){state.tab=btn.dataset.tab;render()}
-});
+    <!-- AUTH MODAL -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="authTitle">Giriş Yap</h2>
+                <div class="btn-close" onclick="closeModal('authModal')">✕</div>
+            </div>
+            <form id="authForm">
+                <div class="form-group">
+                    <label class="form-label">E-posta</label>
+                    <input type="email" class="form-input" placeholder="ornek@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Şifre</label>
+                    <input type="password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Devam Et</button>
+            </form>
+            <div class="modal-footer">
+                Hesabınız yok mu? <span class="link-text" onclick="toggleAuthMode()">Kayıt Ol</span>
+            </div>
+        </div>
+    </div>
 
-render();
-</script>
+    <!-- STUDIO MODAL -->
+    <div class="modal" id="studioModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">🎨 Pastanı Tasarla</h2>
+                <div class="btn-close" onclick="closeModal('studioModal')">✕</div>
+            </div>
+            
+            <div class="studio-container">
+                <div class="studio-tabs">
+                    <div class="studio-tab active" onclick="switchStudioMode('2d')">2D Tasarım</div>
+                    <div class="studio-tab" onclick="switchStudioMode('3d')">3D Önizleme</div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="designCanvas"></canvas>
+                    <div id="threeDPreview"></div>
+                </div>
+
+                <div class="studio-tools">
+                    <!-- BASE SELECTOR -->
+                    <div class="tool-section">
+                        <div class="tool-title">1️⃣ Pasta Tabanı Seç</div>
+                        <div class="base-selector">
+                            <div class="base-option active" onclick="selectBase('chocolate')" data-base="chocolate">
+                                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&q=80" alt="Çikolata">
+                            </div>
+                            <div class="base-option" onclick="selectBase('vanilla')" data-base="vanilla">
+                                <img src="https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=400&q=80" alt="Vanilya">
+                            </div>
+                            <div class="base-option" onclick="selectBase('redvelvet')" data-base="redvelvet">
+                                <img src="https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=400&q=80" alt="Red Velvet">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SIZE SELECTOR -->
+                    <div class="tool-section">
+                        <div class="tool-title">2️⃣ Kişi Sayısı (Min. 4)</div>
+                        <div class="size-selector">
+                            <div class="size-btn active" onclick="selectSize(4)">4 Kişi</div>
+                            <div class="size-btn" onclick="selectSize(6)">6 Kişi</div>
+                            <div class="size-btn" onclick="selectSize(8)">8 Kişi</div>
+                            <div class="size-btn" onclick="selectSize(10)">10 Kişi</div>
+                            <div class="size-btn" onclick="selectSize(12)">12 Kişi</div>
+                            <div class="size-btn" onclick="selectSize(15)">15+ Kişi</div>
+                        </div>
+                    </div>
+
+                    <!-- TEXT CUSTOMIZATION -->
+                    <div class="tool-section">
+                        <div class="tool-title">3️⃣ Özel Yazı Ekle</div>
+                        <div class="text-controls">
+                            <input type="text" class="form-input" id="customText" placeholder="İyi ki doğdun..." maxlength="30">
+                            <select class="form-input" id="fontSelect">
+                                <option value="cursive">Cursive (El Yazısı)</option>
+                                <option value="serif">Serif (Klasik)</option>
+                                <option value="luxury">Luxury (Zarif)</option>
+                            </select>
+                            <div class="color-picker-wrapper">
+                                <div class="color-option active" style="background: #D4AF37;" onclick="selectColor('#D4AF37')"></div>
+                                <div class="color-option" style="background: #8B4513;" onclick="selectColor('#8B4513')"></div>
+                                <div class="color-option" style="background: #FF69B4;" onclick="selectColor('#FF69B4')"></div>
+                                <div class="color-option" style="background: #000000;" onclick="selectColor('#000000')"></div>
+                                <div class="color-option" style="background: #FFFFFF; border: 1px solid #ccc;" onclick="selectColor('#FFFFFF')"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- IMAGE UPLOAD -->
+                    <div class="tool-section">
+                        <div class="tool-title">4️⃣ Fotoğraf Ekle (İsteğe Bağlı)</div>
+                        <input type="file" class="form-input" accept="image/*" onchange="uploadImage(event)">
+                    </div>
+
+                    <!-- PRICING -->
+                    <div class="tool-section" style="background: rgba(212, 175, 55, 0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 14px; opacity: 0.8; margin-bottom: 4px;">Toplam Tutar</div>
+                                <div style="font-size: 28px; font-weight: 800; color: var(--gold);" id="totalPrice">₺1.950</div>
+                            </div>
+                            <button class="btn-primary" style="width: auto; padding: 14px 32px;" onclick="addCustomCakeToCart()">Sepete Ekle</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART DRAWER -->
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h2 class="modal-title">🛍 Sepetim</h2>
+            <div class="btn-close" onclick="toggleCart()">✕</div>
+        </div>
+        <div id="cartItems"></div>
+        <div class="cart-total">
+            <div class="total-row">
+                <span>Ara Toplam</span>
+                <span id="subtotal">₺0</span>
+            </div>
+            <div class="total-row">
+                <span>Teslimat</span>
+                <span id="deliveryFee">₺50</span>
+            </div>
+            <div class="total-row grand">
+                <span>Toplam</span>
+                <span id="grandTotal">₺0</span>
+            </div>
+            <button class="btn-primary" onclick="checkout()">Ödeme Yap</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== STATE MANAGEMENT =====
+        const state = {
+            user: null,
+            cart: [],
+            selectedCity: '',
+            selectedDistrict: '',
+            currentCategory: 'all',
+            studioMode: '2d',
+            customCake: {
+                base: 'chocolate',
+                size: 4,
+                text: '',
+                font: 'cursive',
+                color: '#D4AF37',
+                image: null,
+                basePrice: 1950
+            }
+        };
+
+        // ===== PRODUCT DATABASE =====
+        const products = [
+            { 
+                id: 1, 
+                name: 'Premium Çikolata Delight', 
+                vendor: 'Şef Ahmet Pastanesi',
+                vendorId: 'vendor_001',
+                vendorRating: '4.9', 
+                city: 'istanbul', 
+                district: 'kadikoy',
+                price: 2850, 
+                category: 'chocolate', 
+                features: ['24K Altın', 'Belçika Çikolata', 'Premium'], 
+                delivery: '90 dk', 
+                image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80',
+                minPerson: 4
+            },
+            { 
+                id: 2, 
+                name: 'Tropikal Meyveli Özel', 
+                vendor: 'Elit Cake House',
+                vendorId: 'vendor_002',
+                vendorRating: '4.8', 
+                city: 'ankara', 
+                district: 'cankaya',
+                price: 2100, 
+                category: 'fruit', 
+                features: ['Taze Meyve', 'Premium Krema'], 
+                delivery: '75 dk', 
+                image: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80',
+                minPerson: 4
+            },
+            { 
+                id: 3, 
+                name: 'Klasik Vanilyalı Rüya', 
+                vendor: 'Bursa Pasta Atölyesi',
+                vendorId: 'vendor_003',
+                vendorRating: '4.7', 
+                city: 'bursa', 
+                district: 'nilufer',
+                price: 1950, 
+                category: 'classic', 
+                features: ['Bourbon Vanilya', 'El Yapımı'], 
+                delivery: '60 dk', 
+                image: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=800&q=80',
+                minPerson: 4
+            },
+            { 
+                id: 4, 
+                name: 'Muz Karamel Sensation', 
+                vendor: 'Antalya Patisserie',
+                vendorId: 'vendor_004',
+                vendorRating: '4.9', 
+                city: 'antalya', 
+                district: 'konyaalti',
+                price: 2400, 
+                category: 'chocolate', 
+                features: ['Organik Muz', 'Toffee Krema'], 
+                delivery: '80 dk', 
+                image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80',
+                minPerson: 4
+            },
+            { 
+                id: 5, 
+                name: 'Berry Explosion Mix', 
+                vendor: 'İzmir Cake Studio',
+                vendorId: 'vendor_005',
+                vendorRating: '4.8', 
+                city: 'izmir', 
+                district: 'bornova',
+                price: 2650, 
+                category: 'fruit', 
+                features: ['Çilek', 'Ahududu', 'Yaban Mersini'], 
+                delivery: '70 dk', 
+                image: 'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=800&q=80',
+                minPerson: 4
+            },
+            { 
+                id: 6, 
+                name: 'Frambuazlı Klasik', 
+                vendor: 'Adana Lezzet Evi',
+                vendorId: 'vendor_006',
+                vendorRating: '4.6', 
+                city: 'adana', 
+                district: 'seyhan',
+                price: 2200, 
+                category: 'classic', 
+                features: ['Frambuaz Püresi', 'Hafif Krema'], 
+                delivery: '85 dk', 
+                image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800&q=80',
+                minPerson: 4
+            }
+        ];
+
+        // ===== DISTRICT DATA =====
+        const districts = {
+            istanbul: ['Kadıköy', 'Beşiktaş', 'Şişli', 'Bakırköy', 'Üsküdar'],
+            ankara: ['Çankaya', 'Keçiören', 'Mamak', 'Yenimahalle', 'Etimesgut'],
+            izmir: ['Bornova', 'Karşıyaka', 'Konak', 'Buca', 'Balçova'],
+            bursa: ['Nilüfer', 'Osmangazi', 'Yıldırım', 'Görükle', 'Mudanya'],
+            antalya: ['Konyaaltı', 'Muratpaşa', 'Kepez', 'Döşemealtı', 'Aksu'],
+            adana: ['Seyhan', 'Yüreğir', 'Çukurova', 'Sarıçam', 'Karaisalı']
+        };
+
+        // ===== INITIALIZATION =====
+        window.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            initializeCanvas();
+        });
+
+        // ===== PRODUCT RENDERING =====
+        function renderProducts(category = 'all', city = '') {
+            const grid = document.getElementById('productsGrid');
+            let filtered = products;
+
+            if (category !== 'all') {
+                filtered = filtered.filter(p => p.category === category);
+            }
+
+            if (city) {
+                filtered = filtered.filter(p => p.city === city);
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card" onclick="viewProduct(${p.id})">
+                    <div class="product-image">
+                        <img src="${p.image}" alt="${p.name}" loading="lazy">
+                        <div class="product-badge">HAZIR TESLİMAT</div>
+                    </div>
+                    <div class="product-info">
+                        <div class="vendor-info">
+                            <span class="vendor-name">${p.vendor}</span>
+                            <span class="vendor-rating">★ ${p.vendorRating}</span>
+                        </div>
+                        <h3 class="product-name">${p.name}</h3>
+                        <div class="product-features">
+                            ${p.features.map(f => `<span class="feature-tag">${f}</span>`).join('')}
+                        </div>
+                        <div class="product-footer">
+                            <div>
+                                <div class="product-price">₺${p.price.toLocaleString('tr-TR')}</div>
+                                <div class="delivery-time">⏱ ${p.delivery}</div>
+                            </div>
+                            <button class="btn-add" onclick="event.stopPropagation(); quickAdd(${p.id})">Ekle</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== CATEGORY FILTER =====
+        function filterCategory(category) {
+            state.currentCategory = category;
+            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProducts(category, state.selectedCity);
+        }
+
+        // ===== LOCATION HANDLING =====
+        function loadDistricts() {
+            const city = document.getElementById('citySelect').value;
+            const districtSelect = document.getElementById('districtSelect');
+            
+            state.selectedCity = city;
+            
+            if (city && districts[city]) {
+                districtSelect.innerHTML = '<option value="">İlçe Seçin</option>' + 
+                    districts[city].map(d => `<option value="${d.toLowerCase()}">${d}</option>`).join('');
+                districtSelect.disabled = false;
+            } else {
+                districtSelect.innerHTML = '<option value="">Önce şehir seçin</option>';
+                districtSelect.disabled = true;
+            }
+
+            renderProducts(state.currentCategory, city);
+        }
+
+        // ===== CART MANAGEMENT =====
+        function quickAdd(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            state.cart.push({
+                ...product,
+                quantity: 1,
+                customizations: null
+            });
+
+            updateCart();
+            showNotification('✅ Sepete eklendi!');
+        }
+
+        function addCustomCakeToCart() {
+            const customProduct = {
+                id: 'custom_' + Date.now(),
+                name: 'Özel Tasarım Pasta',
+                vendor: 'Seçili Pastane',
+                vendorId: 'TBD',
+                price: calculateCustomPrice(),
+                image: captureCanvasImage(),
+                category: 'custom',
+                quantity: 1,
+                customizations: { ...state.customCake }
+            };
+
+            state.cart.push(customProduct);
+            updateCart();
+            closeModal('studioModal');
+            showNotification('🎨 Özel tasarımınız sepete eklendi!');
+        }
+
+        function updateCart() {
+            const badge = document.getElementById('cartBadge');
+            const itemsContainer = document.getElementById('cartItems');
+            
+            badge.textContent = state.cart.length;
+
+            if (state.cart.length === 0) {
+                itemsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7; padding: 40px 0;">Sepetiniz boş</p>';
+                document.getElementById('subtotal').textContent = '₺0';
+                document.getElementById('grandTotal').textContent = '₺50';
+                return;
+            }
+
+            itemsContainer.innerHTML = state.cart.map((item, index) => `
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="cart-item-info">
+                        <div style="font-weight: 700; margin-bottom: 4px;">${item.name}</div>
+                        <div style="font-size: 12px; opacity: 0.7; margin-bottom: 8px;">${item.vendor}</div>
+                        <div style="font-weight: 800; color: var(--gold);">₺${item.price.toLocaleString('tr-TR')}</div>
+                    </div>
+                    <button class="btn-close" onclick="removeFromCart(${index})" style="position: static;">✕</button>
+                </div>
+            `).join('');
+
+            const subtotal = state.cart.reduce((sum, item) => sum + item.price, 0);
+            const deliveryFee = 50;
+            const total = subtotal + deliveryFee;
+
+            document.getElementById('subtotal').textContent = `₺${subtotal.toLocaleString('tr-TR')}`;
+            document.getElementById('grandTotal').textContent = `₺${total.toLocaleString('tr-TR')}`;
+        }
+
+        function removeFromCart(index) {
+            state.cart.splice(index, 1);
+            updateCart();
+        }
+
+        function toggleCart() {
+            const drawer = document.getElementById('cartDrawer');
+            drawer.classList.toggle('open');
+        }
+
+        // ===== STUDIO FUNCTIONS =====
+        function openStudio() {
+            document.getElementById('studioModal').classList.add('show');
+            setTimeout(() => initializeCanvas(), 100);
+        }
+
+        function initializeCanvas() {
+            const canvas = document.getElementById('designCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 800;
+
+            // Draw base cake image
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, 800, 800);
+                drawCustomText(ctx);
+            };
+            img.src = 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80';
+        }
+
+        function drawCustomText(ctx) {
+            const text = document.getElementById('customText')?.value || '';
+            if (!text) return;
+
+            const fontMap = {
+                cursive: '48px cursive',
+                serif: '48px serif',
+                luxury: '48px "Playfair Display"'
+            };
+
+            ctx.font = fontMap[state.customCake.font] || fontMap.cursive;
+            ctx.fillStyle = state.customCake.color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 400, 400);
+        }
+
+        function selectBase(base) {
+            state.customCake.base = base;
+            document.querySelectorAll('.base-option').forEach(opt => opt.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const imageMap = {
+                chocolate: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80',
+                vanilla: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=800&q=80',
+                redvelvet: 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=800&q=80'
+            };
+
+            const canvas = document.getElementById('designCanvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                ctx.clearRect(0, 0, 800, 800);
+                ctx.drawImage(img, 0, 0, 800, 800);
+                drawCustomText(ctx);
+            };
+            img.src = imageMap[base];
+        }
+
+        function selectSize(size) {
+            state.customCake.size = size;
+            document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updatePricing();
+        }
+
+        function selectColor(color) {
+            state.customCake.color = color;
+            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+            event.target.classList.add('active');
+            initializeCanvas();
+        }
+
+        function uploadImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                state.customCake.image = e.target.result;
+                const canvas = document.getElementById('designCanvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                img.onload = () => {
+                    ctx.drawImage(img, 200, 200, 400, 400);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function calculateCustomPrice() {
+            const basePrice = state.customCake.basePrice;
+            const sizeMultiplier = state.customCake.size / 4;
+            return Math.round(basePrice * sizeMultiplier);
+        }
+
+        function updatePricing() {
+            const price = calculateCustomPrice();
+            document.getElementById('totalPrice').textContent = `₺${price.toLocaleString('tr-TR')}`;
+        }
+
+        function captureCanvasImage() {
+            const canvas = document.getElementById('designCanvas');
+            return canvas.toDataURL('image/png');
+        }
+
+        function switchStudioMode(mode) {
+            state.studioMode = mode;
+            document.querySelectorAll('.studio-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (mode === '3d') {
+                document.getElementById('designCanvas').style.display = 'none';
+                document.getElementById('threeDPreview').style.display = 'block';
+                init3DPreview();
+            } else {
+                document.getElementById('designCanvas').style.display = 'block';
+                document.getElementById('threeDPreview').style.display = 'none';
+            }
+        }
+
+        function init3DPreview() {
+            const container = document.getElementById('threeDPreview');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            
+            renderer.setSize(container.offsetWidth, container.offsetHeight);
+            container.innerHTML = '';
+            container.appendChild(renderer.domElement);
+
+            // Create cake geometry
+            const geometry = new THREE.CylinderGeometry(2, 2, 1, 32);
+            const texture = new THREE.CanvasTexture(document.getElementById('designCanvas'));
+            const material = new THREE.MeshPhysicalMaterial({
+                map: texture,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1,
+                metalness: 0.1,
+                roughness: 0.1
+            });
+
+            const cake = new THREE.Mesh(geometry, material);
+            scene.add(cake);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            camera.position.z = 5;
+
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                cake.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // ===== MODAL HANDLING =====
+        function openAuth() {
+            document.getElementById('authModal').classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function toggleAuthMode() {
+            const title = document.getElementById('authTitle');
+            const isLogin = title.textContent === 'Giriş Yap';
+            title.textContent = isLogin ? 'Kayıt Ol' : 'Giriş Yap';
+        }
+
+        // ===== NOTIFICATIONS =====
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--gold);
+                color: var(--black);
+                padding: 16px 24px;
+                border-radius: 50px;
+                font-weight: 800;
+                z-index: 3000;
+                animation: slideDown 0.3s;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            // Tab-specific logic here
+            if (tab === 'home') {
+                renderProducts();
+            }
+        }
+
+        // ===== CHECKOUT =====
+        function checkout() {
+            if (state.cart.length === 0) {
+                showNotification('⚠️ Sepetiniz boş!');
+                return;
+            }
+
+            if (!state.user) {
+                toggleCart();
+                openAuth();
+                showNotification('🔐 Önce giriş yapmalısınız');
+                return;
+            }
+
+            // Generate order JSON
+            const orderData = {
+                orderId: 'ORD_' + Date.now(),
+                customerId: state.user?.id || 'GUEST',
+                items: state.cart.map(item => ({
+                    productId: item.id,
+                    vendorId: item.vendorId,
+                    name: item.name,
+                    basePrice: item.price,
+                    quantity: item.quantity,
+                    customizations: item.customizations ? {
+                        baseType: item.customizations.base,
+                        personCount: item.customizations.size,
+                        customText: item.customizations.text,
+                        fontStyle: item.customizations.font,
+                        textColor: item.customizations.color,
+                        imageUrl: item.customizations.image,
+                        designSnapshot: item.image
+                    } : null
+                })),
+                deliveryAddress: {
+                    city: state.selectedCity,
+                    district: state.selectedDistrict
+                },
+                totalAmount: state.cart.reduce((sum, item) => sum + item.price, 0) + 50,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+
+            console.log('📦 ORDER PACKAGE:', JSON.stringify(orderData, null, 2));
+            
+            showNotification('🎉 Siparişiniz alındı!');
+            state.cart = [];
+            updateCart();
+            toggleCart();
+        }
+
+        // ===== TEXT INPUT LIVE UPDATE =====
+        document.addEventListener('DOMContentLoaded', () => {
+            const textInput = document.getElementById('customText');
+            if (textInput) {
+                textInput.addEventListener('input', () => {
+                    state.customCake.text = textInput.value;
+                    initializeCanvas();
+                });
+            }
+
+            const fontSelect = document.getElementById('fontSelect');
+            if (fontSelect) {
+                fontSelect.addEventListener('change', () => {
+                    state.customCake.font = fontSelect.value;
+                    initializeCanvas();
+                });
+            }
+        });
+    </script>
 </body>
 </html>
