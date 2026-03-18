@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cake Studio — SARAY</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <title>Cake Designer — SARAY PATİSSERİE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --black: #0F0E0C; --gold: #D4AF37; --white: #FCFBF8; }
         body { font-family: 'Montserrat', sans-serif; background: var(--black); color: var(--white); overflow: hidden; height: 100vh; }
+        
         .top { height: 80px; background: rgba(15, 14, 12, 0.98); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border-bottom: 1px solid rgba(212, 175, 55, 0.3); }
         .logo { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #D4AF37, #F4E5A1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .badge { background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.3); padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 700; }
@@ -18,34 +19,72 @@
         .badge.preview { color: var(--gold); }
         button { background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.3); color: var(--white); padding: 12px 28px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.3s; }
         .btn-3d { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border: none; }
+        
         .layout { display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 80px); }
         .panel { background: var(--black); border-right: 1px solid rgba(212, 175, 55, 0.3); overflow-y: auto; padding: 32px; }
         .section { margin-bottom: 40px; }
-        .section-title { font-size: 16px; font-weight: 800; margin-bottom: 20px; color: var(--gold); text-transform: uppercase; }
+        .section-title { font-size: 14px; font-weight: 800; margin-bottom: 20px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+        
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .opt { background: rgba(212, 175, 55, 0.05); border: 2px solid rgba(212, 175, 55, 0.2); padding: 20px 16px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 700; transition: all 0.3s; }
+        .opt { background: rgba(212, 175, 55, 0.05); border: 2px solid rgba(212, 175, 55, 0.2); padding: 20px 12px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 700; font-size: 13px; transition: all 0.3s; }
         .opt.active { background: var(--gold); color: var(--black); border-color: var(--gold); }
+        
+        .base-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .base-opt { background: var(--black); border: 2px solid rgba(212, 175, 55, 0.2); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s; }
+        .base-opt.active { border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+        .base-opt img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+        .base-opt .base-name { padding: 12px; text-align: center; font-size: 12px; font-weight: 700; }
+        
         .colors { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
         .color { aspect-ratio: 1; border-radius: 12px; cursor: pointer; border: 3px solid transparent; transition: all 0.3s; }
         .color.active { border-color: var(--gold); transform: scale(1.1); }
+        
         input, select { width: 100%; background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.3); color: var(--white); padding: 14px 18px; border-radius: 8px; font-family: 'Montserrat', sans-serif; margin-top: 10px; }
+        
         .canvas-area { background: linear-gradient(135deg, #1a1918 0%, #0F0E0C 100%); position: relative; display: flex; align-items: center; justify-content: center; }
         #canvas2D, #canvas3D { display: none; }
         #canvas2D.active, #canvas3D.active { display: block; }
-        .hint { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(15, 14, 12, 0.95); padding: 16px 36px; border-radius: 50px; font-size: 14px; font-weight: 600; }
+        
+        .hint { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(15, 14, 12, 0.95); backdrop-filter: blur(20px); padding: 16px 36px; border-radius: 50px; font-size: 14px; font-weight: 600; }
+        
+        .price-box { background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05)); border: 1px solid var(--gold); border-radius: 16px; padding: 20px; text-align: center; margin-top: 24px; }
+        .price-label { font-size: 12px; opacity: 0.7; margin-bottom: 8px; }
+        .price { font-size: 36px; font-weight: 800; color: var(--gold); }
     </style>
 </head>
 <body>
     <div class="top">
         <div class="logo">SARAY</div>
-        <div class="badge design" id="mode">🎨 Tasarım Modu</div>
+        <div class="badge design" id="mode">🎨 2D Tasarım Modu</div>
         <button class="btn-3d" onclick="toggle3D()">👁️ 3D Önizleme</button>
     </div>
 
     <div class="layout">
         <div class="panel">
             <div class="section">
-                <div class="section-title">🎂 Pasta Katları</div>
+                <div class="section-title">🎂 Pasta Tabanı</div>
+                <div class="base-grid">
+                    <div class="base-opt active" onclick="setBase('chocolate')">
+                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&q=80" alt="Çikolata">
+                        <div class="base-name">Çikolata</div>
+                    </div>
+                    <div class="base-opt" onclick="setBase('vanilla')">
+                        <img src="https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=400&q=80" alt="Vanilya">
+                        <div class="base-name">Vanilya</div>
+                    </div>
+                    <div class="base-opt" onclick="setBase('strawberry')">
+                        <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&q=80" alt="Çilek">
+                        <div class="base-name">Çilek</div>
+                    </div>
+                    <div class="base-opt" onclick="setBase('caramel')">
+                        <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=80" alt="Karamel">
+                        <div class="base-name">Karamel</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🏗️ Kat Sayısı</div>
                 <div class="grid">
                     <div class="opt active" onclick="setTiers(1)">1 Kat</div>
                     <div class="opt" onclick="setTiers(2)">2 Kat</div>
@@ -55,7 +94,7 @@
 
             <div class="section">
                 <div class="section-title">👥 Kişi Sayısı</div>
-                <select id="size">
+                <select id="size" onchange="calcPrice()">
                     <option value="4">4 Kişi</option>
                     <option value="6">6 Kişi</option>
                     <option value="8">8 Kişi</option>
@@ -68,45 +107,65 @@
             </div>
 
             <div class="section">
-                <div class="section-title">🎨 Kaplama Rengi</div>
+                <div class="section-title">🎨 Yazı Rengi</div>
                 <div class="colors">
-                    <div class="color active" style="background:#FFF; border:2px solid #ddd" onclick="setColor('#FFF')"></div>
-                    <div class="color" style="background:#FFB6C1" onclick="setColor('#FFB6C1')"></div>
-                    <div class="color" style="background:#D4AF37" onclick="setColor('#D4AF37')"></div>
-                    <div class="color" style="background:#8B4513" onclick="setColor('#8B4513')"></div>
-                    <div class="color" style="background:#87CEEB" onclick="setColor('#87CEEB')"></div>
-                    <div class="color" style="background:#E6E6FA" onclick="setColor('#E6E6FA')"></div>
-                    <div class="color" style="background:#98FB98" onclick="setColor('#98FB98')"></div>
-                    <div class="color" style="background:#FFE4E1" onclick="setColor('#FFE4E1')"></div>
-                    <div class="color" style="background:#F0E68C" onclick="setColor('#F0E68C')"></div>
-                    <div class="color" style="background:#000" onclick="setColor('#000')"></div>
+                    <div class="color active" style="background:#D4AF37" onclick="setTextColor('#D4AF37')"></div>
+                    <div class="color" style="background:#FFF" onclick="setTextColor('#FFF')"></div>
+                    <div class="color" style="background:#000" onclick="setTextColor('#000')"></div>
+                    <div class="color" style="background:#FF1493" onclick="setTextColor('#FF1493')"></div>
+                    <div class="color" style="background:#4169E1" onclick="setTextColor('#4169E1')"></div>
                 </div>
             </div>
 
             <div class="section">
                 <div class="section-title">✍️ Pasta Yazısı</div>
-                <input type="text" id="text" placeholder="Örn: İyi ki doğdun..." oninput="draw()">
+                <input type="text" id="text" placeholder="İyi ki doğdun..." oninput="draw()">
             </div>
 
             <div class="section">
-                <div class="section-title">🔤 Font</div>
+                <div class="section-title">🔤 Font Stili</div>
                 <select id="font" onchange="draw()">
                     <option value="Dancing Script">Dancing Script</option>
+                    <option value="Great Vibes">Great Vibes</option>
+                    <option value="Pacifico">Pacifico</option>
                     <option value="Playfair Display">Playfair Display</option>
-                    <option value="Montserrat">Montserrat</option>
                 </select>
             </div>
+
+            <div class="price-box">
+                <div class="price-label">Toplam Tutar</div>
+                <div class="price" id="priceDisplay">₺450</div>
+            </div>
+
+            <button class="btn-3d" style="width:100%; margin-top:16px;">🛍 Sepete Ekle</button>
         </div>
 
         <div class="canvas-area">
             <canvas id="canvas2D" class="active" width="1000" height="1000"></canvas>
             <canvas id="canvas3D"></canvas>
-            <div class="hint" id="hint">🎨 Üstten görünüm — Pastanızı tasarlayın</div>
+            <div class="hint" id="hint">🎨 Gerçek pasta fotoğrafı üzerine tasarım yapın</div>
         </div>
     </div>
 
     <script>
-        let state = { mode:'2d', tiers:1, color:'#FFFFFF', text:'', font:'Dancing Script' };
+        const baseImages = {
+            chocolate: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1200&q=90',
+            vanilla: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=1200&q=90',
+            strawberry: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1200&q=90',
+            caramel: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=1200&q=90'
+        };
+
+        let state = { 
+            mode: '2d', 
+            base: 'chocolate', 
+            tiers: 1, 
+            size: 4,
+            textColor: '#D4AF37',
+            text: '', 
+            font: 'Dancing Script',
+            basePrice: 450
+        };
+
         let canvas2D, ctx, canvas3D, scene, camera, renderer, controls;
 
         window.onload = () => {
@@ -115,115 +174,69 @@
             canvas3D = document.getElementById('canvas3D');
             init3D();
             draw();
+            calcPrice();
         };
 
         function draw() {
             state.text = document.getElementById('text').value;
             state.font = document.getElementById('font').value;
 
+            // Clear
             ctx.fillStyle = '#F5F5F5';
             ctx.fillRect(0, 0, 1000, 1000);
 
-            const cx = 500, cy = 500, r = 350;
+            // Load cake base image
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const size = 900;
+                const x = 50, y = 50;
 
-            // Shadow
-            ctx.shadowColor = 'rgba(0,0,0,0.15)';
-            ctx.shadowBlur = 30;
-            ctx.shadowOffsetY = 15;
+                // Draw cake photo
+                ctx.drawImage(img, x, y, size, size);
 
-            // Cake gradient
-            const grad = ctx.createRadialGradient(cx - 100, cy - 100, 0, cx, cy, r);
-            grad.addColorStop(0, lighten(state.color, 20));
-            grad.addColorStop(1, state.color);
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(cx, cy, r, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.shadowColor = 'transparent';
-
-            // Frosting dots
-            for(let i = 0; i < 12; i++) {
-                const angle = (i * 30) * Math.PI / 180;
-                const x = cx + Math.cos(angle) * r * 0.9;
-                const y = cy + Math.sin(angle) * r * 0.9;
-                
-                ctx.fillStyle = lighten(state.color, 10);
-                ctx.beginPath();
-                ctx.arc(x, y, 25, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = lighten(state.color, 20);
-                ctx.beginPath();
-                ctx.arc(x, y, 15, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // Edge
-            ctx.strokeStyle = darken(state.color, 15);
-            ctx.lineWidth = 12;
-            ctx.beginPath();
-            ctx.arc(cx, cy, r, 0, Math.PI * 2);
-            ctx.stroke();
-
-            // Gold ring
-            ctx.strokeStyle = '#D4AF37';
-            ctx.lineWidth = 8;
-            ctx.beginPath();
-            ctx.arc(cx, cy, r * 0.75, 0, Math.PI * 2);
-            ctx.stroke();
-
-            // Center
-            const cGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 80);
-            cGrad.addColorStop(0, '#FFD700');
-            cGrad.addColorStop(1, '#D4AF37');
-            ctx.fillStyle = cGrad;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 80, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Text
-            if(state.text) {
-                ctx.fillStyle = '#000';
-                ctx.font = `bold 70px "${state.font}"`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.shadowColor = 'rgba(255,255,255,0.5)';
-                ctx.shadowBlur = 10;
-                ctx.fillText(state.text, cx, cy);
-            }
+                // Text overlay
+                if(state.text) {
+                    ctx.fillStyle = state.textColor;
+                    ctx.font = `bold 80px "${state.font}"`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                    ctx.shadowBlur = 15;
+                    ctx.fillText(state.text, 500, 500);
+                }
+            };
+            img.src = baseImages[state.base];
         }
 
-        function lighten(c, p) {
-            const n = parseInt(c.replace('#',''), 16);
-            const a = Math.round(2.55 * p);
-            const R = (n >> 16) + a;
-            const G = (n >> 8 & 0x00FF) + a;
-            const B = (n & 0x0000FF) + a;
-            return '#' + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
-        }
-
-        function darken(c, p) {
-            const n = parseInt(c.replace('#',''), 16);
-            const a = Math.round(2.55 * p);
-            const R = (n >> 16) - a;
-            const G = (n >> 8 & 0x00FF) - a;
-            const B = (n & 0x0000FF) - a;
-            return '#' + (0x1000000 + (R>0?R:0)*0x10000 + (G>0?G:0)*0x100 + (B>0?B:0)).toString(16).slice(1);
+        function setBase(base) {
+            state.base = base;
+            document.querySelectorAll('.base-opt').forEach(o => o.classList.remove('active'));
+            event.target.closest('.base-opt').classList.add('active');
+            draw();
+            calcPrice();
         }
 
         function setTiers(t) {
             state.tiers = t;
             document.querySelectorAll('.opt').forEach(o => o.classList.remove('active'));
             event.target.classList.add('active');
-            draw();
+            calcPrice();
         }
 
-        function setColor(c) {
-            state.color = c;
+        function setTextColor(c) {
+            state.textColor = c;
             document.querySelectorAll('.color').forEach(o => o.classList.remove('active'));
             event.target.classList.add('active');
             draw();
+        }
+
+        function calcPrice() {
+            state.size = parseInt(document.getElementById('size').value);
+            let total = state.basePrice * (state.size / 4);
+            total += (state.tiers - 1) * 200; // Her ek kat +200
+            if(state.text) total += 100;
+            document.getElementById('priceDisplay').textContent = `₺${Math.round(total)}`;
         }
 
         function toggle3D() {
@@ -231,19 +244,19 @@
                 state.mode = '3d';
                 canvas2D.classList.remove('active');
                 canvas3D.classList.add('active');
-                document.getElementById('mode').textContent = '👁️ 3D Önizleme';
+                document.getElementById('mode').textContent = '👁️ 3D Önizleme Modu';
                 document.getElementById('mode').classList.remove('design');
                 document.getElementById('mode').classList.add('preview');
-                document.getElementById('hint').textContent = '🖱️ Sürükle & Döndür';
+                document.getElementById('hint').textContent = '🖱️ Sürükle & Döndür — Scroll ile Yakınlaştır';
                 create3D();
             } else {
                 state.mode = '2d';
                 canvas3D.classList.remove('active');
                 canvas2D.classList.add('active');
-                document.getElementById('mode').textContent = '🎨 Tasarım Modu';
+                document.getElementById('mode').textContent = '🎨 2D Tasarım Modu';
                 document.getElementById('mode').classList.remove('preview');
                 document.getElementById('mode').classList.add('design');
-                document.getElementById('hint').textContent = '🎨 Üstten görünüm';
+                document.getElementById('hint').textContent = '🎨 Gerçek pasta fotoğrafı üzerine tasarım yapın';
             }
         }
 
@@ -273,34 +286,22 @@
             const sizes = {1:[2.5], 2:[2.5,1.8], 3:[2.5,1.8,1.2]};
             let y = 0;
 
+            // Use canvas as texture
+            const texture = new THREE.CanvasTexture(canvas2D);
+
             heights[state.tiers].forEach((h, i) => {
                 const geo = new THREE.CylinderGeometry(sizes[state.tiers][i], sizes[state.tiers][i], h, 32);
                 const mat = new THREE.MeshPhysicalMaterial({
-                    color: new THREE.Color(state.color),
+                    map: texture,
                     clearcoat: 0.5,
-                    roughness: 0.4
+                    roughness: 0.4,
+                    metalness: 0.1
                 });
                 const mesh = new THREE.Mesh(geo, mat);
                 mesh.position.y = y + h/2;
                 scene.add(mesh);
                 y += h;
             });
-
-            if(state.text) {
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.width = 512;
-                canvas.height = 512;
-                context.fillStyle = '#000';
-                context.font = `bold 64px "${state.font}"`;
-                context.textAlign = 'center';
-                context.fillText(state.text, 256, 256);
-                const texture = new THREE.CanvasTexture(canvas);
-                const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map: texture}));
-                sprite.position.y = y + 0.5;
-                sprite.scale.set(4, 4, 1);
-                scene.add(sprite);
-            }
         }
 
         function animate() {
