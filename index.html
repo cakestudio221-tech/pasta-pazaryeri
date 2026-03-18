@@ -149,15 +149,15 @@
             <strong>Toplam Katman:</strong> <span id="layer-count">0</span>
         </div>
         
-        <button class="btn btn-primary" onclick="yeniKatmanEkle()">
+        <button class="btn btn-primary" id="add-layer-btn">
             + Yeni Katman Ekle
         </button>
         
-        <button class="btn btn-success" id="complete-btn" onclick="siparisiTamamla()" disabled>
+        <button class="btn btn-success" id="complete-btn" disabled>
             ✓ Siparişi Tamamla
         </button>
         
-        <button class="btn btn-secondary" id="clear-btn" onclick="pastaTemizle()" disabled>
+        <button class="btn btn-secondary" id="clear-btn" disabled>
             🗑️ Temizle
         </button>
         
@@ -182,19 +182,12 @@
         </ul>
     </div>
 
-    <!-- Three.js ve Bağımlılıklar -->
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-        }
-    }
-    </script>
+    <!-- Three.js CDN -->
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
     
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    <script>
+        console.log('Script başladı...');
         
         // ============================================
         // GLOBAL DEĞİŞKENLER
@@ -219,6 +212,7 @@
         // SAHNE KURULUMU
         // ============================================
         function init() {
+            console.log('Init fonksiyonu çalıştı');
             const container = document.getElementById('canvas-container');
             
             // Sahne oluştur
@@ -242,7 +236,7 @@
             container.appendChild(renderer.domElement);
             
             // Orbit Controls
-            controls = new OrbitControls(camera, renderer.domElement);
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
             controls.minDistance = 3;
@@ -273,8 +267,15 @@
             ground.receiveShadow = true;
             scene.add(ground);
             
+            // Event listeners
+            document.getElementById('add-layer-btn').addEventListener('click', yeniKatmanEkle);
+            document.getElementById('complete-btn').addEventListener('click', siparisiTamamla);
+            document.getElementById('clear-btn').addEventListener('click', pastaTemizle);
+            
             // Pencere yeniden boyutlandırma
             window.addEventListener('resize', onWindowResize, false);
+            
+            console.log('Sahne kuruldu, animasyon başlatılıyor...');
             
             // Animasyon döngüsü
             animate();
@@ -284,6 +285,8 @@
         // KATMAN EKLEME FONKSİYONU (FİZİK + YAYLANMA)
         // ============================================
         function yeniKatmanEkle() {
+            console.log('Yeni katman ekleniyor...');
+            
             const katmanIndex = katmanlar.length;
             const hedefY = (katmanIndex * KATMAN_YUKSEKLIK) + (KATMAN_YUKSEKLIK / 2);
             const baslangicY = 10;
@@ -296,6 +299,8 @@
                 renk: '#' + renkler[katmanIndex % renkler.length].toString(16).padStart(6, '0')
             };
             katmanlar.push(yeniKatman);
+            
+            console.log('Katman verisi:', yeniKatman);
             
             // 3D Mesh oluştur
             const geometry = new THREE.CylinderGeometry(1.2, 1.2, KATMAN_YUKSEKLIK, 32);
@@ -310,6 +315,8 @@
             mesh.receiveShadow = true;
             scene.add(mesh);
             
+            console.log('Mesh sahnede oluşturuldu');
+            
             // Animasyon verisi
             const animData = {
                 mesh: mesh,
@@ -323,10 +330,12 @@
             
             // UI güncelle
             guncelleUI();
+            
+            console.log('Katman eklendi! Toplam:', katmanlar.length);
         }
 
         // ============================================
-        // FİZİK TABانLI YAYLANMA ANİMASYONU
+        // FİZİK TABANLI YAYLANMA ANİMASYONU
         // ============================================
         function animatePhysics(animData, deltaTime) {
             if (!animData.animating) return;
@@ -400,6 +409,8 @@
         function siparisiTamamla() {
             if (katmanlar.length === 0) return;
             
+            console.log('Sipariş tamamlanıyor...');
+            
             // E-ticaret platformuna gönderilecek sipariş detayı
             const siparisDetayi = {
                 siparisTarihi: new Date().toISOString(),
@@ -414,30 +425,21 @@
                 teslimatTipi: 'standart'
             };
             
-            console.log('=== SİPARİŞ DETAYI ===');
+            console.log('═══════════════════════════════');
+            console.log('🎂 SİPARİŞ DETAYI');
+            console.log('═══════════════════════════════');
             console.log(JSON.stringify(siparisDetayi, null, 2));
-            console.log('======================');
+            console.log('═══════════════════════════════');
             
-            alert(`Sipariş tamamlandı! ${katmanlar.length} katmanlı pasta.\n\nDetaylar console'da (F12 ile görüntüleyin).`);
-            
-            /**
-             * CODEFLY API ENTEGRASYONU İÇİN:
-             * 
-             * fetch('https://api.sizinpazaryeriniz.com/siparis', {
-             *     method: 'POST',
-             *     headers: { 'Content-Type': 'application/json' },
-             *     body: JSON.stringify(siparisDetayi)
-             * })
-             * .then(res => res.json())
-             * .then(data => console.log('Sipariş oluşturuldu:', data))
-             * .catch(err => console.error('Hata:', err));
-             */
+            alert(`✅ Sipariş tamamlandı!\n\n${katmanlar.length} katmanlı pasta\nToplam: ${siparisDetayi.toplamFiyat} TL\n\nDetaylar console'da (F12 ile görüntüleyin).`);
         }
 
         // ============================================
         // TEMİZLE
         // ============================================
         function pastaTemizle() {
+            console.log('Pasta temizleniyor...');
+            
             // Tüm mesh'leri sahneden kaldır
             meshler.forEach(animData => {
                 scene.remove(animData.mesh);
@@ -451,6 +453,8 @@
             katmanSayaci = 0;
             
             guncelleUI();
+            
+            console.log('Pasta temizlendi!');
         }
 
         // ============================================
@@ -472,42 +476,12 @@
         }
 
         // ============================================
-        // BAŞLAT
+        // SAYFA YÜKLENDİĞİNDE BAŞLAT
         // ============================================
-        init();
-        
-        // Fonksiyonları global scope'a ekle (HTML onclick için gerekli)
-        window.yeniKatmanEkle = yeniKatmanEkle;
-        window.siparisiTamamla = siparisiTamamla;
-        window.pastaTemizle = pastaTemizle;
-
-        /**
-         * =====================================================
-         * GELECEK ADIMLAR - GLTF MODEL ENTEGRASYONU
-         * =====================================================
-         * 
-         * 1. GLTFLoader ekleyin:
-         * <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-         * 
-         * 2. Model yükleme fonksiyonu:
-         * 
-         * const loader = new THREE.GLTFLoader();
-         * 
-         * function loadPastaModel(modelPath, callback) {
-         *     loader.load(modelPath, (gltf) => {
-         *         callback(gltf.scene);
-         *     });
-         * }
-         * 
-         * 3. Kullanım:
-         * 
-         * loadPastaModel('/models/cilek-katman.glb', (model) => {
-         *     model.position.y = hedefY;
-         *     scene.add(model);
-         * });
-         * 
-         * =====================================================
-         */
+        window.addEventListener('load', function() {
+            console.log('Sayfa yüklendi, başlatılıyor...');
+            init();
+        });
     </script>
 </body>
 </html>
