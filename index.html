@@ -183,10 +183,19 @@
     </div>
 
     <!-- Three.js ve Bağımlılıklar -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
     
-    <script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        
         // ============================================
         // GLOBAL DEĞİŞKENLER
         // ============================================
@@ -233,7 +242,7 @@
             container.appendChild(renderer.domElement);
             
             // Orbit Controls
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
             controls.minDistance = 3;
@@ -466,6 +475,11 @@
         // BAŞLAT
         // ============================================
         init();
+        
+        // Fonksiyonları global scope'a ekle (HTML onclick için gerekli)
+        window.yeniKatmanEkle = yeniKatmanEkle;
+        window.siparisiTamamla = siparisiTamamla;
+        window.pastaTemizle = pastaTemizle;
 
         /**
          * =====================================================
