@@ -2,657 +2,498 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>SARAY PATİSSERİE — Türkiye'nin Elite Pasta Pazarı</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 3D Pasta İnşaat Motoru</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        :root {
-            --black: #0F0E0C;
-            --gold: #D4AF37;
-            --white: #FCFBF8;
-            --glass: rgba(212, 175, 55, 0.05);
-            --border: 0.5px solid rgba(212, 175, 55, 0.3);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+        
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--black);
-            color: var(--white);
-            overflow-x: hidden;
-        }
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
-
-        /* TOP NAV */
-        .top-nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 70px;
-            background: rgba(15, 14, 12, 0.98);
-            backdrop-filter: blur(20px);
-            border-bottom: var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 5%;
-            z-index: 1000;
-        }
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #D4AF37, #F4E5A1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            cursor: pointer;
-        }
-        .location-badge {
-            background: var(--glass);
-            border: var(--border);
-            padding: 10px 24px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .nav-actions {
-            display: flex;
-            gap: 16px;
-        }
-        .btn-nav {
-            background: var(--glass);
-            border: var(--border);
-            color: var(--white);
-            padding: 10px 24px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-nav:hover {
-            background: rgba(212, 175, 55, 0.15);
-            border-color: var(--gold);
-        }
-
-        /* HERO */
-        .hero {
-            margin-top: 70px;
-            height: 600px;
-            position: relative;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             overflow: hidden;
         }
-        .slide {
+        
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .control-panel {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s;
-            background-size: cover;
-            background-position: center;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            min-width: 280px;
         }
-        .slide.active { opacity: 1; }
-        .overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(15, 14, 12, 0.75), rgba(15, 14, 12, 0.3));
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 60px;
-        }
-        h1 {
-            font-size: 64px;
-            font-weight: 800;
-            margin-bottom: 24px;
-            text-shadow: 0 4px 30px rgba(0,0,0,0.6);
-        }
-        .hero p {
-            font-size: 22px;
-            margin-bottom: 40px;
-            max-width: 700px;
-        }
-        .btn-hero {
-            background: linear-gradient(135deg, #D4AF37, #F4E5A1);
-            color: var(--black);
-            border: none;
-            padding: 22px 60px;
-            border-radius: 50px;
-            font-size: 20px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.4);
-            transition: all 0.4s;
-        }
-        .btn-hero:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.6);
-        }
-        .dots {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 16px;
-        }
-        .dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-            transition: all 0.4s;
-        }
-        .dot.active {
-            background: var(--gold);
-            width: 50px;
-            border-radius: 7px;
-        }
-
-        /* PRODUCTS */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 80px 5%;
-        }
-        h2 {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 16px;
-        }
-        .section-subtitle {
-            font-size: 16px;
-            opacity: 0.7;
-            margin-bottom: 40px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 32px;
-        }
-        .card {
-            background: var(--glass);
-            border: var(--border);
-            border-radius: 24px;
-            overflow: hidden;
-            transition: all 0.4s;
-            cursor: pointer;
-        }
-        .card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 24px 48px rgba(212, 175, 55, 0.25);
-            border-color: rgba(212, 175, 55, 0.6);
-        }
-        .card-img {
-            width: 100%;
-            aspect-ratio: 1;
-            position: relative;
-            overflow: hidden;
-            background: #fff;
-        }
-        .card-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-        .card:hover .card-img img {
-            transform: scale(1.08);
-        }
-        .badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: var(--gold);
-            color: var(--black);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 800;
-        }
-        .card-body {
-            padding: 28px;
-        }
-        .vendor-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-        .vendor {
-            font-size: 13px;
-            opacity: 0.6;
-            font-weight: 600;
-        }
-        .rating {
-            color: var(--gold);
-            font-weight: 700;
-            font-size: 14px;
-        }
-        h3 {
+        
+        .control-panel h2 {
+            margin: 0 0 20px 0;
+            color: #333;
             font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 16px;
         }
-        .tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .tag {
-            background: rgba(212, 175, 55, 0.12);
-            border: var(--border);
-            padding: 6px 14px;
-            border-radius: 14px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 20px;
-            border-top: var(--border);
-        }
-        .price {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--gold);
-        }
-        .price-label {
-            font-size: 12px;
-            opacity: 0.6;
-        }
-        .btns {
-            display: flex;
-            gap: 10px;
-        }
-        .btn {
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 800;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s;
-        }
-        .btn-sec {
-            background: var(--glass);
-            color: var(--white);
-            border: var(--border);
-        }
-        .btn-pri {
-            background: var(--gold);
-            color: var(--black);
-        }
-
-        /* MODAL */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: var(--black);
-            border: var(--border);
-            border-radius: 28px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-        .modal-header {
-            padding: 40px 40px 24px;
-            border-bottom: var(--border);
-        }
-        .modal-title {
-            font-size: 32px;
-            font-weight: 800;
-        }
-        .btn-close {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--glass);
-            border: var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 22px;
-        }
-        .modal-body {
-            padding: 40px;
-        }
-        .form-group {
-            margin-bottom: 24px;
-        }
-        .label {
-            display: block;
+        
+        .stats {
+            margin-bottom: 15px;
+            color: #666;
             font-size: 14px;
-            font-weight: 700;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
             margin-bottom: 10px;
-        }
-        input, select {
-            width: 100%;
-            background: var(--glass);
-            border: var(--border);
-            color: var(--white);
-            padding: 16px 20px;
-            border-radius: 16px;
-            font-size: 15px;
-            font-family: 'Montserrat', sans-serif;
-        }
-        .btn-submit {
-            width: 100%;
-            background: linear-gradient(135deg, #D4AF37, #F4E5A1);
-            color: var(--black);
+            font-size: 16px;
+            font-weight: bold;
             border: none;
-            padding: 18px;
-            border-radius: 50px;
-            font-size: 17px;
-            font-weight: 800;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        /* BOTTOM NAV (Mobile) */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 70px;
-            background: rgba(15, 14, 12, 0.98);
-            backdrop-filter: blur(20px);
-            border-top: var(--border);
-            display: none;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
         }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-success:hover:not(:disabled) {
+            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #666;
+            border: 2px solid #ddd;
+            padding: 10px;
+            font-size: 14px;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            border-color: #f5576c;
+            color: #f5576c;
+        }
+        
+        .btn:disabled {
+            background: #ccc !important;
+            cursor: not-allowed;
             opacity: 0.6;
         }
-        .nav-item.active {
-            opacity: 1;
-            color: var(--gold);
+        
+        .info-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
         }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 42px; }
-            .grid { grid-template-columns: 1fr; }
-            .bottom-nav { display: flex; }
-            body { padding-bottom: 70px; }
+        
+        .info-box ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+        
+        .footer-note {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #666;
+            max-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .footer-note ul {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+        
+        .footer-note strong {
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <!-- TOP NAV -->
-    <nav class="top-nav">
-        <div class="logo">SARAY</div>
-        <div class="location-badge" onclick="openLocationModal()">
-            <span id="currentCity">📍 Şehir Seçin</span>
+    <div id="canvas-container"></div>
+    
+    <!-- Kontrol Paneli -->
+    <div class="control-panel">
+        <h2>🎂 Pasta İnşaat Motoru</h2>
+        
+        <div class="stats">
+            <strong>Toplam Katman:</strong> <span id="layer-count">0</span>
         </div>
-        <div class="nav-actions">
-            <button class="btn-nav" onclick="openAuthModal()">👤 Giriş</button>
-            <button class="btn-nav">🛍 Sepet (<span id="cartCount">0</span>)</button>
-        </div>
-    </nav>
-
-    <!-- HERO SLIDER -->
-    <div class="hero">
-        <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1920&q=90')">
-            <div class="overlay">
-                <h1>Türkiye'nin En <span style="color:var(--gold)">Elite</span> Pasta Deneyimi</h1>
-                <p>81 ilden seçkin pastaneler • Profesyonel 3D tasarım stüdyosu • Aynı gün teslimat</p>
-                <button class="btn-hero" onclick="openStudio()">🎨 PASTANI SEN TASARLA</button>
-            </div>
-        </div>
-        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=1920&q=90')">
-            <div class="overlay">
-                <h1>4 Kişiden <span style="color:var(--gold)">50+ Kişiye</span></h1>
-                <p>Minimum 4 kişilik pastalar • Kurumsal siparişler • Fatura seçeneği</p>
-                <button class="btn-hero" onclick="openStudio()">🎨 PASTANI SEN TASARLA</button>
-            </div>
-        </div>
-        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=1920&q=90')">
-            <div class="overlay">
-                <h1>2D Tasarım → <span style="color:var(--gold)">3D Önizleme</span></h1>
-                <p>Profesyonel pasta fotoğrafları üzerine tasarım • 360° döndürülebilir</p>
-                <button class="btn-hero" onclick="openStudio()">🎨 PASTANI SEN TASARLA</button>
-            </div>
-        </div>
-        <div class="dots">
-            <div class="dot active" onclick="goSlide(0)"></div>
-            <div class="dot" onclick="goSlide(1)"></div>
-            <div class="dot" onclick="goSlide(2)"></div>
+        
+        <button class="btn btn-primary" onclick="yeniKatmanEkle()">
+            + Yeni Katman Ekle
+        </button>
+        
+        <button class="btn btn-success" id="complete-btn" onclick="siparisiTamamla()" disabled>
+            ✓ Siparişi Tamamla
+        </button>
+        
+        <button class="btn btn-secondary" id="clear-btn" onclick="pastaTemizle()" disabled>
+            🗑️ Temizle
+        </button>
+        
+        <div class="info-box">
+            <strong>💡 Kullanım:</strong>
+            <ul>
+                <li>Fareyle pastayı döndürün</li>
+                <li>Scroll ile zoom yapın</li>
+                <li>Katmanlar yumuşak yaylanır</li>
+            </ul>
         </div>
     </div>
-
-    <!-- PRODUCTS -->
-    <div class="container">
-        <h2>🎂 Hazır Premium Modeller</h2>
-        <p class="section-subtitle">Seçkin pastanelerimizin özel koleksiyonları — Sadece yazı ve kişi sayısı düzenlenebilir (Min. 4 kişi)</p>
-        <div class="grid" id="productGrid"></div>
+    
+    <!-- Bilgi Notu -->
+    <div class="footer-note">
+        <strong>🚀 Gelecek Özellikler:</strong>
+        <ul>
+            <li>GLTF/GLB model entegrasyonu</li>
+            <li>Renk/tekstür seçici</li>
+            <li>Codefly API entegrasyonu</li>
+            <li>Gerçek zamanlı fiyat hesaplama</li>
+        </ul>
     </div>
 
-    <!-- LOCATION MODAL -->
-    <div class="modal" id="locationModal">
-        <div class="modal-content">
-            <div class="btn-close" onclick="closeModal('locationModal')">✕</div>
-            <div class="modal-header">
-                <h2 class="modal-title">📍 Konumunuzu Seçin</h2>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="label">Şehir</label>
-                    <select id="citySelect">
-                        <option value="">Şehir Seçin</option>
-                        <option value="istanbul">İstanbul</option>
-                        <option value="ankara">Ankara</option>
-                        <option value="izmir">İzmir</option>
-                        <option value="bursa">Bursa</option>
-                        <option value="antalya">Antalya</option>
-                        <option value="adana">Adana</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="label">İlçe</label>
-                    <select id="districtSelect">
-                        <option value="">Önce şehir seçin</option>
-                    </select>
-                </div>
-                <button class="btn-submit" onclick="setLocation()">✅ Konumu Kaydet</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AUTH MODAL -->
-    <div class="modal" id="authModal">
-        <div class="modal-content">
-            <div class="btn-close" onclick="closeModal('authModal')">✕</div>
-            <div class="modal-header">
-                <h2 class="modal-title">👤 Giriş Yap / Kayıt Ol</h2>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="label">E-posta</label>
-                    <input type="email" placeholder="ornek@email.com">
-                </div>
-                <div class="form-group">
-                    <label class="label">Şifre</label>
-                    <input type="password" placeholder="••••••••">
-                </div>
-                <button class="btn-submit">🔐 Giriş Yap</button>
-                <button class="btn-submit" style="background:var(--glass); color:var(--white); margin-top:12px;">📝 Kayıt Ol</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- BOTTOM NAV (Mobile) -->
-    <div class="bottom-nav">
-        <div class="nav-item active">
-            <span>🏠</span>
-            <span>Ana Sayfa</span>
-        </div>
-        <div class="nav-item">
-            <span>🔍</span>
-            <span>Ara</span>
-        </div>
-        <div class="nav-item" onclick="openStudio()">
-            <span>🎨</span>
-            <span>Tasarla</span>
-        </div>
-        <div class="nav-item">
-            <span>🛍</span>
-            <span>Sepet</span>
-        </div>
-    </div>
-
+    <!-- Three.js ve Bağımlılıklar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
     <script>
-        const products = [
-            {id:1, name:'Premium Çikolata Delight', vendor:'Şef Ahmet Pastanesi', rating:'4.9', city:'istanbul', price:850, tags:['24K Altın','Belçika Çikolata'], img:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80'},
-            {id:2, name:'Tropikal Meyveli Özel', vendor:'Elit Cake House', rating:'4.8', city:'ankara', price:750, tags:['Taze Meyve','Premium'], img:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80'},
-            {id:3, name:'Vanilyalı Rüya', vendor:'Bursa Atölyesi', rating:'4.7', city:'bursa', price:680, tags:['Bourbon Vanilya'], img:'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=800&q=80'},
-            {id:4, name:'Muz Karamel', vendor:'Antalya Patisserie', rating:'4.9', city:'antalya', price:820, tags:['Organik','Toffee'], img:'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80'},
-            {id:5, name:'Berry Mix', vendor:'İzmir Studio', rating:'4.8', city:'izmir', price:890, tags:['Çilek','Ahududu'], img:'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=800&q=80'},
-            {id:6, name:'Frambuazlı', vendor:'Adana Lezzet', rating:'4.6', city:'adana', price:780, tags:['Frambuaz Püresi'], img:'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800&q=80'}
+        // ============================================
+        // GLOBAL DEĞİŞKENLER
+        // ============================================
+        let scene, camera, renderer, controls;
+        let katmanlar = []; // Pasta katmanları verisi
+        let meshler = []; // 3D mesh nesneleri
+        let katmanSayaci = 0;
+        const KATMAN_YUKSEKLIK = 0.8;
+        
+        // Renk paleti
+        const renkler = [
+            0xFFB6C1, // Açık pembe
+            0xFFD700, // Altın sarısı
+            0x98D8C8, // Mint yeşili
+            0xF7CAC9, // Pudra pembe
+            0xDDA0DD, // Erik rengi
+            0xF0E68C, // Khaki sarı
         ];
 
-        let state = { cart:[], city:'', district:'', slide:0 };
-
-        function renderProducts() {
-            let filtered = state.city ? products.filter(p => p.city === state.city) : products;
-            document.getElementById('productGrid').innerHTML = filtered.map(p => `
-                <div class="card">
-                    <div class="card-img">
-                        <img src="${p.img}" alt="${p.name}">
-                        <div class="badge">HAZIR TESLİMAT</div>
-                    </div>
-                    <div class="card-body">
-                        <div class="vendor-row">
-                            <span class="vendor">${p.vendor}</span>
-                            <span class="rating">⭐ ${p.rating}</span>
-                        </div>
-                        <h3>${p.name}</h3>
-                        <div class="tags">
-                            ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-                        </div>
-                        <div class="card-footer">
-                            <div>
-                                <div class="price-label">Başlangıç</div>
-                                <div class="price">₺${p.price}</div>
-                            </div>
-                            <div class="btns">
-                                <button class="btn btn-sec">✏️ Düzenle</button>
-                                <button class="btn btn-pri" onclick="addCart(${p.id})">Ekle</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+        // ============================================
+        // SAHNE KURULUMU
+        // ============================================
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            // Sahne oluştur
+            scene = new THREE.Scene();
+            
+            // Kamera oluştur
+            camera = new THREE.PerspectiveCamera(
+                50,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(5, 4, 5);
+            camera.lookAt(0, 0, 0);
+            
+            // Renderer oluştur
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+            
+            // Orbit Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 3;
+            controls.maxDistance = 15;
+            controls.maxPolarAngle = Math.PI / 2;
+            
+            // Işıklandırma
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 10, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.5);
+            pointLight.position.set(-5, 5, -5);
+            scene.add(pointLight);
+            
+            // Zemin
+            const groundGeometry = new THREE.PlaneGeometry(10, 10);
+            const groundMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -0.5;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // Pencere yeniden boyutlandırma
+            window.addEventListener('resize', onWindowResize, false);
+            
+            // Animasyon döngüsü
+            animate();
         }
 
-        function addCart(id) {
-            state.cart.push(id);
-            document.getElementById('cartCount').textContent = state.cart.length;
-            alert('✅ Sepete eklendi!');
-        }
-
-        function openLocationModal() {
-            document.getElementById('locationModal').classList.add('active');
-        }
-
-        function openAuthModal() {
-            document.getElementById('authModal').classList.add('active');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        function setLocation() {
-            const city = document.getElementById('citySelect').value;
-            const district = document.getElementById('districtSelect').value;
-            if(!city) { alert('Lütfen şehir seçin!'); return; }
-            state.city = city;
-            state.district = district;
-            document.getElementById('currentCity').textContent = `📍 ${city.charAt(0).toUpperCase() + city.slice(1)}`;
-            closeModal('locationModal');
-            renderProducts();
-        }
-
-        function openStudio() {
-            if(!state.city) {
-                alert('❌ Önce şehir seçmelisiniz!');
-                openLocationModal();
-                return;
-            }
-            const path = window.location.pathname.split('/')[1];
-            window.open(`/${path}/cake-studio.html`, '_blank');
-        }
-
-        // Slider
-        setInterval(() => {
-            state.slide = (state.slide + 1) % 3;
-            updateSlider();
-        }, 5000);
-
-        function goSlide(i) {
-            state.slide = i;
-            updateSlider();
-        }
-
-        function updateSlider() {
-            document.querySelectorAll('.slide').forEach((s, i) => {
-                s.classList.toggle('active', i === state.slide);
-            });
-            document.querySelectorAll('.dot').forEach((d, i) => {
-                d.classList.toggle('active', i === state.slide);
-            });
-        }
-
-        // District data
-        document.getElementById('citySelect').addEventListener('change', (e) => {
-            const districts = {
-                istanbul: ['Beşiktaş','Kadıköy','Şişli','Beyoğlu'],
-                ankara: ['Çankaya','Keçiören','Yenimahalle'],
-                izmir: ['Konak','Karşıyaka','Bornova'],
-                bursa: ['Nilüfer','Osmangazi'],
-                antalya: ['Muratpaşa','Kepez'],
-                adana: ['Seyhan','Çukurova']
+        // ============================================
+        // KATMAN EKLEME FONKSİYONU (FİZİK + YAYLANMA)
+        // ============================================
+        function yeniKatmanEkle() {
+            const katmanIndex = katmanlar.length;
+            const hedefY = (katmanIndex * KATMAN_YUKSEKLIK) + (KATMAN_YUKSEKLIK / 2);
+            const baslangicY = 10;
+            
+            // Veri modeli (Pazar yerine gidecek)
+            const yeniKatman = {
+                id: katmanSayaci++,
+                katman: katmanIndex + 1,
+                tip: 'silindir',
+                renk: '#' + renkler[katmanIndex % renkler.length].toString(16).padStart(6, '0')
             };
-            const sel = document.getElementById('districtSelect');
-            sel.innerHTML = districts[e.target.value] 
-                ? districts[e.target.value].map(d => `<option value="${d}">${d}</option>`).join('')
-                : '<option value="">İlçe seçin</option>';
-        });
+            katmanlar.push(yeniKatman);
+            
+            // 3D Mesh oluştur
+            const geometry = new THREE.CylinderGeometry(1.2, 1.2, KATMAN_YUKSEKLIK, 32);
+            const material = new THREE.MeshStandardMaterial({
+                color: renkler[katmanIndex % renkler.length],
+                roughness: 0.3,
+                metalness: 0.1
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(0, baslangicY, 0);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+            
+            // Animasyon verisi
+            const animData = {
+                mesh: mesh,
+                startY: baslangicY,
+                targetY: hedefY,
+                currentY: baslangicY,
+                velocity: 0,
+                animating: true
+            };
+            meshler.push(animData);
+            
+            // UI güncelle
+            guncelleUI();
+        }
 
-        renderProducts();
+        // ============================================
+        // FİZİK TABانLI YAYLANMA ANİMASYONU
+        // ============================================
+        function animatePhysics(animData, deltaTime) {
+            if (!animData.animating) return;
+            
+            // Yay sabitleri (krema kıvamı için optimize)
+            const tension = 120;  // Yay sertliği
+            const friction = 14;  // Sürtünme
+            const mass = 1;
+            
+            // Hedef ile mevcut pozisyon arasındaki fark
+            const displacement = animData.targetY - animData.currentY;
+            
+            // Yay kuvveti: F = -k * x
+            const springForce = tension * displacement;
+            
+            // Sürtünme kuvveti: F = -c * v
+            const dampingForce = -friction * animData.velocity;
+            
+            // Toplam kuvvet
+            const force = springForce + dampingForce;
+            
+            // İvme: a = F / m
+            const acceleration = force / mass;
+            
+            // Hız güncelle
+            animData.velocity += acceleration * deltaTime;
+            
+            // Pozisyon güncelle
+            animData.currentY += animData.velocity * deltaTime;
+            
+            // Mesh pozisyonunu ayarla
+            animData.mesh.position.y = animData.currentY;
+            
+            // Durma kontrolü (hedefe yeterince yakınsa ve hızı düşükse)
+            if (Math.abs(displacement) < 0.001 && Math.abs(animData.velocity) < 0.001) {
+                animData.currentY = animData.targetY;
+                animData.mesh.position.y = animData.targetY;
+                animData.velocity = 0;
+                animData.animating = false;
+            }
+        }
+
+        // ============================================
+        // ANİMASYON DÖNGÜSÜ
+        // ============================================
+        let lastTime = Date.now();
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Delta time hesapla (saniye cinsinden)
+            const currentTime = Date.now();
+            const deltaTime = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+            
+            // Tüm katmanları animasyon et
+            meshler.forEach(animData => {
+                animatePhysics(animData, deltaTime);
+            });
+            
+            // Kontrolleri güncelle
+            controls.update();
+            
+            // Render
+            renderer.render(scene, camera);
+        }
+
+        // ============================================
+        // SİPARİŞ TAMAMLAMA
+        // ============================================
+        function siparisiTamamla() {
+            if (katmanlar.length === 0) return;
+            
+            // E-ticaret platformuna gönderilecek sipariş detayı
+            const siparisDetayi = {
+                siparisTarihi: new Date().toISOString(),
+                toplamKatman: katmanlar.length,
+                katmanlar: katmanlar.map(k => ({
+                    katman: k.katman,
+                    tip: k.tip,
+                    renk: k.renk
+                })),
+                toplamFiyat: katmanlar.length * 25.00,
+                musteriNotu: '',
+                teslimatTipi: 'standart'
+            };
+            
+            console.log('=== SİPARİŞ DETAYI ===');
+            console.log(JSON.stringify(siparisDetayi, null, 2));
+            console.log('======================');
+            
+            alert(`Sipariş tamamlandı! ${katmanlar.length} katmanlı pasta.\n\nDetaylar console'da (F12 ile görüntüleyin).`);
+            
+            /**
+             * CODEFLY API ENTEGRASYONU İÇİN:
+             * 
+             * fetch('https://api.sizinpazaryeriniz.com/siparis', {
+             *     method: 'POST',
+             *     headers: { 'Content-Type': 'application/json' },
+             *     body: JSON.stringify(siparisDetayi)
+             * })
+             * .then(res => res.json())
+             * .then(data => console.log('Sipariş oluşturuldu:', data))
+             * .catch(err => console.error('Hata:', err));
+             */
+        }
+
+        // ============================================
+        // TEMİZLE
+        // ============================================
+        function pastaTemizle() {
+            // Tüm mesh'leri sahneden kaldır
+            meshler.forEach(animData => {
+                scene.remove(animData.mesh);
+                animData.mesh.geometry.dispose();
+                animData.mesh.material.dispose();
+            });
+            
+            // Verileri sıfırla
+            katmanlar = [];
+            meshler = [];
+            katmanSayaci = 0;
+            
+            guncelleUI();
+        }
+
+        // ============================================
+        // UI GÜNCELLEME
+        // ============================================
+        function guncelleUI() {
+            document.getElementById('layer-count').textContent = katmanlar.length;
+            document.getElementById('complete-btn').disabled = katmanlar.length === 0;
+            document.getElementById('clear-btn').disabled = katmanlar.length === 0;
+        }
+
+        // ============================================
+        // PENCERE YENİDEN BOYUTLANDIRMA
+        // ============================================
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // ============================================
+        // BAŞLAT
+        // ============================================
+        init();
+
+        /**
+         * =====================================================
+         * GELECEK ADIMLAR - GLTF MODEL ENTEGRASYONU
+         * =====================================================
+         * 
+         * 1. GLTFLoader ekleyin:
+         * <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+         * 
+         * 2. Model yükleme fonksiyonu:
+         * 
+         * const loader = new THREE.GLTFLoader();
+         * 
+         * function loadPastaModel(modelPath, callback) {
+         *     loader.load(modelPath, (gltf) => {
+         *         callback(gltf.scene);
+         *     });
+         * }
+         * 
+         * 3. Kullanım:
+         * 
+         * loadPastaModel('/models/cilek-katman.glb', (model) => {
+         *     model.position.y = hedefY;
+         *     scene.add(model);
+         * });
+         * 
+         * =====================================================
+         */
     </script>
 </body>
 </html>
