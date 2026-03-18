@@ -717,116 +717,24 @@
 
             <!-- ADIM 2: KATMAN TASARIMI -->
             <div class="content-body" id="step-2">
-                <div class="section-title">3 Katlı Pasta Tasarımı</div>
-                <div class="section-subtitle">Her kat için lezzet, renk ve kaplama seçin</div>
+                <div class="section-title">Dinamik Pasta Tasarımı</div>
+                <div class="section-subtitle">İstediğiniz kadar kat ekleyin (1-5 arası)</div>
 
-                <!-- ALT KAT -->
-                <div class="layer-designer">
-                    <h4>🥇 Alt Kat (En Büyük)</h4>
-                    <div class="form-group">
-                        <label>Lezzet</label>
-                        <select id="layer-1-flavor" onchange="updateLayer(1, 'flavor', this.value)">
-                            <option value="vanilla">🌸 Vanilya</option>
-                            <option value="chocolate">🍫 Çikolata</option>
-                            <option value="strawberry">🍓 Çilek</option>
-                            <option value="lemon">🍋 Limon</option>
-                            <option value="red-velvet">❤️ Red Velvet</option>
-                            <option value="carrot">🥕 Havuç Keki</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Renk</label>
-                        <div class="color-grid">
-                            <div class="color-option selected" style="background: #FFF5E1" data-color="#FFF5E1" data-name="Krem" onclick="selectLayerColor(1, '#FFF5E1', this)"></div>
-                            <div class="color-option" style="background: #FFB6C1" data-color="#FFB6C1" data-name="Pembe" onclick="selectLayerColor(1, '#FFB6C1', this)"></div>
-                            <div class="color-option" style="background: #E6E6FA" data-color="#E6E6FA" data-name="Lila" onclick="selectLayerColor(1, '#E6E6FA', this)"></div>
-                            <div class="color-option" style="background: #B0E0E6" data-color="#B0E0E6" data-name="Mavi" onclick="selectLayerColor(1, '#B0E0E6', this)"></div>
-                            <div class="color-option" style="background: #98FB98" data-color="#98FB98" data-name="Yeşil" onclick="selectLayerColor(1, '#98FB98', this)"></div>
-                            <div class="color-option" style="background: #8B4513" data-color="#8B4513" data-name="Çikolata" onclick="selectLayerColor(1, '#8B4513', this)"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Kaplama</label>
-                        <select id="layer-1-coating" onchange="updateLayer(1, 'coating', this.value)">
-                            <option value="buttercream">Buttercream (Klasik Krema)</option>
-                            <option value="fondant">Fondant (Düz Yüzey)</option>
-                            <option value="ganache">Ganache (Çikolata)</option>
-                            <option value="whipped">Whipped Cream (Şanti)</option>
-                        </select>
+                <!-- KAT SAYISI KONTROLÜ -->
+                <div class="layer-designer" style="display: flex; align-items: center; justify-content: space-between;">
+                    <h4>Kat Sayısı: <span id="layer-count-display">3</span></h4>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="removeLayer()" id="remove-layer-btn" style="padding: 10px 20px;">
+                            ➖ Kat Çıkar
+                        </button>
+                        <button class="btn btn-primary" onclick="addLayer()" id="add-layer-btn" style="padding: 10px 20px;">
+                            ➕ Kat Ekle
+                        </button>
                     </div>
                 </div>
 
-                <!-- ORTA KAT -->
-                <div class="layer-designer">
-                    <h4>🥈 Orta Kat</h4>
-                    <div class="form-group">
-                        <label>Lezzet</label>
-                        <select id="layer-2-flavor" onchange="updateLayer(2, 'flavor', this.value)">
-                            <option value="vanilla">🌸 Vanilya</option>
-                            <option value="chocolate" selected>🍫 Çikolata</option>
-                            <option value="strawberry">🍓 Çilek</option>
-                            <option value="lemon">🍋 Limon</option>
-                            <option value="red-velvet">❤️ Red Velvet</option>
-                            <option value="carrot">🥕 Havuç Keki</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Renk</label>
-                        <div class="color-grid">
-                            <div class="color-option" style="background: #FFF5E1" data-color="#FFF5E1" data-name="Krem" onclick="selectLayerColor(2, '#FFF5E1', this)"></div>
-                            <div class="color-option selected" style="background: #FFB6C1" data-color="#FFB6C1" data-name="Pembe" onclick="selectLayerColor(2, '#FFB6C1', this)"></div>
-                            <div class="color-option" style="background: #E6E6FA" data-color="#E6E6FA" data-name="Lila" onclick="selectLayerColor(2, '#E6E6FA', this)"></div>
-                            <div class="color-option" style="background: #B0E0E6" data-color="#B0E0E6" data-name="Mavi" onclick="selectLayerColor(2, '#B0E0E6', this)"></div>
-                            <div class="color-option" style="background: #98FB98" data-color="#98FB98" data-name="Yeşil" onclick="selectLayerColor(2, '#98FB98', this)"></div>
-                            <div class="color-option" style="background: #8B4513" data-color="#8B4513" data-name="Çikolata" onclick="selectLayerColor(2, '#8B4513', this)"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Kaplama</label>
-                        <select id="layer-2-coating" onchange="updateLayer(2, 'coating', this.value)">
-                            <option value="buttercream">Buttercream (Klasik Krema)</option>
-                            <option value="fondant">Fondant (Düz Yüzey)</option>
-                            <option value="ganache">Ganache (Çikolata)</option>
-                            <option value="whipped">Whipped Cream (Şanti)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- ÜST KAT -->
-                <div class="layer-designer">
-                    <h4>🥉 Üst Kat (En Küçük)</h4>
-                    <div class="form-group">
-                        <label>Lezzet</label>
-                        <select id="layer-3-flavor" onchange="updateLayer(3, 'flavor', this.value)">
-                            <option value="vanilla">🌸 Vanilya</option>
-                            <option value="chocolate">🍫 Çikolata</option>
-                            <option value="strawberry" selected>🍓 Çilek</option>
-                            <option value="lemon">🍋 Limon</option>
-                            <option value="red-velvet">❤️ Red Velvet</option>
-                            <option value="carrot">🥕 Havuç Keki</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Renk</label>
-                        <div class="color-grid">
-                            <div class="color-option" style="background: #FFF5E1" data-color="#FFF5E1" data-name="Krem" onclick="selectLayerColor(3, '#FFF5E1', this)"></div>
-                            <div class="color-option" style="background: #FFB6C1" data-color="#FFB6C1" data-name="Pembe" onclick="selectLayerColor(3, '#FFB6C1', this)"></div>
-                            <div class="color-option selected" style="background: #E6E6FA" data-color="#E6E6FA" data-name="Lila" onclick="selectLayerColor(3, '#E6E6FA', this)"></div>
-                            <div class="color-option" style="background: #B0E0E6" data-color="#B0E0E6" data-name="Mavi" onclick="selectLayerColor(3, '#B0E0E6', this)"></div>
-                            <div class="color-option" style="background: #98FB98" data-color="#98FB98" data-name="Yeşil" onclick="selectLayerColor(3, '#98FB98', this)"></div>
-                            <div class="color-option" style="background: #8B4513" data-color="#8B4513" data-name="Çikolata" onclick="selectLayerColor(3, '#8B4513', this)"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Kaplama</label>
-                        <select id="layer-3-coating" onchange="updateLayer(3, 'coating', this.value)">
-                            <option value="buttercream">Buttercream (Klasik Krema)</option>
-                            <option value="fondant">Fondant (Düz Yüzey)</option>
-                            <option value="ganache">Ganache (Çikolata)</option>
-                            <option value="whipped">Whipped Cream (Şanti)</option>
-                        </select>
-                    </div>
-                </div>
+                <!-- DİNAMİK KATMAN TASARIMLARI -->
+                <div id="layers-container"></div>
             </div>
 
             <!-- ADIM 3: YAZI -->
@@ -1060,27 +968,7 @@
 
             <div class="preview-body">
                 <div class="cake-preview-2d">
-                    <!-- ÜST KAT -->
-                    <div class="preview-layer" id="preview-layer-3">
-                        <div class="layer-decorations-preview" id="preview-deco-3"></div>
-                        <div class="layer-visual" style="background: #E6E6FA;">
-                            <div class="layer-text-preview" id="preview-text-3"></div>
-                        </div>
-                    </div>
-
-                    <!-- ORTA KAT -->
-                    <div class="preview-layer" id="preview-layer-2">
-                        <div class="layer-visual" style="background: #FFB6C1;">
-                            <div class="layer-text-preview" id="preview-text-2"></div>
-                        </div>
-                    </div>
-
-                    <!-- ALT KAT -->
-                    <div class="preview-layer" id="preview-layer-1">
-                        <div class="layer-visual" style="background: #FFF5E1;">
-                            <div class="layer-text-preview" id="preview-text-1"></div>
-                        </div>
-                    </div>
+                    <!-- Dinamik katmanlar JavaScript ile oluşturulacak -->
                 </div>
             </div>
 
@@ -1116,6 +1004,7 @@
         let cakeData = {
             shape: 'round',
             size: 'medium',
+            layerCount: 3, // Başlangıçta 3 kat
             layers: [
                 { flavor: 'vanilla', color: '#FFF5E1', coating: 'buttercream' },
                 { flavor: 'chocolate', color: '#FFB6C1', coating: 'buttercream' },
@@ -1166,6 +1055,7 @@
             updatePreview();
             calculatePrice();
             setMinDeliveryDate();
+            renderLayers(); // Katmanları başlangıçta render et
         });
 
         function setMinDeliveryDate() {
@@ -1175,6 +1065,120 @@
             document.getElementById('delivery-date').min = dateStr;
             document.getElementById('delivery-date').value = dateStr;
             cakeData.special.deliveryDate = dateStr;
+        }
+
+        // ==========================================
+        // DİNAMİK KATMAN YÖNETİMİ
+        // ==========================================
+        function addLayer() {
+            if (cakeData.layerCount >= 5) {
+                alert('Maksimum 5 kat ekleyebilirsiniz!');
+                return;
+            }
+
+            // Rastgele renk seç
+            const colors = ['#FFF5E1', '#FFB6C1', '#E6E6FA', '#B0E0E6', '#98FB98', '#8B4513'];
+            const flavors = ['vanilla', 'chocolate', 'strawberry', 'lemon', 'red-velvet', 'carrot'];
+            
+            const newLayer = {
+                flavor: flavors[Math.floor(Math.random() * flavors.length)],
+                color: colors[Math.floor(Math.random() * colors.length)],
+                coating: 'buttercream'
+            };
+
+            cakeData.layers.push(newLayer);
+            cakeData.layerCount++;
+            
+            renderLayers();
+            updatePreview();
+            updateLayerButtons();
+        }
+
+        function removeLayer() {
+            if (cakeData.layerCount <= 1) {
+                alert('En az 1 kat olmalıdır!');
+                return;
+            }
+
+            cakeData.layers.pop();
+            cakeData.layerCount--;
+            
+            renderLayers();
+            updatePreview();
+            updateLayerButtons();
+        }
+
+        function updateLayerButtons() {
+            document.getElementById('add-layer-btn').disabled = cakeData.layerCount >= 5;
+            document.getElementById('remove-layer-btn').disabled = cakeData.layerCount <= 1;
+            document.getElementById('layer-count-display').textContent = cakeData.layerCount;
+        }
+
+        function renderLayers() {
+            const container = document.getElementById('layers-container');
+            container.innerHTML = '';
+
+            const layerIcons = ['🥇', '🥈', '🥉', '🏅', '⭐'];
+            const layerNames = ['Alt Kat (En Büyük)', '2. Kat', '3. Kat', '4. Kat', 'Üst Kat (En Küçük)'];
+
+            cakeData.layers.forEach((layer, index) => {
+                const layerNum = index + 1;
+                const icon = layerIcons[Math.min(index, 4)];
+                const name = index === cakeData.layerCount - 1 ? 'Üst Kat (En Küçük)' : 
+                             index === 0 ? 'Alt Kat (En Büyük)' : `${layerNum}. Kat`;
+
+                const layerHTML = `
+                    <div class="layer-designer">
+                        <h4>${icon} ${name}</h4>
+                        <div class="form-group">
+                            <label>Lezzet</label>
+                            <select id="layer-${layerNum}-flavor" onchange="updateLayer(${layerNum}, 'flavor', this.value)">
+                                <option value="vanilla" ${layer.flavor === 'vanilla' ? 'selected' : ''}>🌸 Vanilya</option>
+                                <option value="chocolate" ${layer.flavor === 'chocolate' ? 'selected' : ''}>🍫 Çikolata</option>
+                                <option value="strawberry" ${layer.flavor === 'strawberry' ? 'selected' : ''}>🍓 Çilek</option>
+                                <option value="lemon" ${layer.flavor === 'lemon' ? 'selected' : ''}>🍋 Limon</option>
+                                <option value="red-velvet" ${layer.flavor === 'red-velvet' ? 'selected' : ''}>❤️ Red Velvet</option>
+                                <option value="carrot" ${layer.flavor === 'carrot' ? 'selected' : ''}>🥕 Havuç Keki</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Renk</label>
+                            <div class="color-grid">
+                                <div class="color-option ${layer.color === '#FFF5E1' ? 'selected' : ''}" 
+                                     style="background: #FFF5E1" data-color="#FFF5E1" data-name="Krem" 
+                                     onclick="selectLayerColor(${layerNum}, '#FFF5E1', this)"></div>
+                                <div class="color-option ${layer.color === '#FFB6C1' ? 'selected' : ''}" 
+                                     style="background: #FFB6C1" data-color="#FFB6C1" data-name="Pembe" 
+                                     onclick="selectLayerColor(${layerNum}, '#FFB6C1', this)"></div>
+                                <div class="color-option ${layer.color === '#E6E6FA' ? 'selected' : ''}" 
+                                     style="background: #E6E6FA" data-color="#E6E6FA" data-name="Lila" 
+                                     onclick="selectLayerColor(${layerNum}, '#E6E6FA', this)"></div>
+                                <div class="color-option ${layer.color === '#B0E0E6' ? 'selected' : ''}" 
+                                     style="background: #B0E0E6" data-color="#B0E0E6" data-name="Mavi" 
+                                     onclick="selectLayerColor(${layerNum}, '#B0E0E6', this)"></div>
+                                <div class="color-option ${layer.color === '#98FB98' ? 'selected' : ''}" 
+                                     style="background: #98FB98" data-color="#98FB98" data-name="Yeşil" 
+                                     onclick="selectLayerColor(${layerNum}, '#98FB98', this)"></div>
+                                <div class="color-option ${layer.color === '#8B4513' ? 'selected' : ''}" 
+                                     style="background: #8B4513" data-color="#8B4513" data-name="Çikolata" 
+                                     onclick="selectLayerColor(${layerNum}, '#8B4513', this)"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Kaplama</label>
+                            <select id="layer-${layerNum}-coating" onchange="updateLayer(${layerNum}, 'coating', this.value)">
+                                <option value="buttercream" ${layer.coating === 'buttercream' ? 'selected' : ''}>Buttercream (Klasik Krema)</option>
+                                <option value="fondant" ${layer.coating === 'fondant' ? 'selected' : ''}>Fondant (Düz Yüzey)</option>
+                                <option value="ganache" ${layer.coating === 'ganache' ? 'selected' : ''}>Ganache (Çikolata)</option>
+                                <option value="whipped" ${layer.coating === 'whipped' ? 'selected' : ''}>Whipped Cream (Şanti)</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += layerHTML;
+            });
+
+            updateLayerButtons();
         }
 
         // ==========================================
@@ -1399,26 +1403,39 @@
         // ÖNİZLEME GÜNCELLEME
         // ==========================================
         function updatePreview() {
-            // Katman renklerini güncelle
-            for (let i = 1; i <= 3; i++) {
-                const visual = document.querySelector(`#preview-layer-${i} .layer-visual`);
-                if (visual) {
-                    visual.style.background = cakeData.layers[i - 1].color;
-                }
+            // Önizleme panelini yeniden oluştur
+            const previewContainer = document.querySelector('.cake-preview-2d');
+            previewContainer.innerHTML = '';
+
+            // Katmanları tersten göster (üstten alta)
+            for (let i = cakeData.layerCount - 1; i >= 0; i--) {
+                const layer = cakeData.layers[i];
+                const layerNum = i + 1;
+                
+                // Genişlik hesaplama (üstten alta büyüyen)
+                const widthPercent = 100 - ((cakeData.layerCount - 1 - i) * (30 / cakeData.layerCount));
+                
+                const layerHTML = `
+                    <div class="preview-layer" id="preview-layer-${layerNum}">
+                        <div class="layer-decorations-preview" id="preview-deco-${layerNum}"></div>
+                        <div class="layer-visual" style="background: ${layer.color}; width: ${widthPercent}%; margin: 0 auto;">
+                            <div class="layer-text-preview" id="preview-text-${layerNum}"></div>
+                        </div>
+                    </div>
+                `;
+                previewContainer.innerHTML += layerHTML;
             }
 
             // Yazı pozisyonunu güncelle
-            const textPositions = { 'top': 3, 'middle': 2, 'bottom': 1 };
+            const textPositionMap = {
+                'top': cakeData.layerCount,
+                'middle': Math.ceil(cakeData.layerCount / 2),
+                'bottom': 1
+            };
             
-            // Önce tüm yazıları temizle
-            for (let i = 1; i <= 3; i++) {
-                const textEl = document.getElementById(`preview-text-${i}`);
-                if (textEl) textEl.textContent = '';
-            }
-
             // Seçili pozisyona yazıyı ekle
             if (cakeData.text.content) {
-                const targetLayer = textPositions[cakeData.text.position];
+                const targetLayer = textPositionMap[cakeData.text.position];
                 const textEl = document.getElementById(`preview-text-${targetLayer}`);
                 if (textEl) {
                     textEl.textContent = cakeData.text.content;
@@ -1433,8 +1450,9 @@
                 }
             }
 
-            // Süslemeleri güncelle
-            const decoContainer = document.getElementById('preview-deco-3');
+            // Süslemeleri en üst kata ekle
+            const topLayerNum = cakeData.layerCount;
+            const decoContainer = document.getElementById(`preview-deco-${topLayerNum}`);
             if (decoContainer) {
                 decoContainer.innerHTML = '';
                 
@@ -1582,29 +1600,33 @@
             cakeMeshes = [];
             
             const LAYER_HEIGHT = 1;
-            const layerSizes = [2, 1.6, 1.2]; // Alt, orta, üst
+            
+            // Boyutları dinamik hesapla
+            const baseSize = 2.2;
+            const sizeDecrement = (baseSize - 0.8) / Math.max(1, cakeData.layerCount - 1);
             
             cakeData.layers.forEach((layer, index) => {
+                const layerSize = baseSize - (index * sizeDecrement);
                 let geometry;
                 
                 // Şekle göre geometri
                 if (cakeData.shape === 'round') {
                     geometry = new THREE.CylinderGeometry(
-                        layerSizes[index],
-                        layerSizes[index],
+                        layerSize,
+                        layerSize,
                         LAYER_HEIGHT,
                         64
                     );
                 } else if (cakeData.shape === 'square') {
                     geometry = new THREE.BoxGeometry(
-                        layerSizes[index] * 1.8,
+                        layerSize * 1.8,
                         LAYER_HEIGHT,
-                        layerSizes[index] * 1.8
+                        layerSize * 1.8
                     );
                 } else if (cakeData.shape === 'heart') {
                     geometry = new THREE.CylinderGeometry(
-                        layerSizes[index],
-                        layerSizes[index],
+                        layerSize,
+                        layerSize,
                         LAYER_HEIGHT,
                         64
                     );
