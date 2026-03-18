@@ -2,31 +2,35 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SARAY PATİSSERİE — Türkiye'nin Elite Pasta Marketi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SARAY PATİSSERİE — Türkiye'nin Elite Pasta Pazarı</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Montserrat:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
             --black: #0F0E0C;
             --gold: #D4AF37;
             --white: #FCFBF8;
+            --glass: rgba(212, 175, 55, 0.05);
+            --border: 0.5px solid rgba(212, 175, 55, 0.3);
         }
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--black);
             color: var(--white);
+            overflow-x: hidden;
         }
-        
-        /* NAV */
-        .nav {
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* TOP NAV */
+        .top-nav {
             position: fixed;
             top: 0;
             width: 100%;
             height: 70px;
             background: rgba(15, 14, 12, 0.98);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom: var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -40,19 +44,41 @@
             background: linear-gradient(135deg, #D4AF37, #F4E5A1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-        select, button {
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: var(--white);
-            padding: 10px 20px;
-            border-radius: 50px;
             cursor: pointer;
-            font-weight: 700;
-            font-family: 'Montserrat', sans-serif;
         }
-        
-        /* HERO SLIDER */
+        .location-badge {
+            background: var(--glass);
+            border: var(--border);
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-actions {
+            display: flex;
+            gap: 16px;
+        }
+        .btn-nav {
+            background: var(--glass);
+            border: var(--border);
+            color: var(--white);
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-nav:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold);
+        }
+
+        /* HERO */
         .hero {
             margin-top: 70px;
             height: 600px;
@@ -81,10 +107,10 @@
             padding: 60px;
         }
         h1 {
-            font-family: 'Playfair Display', serif;
             font-size: 64px;
             font-weight: 800;
             margin-bottom: 24px;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.6);
         }
         .hero p {
             font-size: 22px;
@@ -101,6 +127,11 @@
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 10px 40px rgba(212, 175, 55, 0.4);
+            transition: all 0.4s;
+        }
+        .btn-hero:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.6);
         }
         .dots {
             position: absolute;
@@ -123,7 +154,7 @@
             width: 50px;
             border-radius: 7px;
         }
-        
+
         /* PRODUCTS */
         .container {
             max-width: 1400px;
@@ -131,68 +162,119 @@
             padding: 80px 5%;
         }
         h2 {
-            font-family: 'Playfair Display', serif;
             font-size: 42px;
             font-weight: 800;
+            margin-bottom: 16px;
+        }
+        .section-subtitle {
+            font-size: 16px;
+            opacity: 0.7;
             margin-bottom: 40px;
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 28px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 32px;
         }
         .card {
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: var(--glass);
+            border: var(--border);
             border-radius: 24px;
             overflow: hidden;
-            transition: transform 0.4s;
+            transition: all 0.4s;
+            cursor: pointer;
         }
         .card:hover {
             transform: translateY(-12px);
+            box-shadow: 0 24px 48px rgba(212, 175, 55, 0.25);
+            border-color: rgba(212, 175, 55, 0.6);
         }
         .card-img {
             width: 100%;
             aspect-ratio: 1;
+            position: relative;
+            overflow: hidden;
             background: #fff;
         }
         .card-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .card:hover .card-img img {
+            transform: scale(1.08);
+        }
+        .badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--gold);
+            color: var(--black);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
         }
         .card-body {
-            padding: 24px;
+            padding: 28px;
+        }
+        .vendor-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
         }
         .vendor {
             font-size: 13px;
             opacity: 0.6;
-            margin-bottom: 8px;
-        }
-        h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            font-weight: 800;
-            margin-bottom: 12px;
+            font-weight: 600;
         }
         .rating {
             color: var(--gold);
             font-weight: 700;
+            font-size: 14px;
+        }
+        h3 {
+            font-size: 24px;
+            font-weight: 800;
             margin-bottom: 16px;
         }
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .tag {
+            background: rgba(212, 175, 55, 0.12);
+            border: var(--border);
+            padding: 6px 14px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: var(--border);
+        }
         .price {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
             color: var(--gold);
-            margin: 16px 0;
+        }
+        .price-label {
+            font-size: 12px;
+            opacity: 0.6;
         }
         .btns {
             display: flex;
             gap: 10px;
         }
         .btn {
-            flex: 1;
-            padding: 12px;
+            padding: 12px 20px;
             border-radius: 50px;
             font-size: 13px;
             font-weight: 800;
@@ -201,55 +283,166 @@
             transition: all 0.3s;
         }
         .btn-sec {
-            background: rgba(212, 175, 55, 0.05);
+            background: var(--glass);
             color: var(--white);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            border: var(--border);
         }
         .btn-pri {
             background: var(--gold);
             color: var(--black);
         }
-        
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--black);
+            border: var(--border);
+            border-radius: 28px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-header {
+            padding: 40px 40px 24px;
+            border-bottom: var(--border);
+        }
+        .modal-title {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .btn-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 22px;
+        }
+        .modal-body {
+            padding: 40px;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        input, select {
+            width: 100%;
+            background: var(--glass);
+            border: var(--border);
+            color: var(--white);
+            padding: 16px 20px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #D4AF37, #F4E5A1);
+            color: var(--black);
+            border: none;
+            padding: 18px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        /* BOTTOM NAV (Mobile) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(15, 14, 12, 0.98);
+            backdrop-filter: blur(20px);
+            border-top: var(--border);
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0.6;
+        }
+        .nav-item.active {
+            opacity: 1;
+            color: var(--gold);
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 42px; }
             .grid { grid-template-columns: 1fr; }
+            .bottom-nav { display: flex; }
+            body { padding-bottom: 70px; }
         }
     </style>
 </head>
 <body>
-    <nav class="nav">
+    <!-- TOP NAV -->
+    <nav class="top-nav">
         <div class="logo">SARAY</div>
-        <select id="city" onchange="filter()">
-            <option value="">📍 Tüm Şehirler</option>
-            <option value="istanbul">İstanbul</option>
-            <option value="ankara">Ankara</option>
-            <option value="izmir">İzmir</option>
-            <option value="bursa">Bursa</option>
-            <option value="antalya">Antalya</option>
-            <option value="adana">Adana</option>
-        </select>
-        <button>🛍 Sepet (<span id="count">0</span>)</button>
+        <div class="location-badge" onclick="openLocationModal()">
+            <span id="currentCity">📍 Şehir Seçin</span>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-nav" onclick="openAuthModal()">👤 Giriş</button>
+            <button class="btn-nav">🛍 Sepet (<span id="cartCount">0</span>)</button>
+        </div>
     </nav>
 
+    <!-- HERO SLIDER -->
     <div class="hero">
         <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1920&q=90')">
             <div class="overlay">
-                <h1>Türkiye'nin En <span style="color:#D4AF37">Elite</span> Pasta Deneyimi</h1>
-                <p>81 ilden seçkin pastaneler • Profesyonel 3D tasarım stüdyosu</p>
+                <h1>Türkiye'nin En <span style="color:var(--gold)">Elite</span> Pasta Deneyimi</h1>
+                <p>81 ilden seçkin pastaneler • Profesyonel 3D tasarım stüdyosu • Aynı gün teslimat</p>
                 <button class="btn-hero" onclick="openStudio()">🎨 PASTANI SEN TASARLA</button>
             </div>
         </div>
         <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=1920&q=90')">
             <div class="overlay">
-                <h1>4 Kişiden <span style="color:#D4AF37">50+ Kişiye</span></h1>
-                <p>Minimum 4 kişilik pastalar • Kurumsal siparişler</p>
+                <h1>4 Kişiden <span style="color:var(--gold)">50+ Kişiye</span></h1>
+                <p>Minimum 4 kişilik pastalar • Kurumsal siparişler • Fatura seçeneği</p>
                 <button class="btn-hero" onclick="openStudio()">🎨 PASTANI SEN TASARLA</button>
             </div>
         </div>
         <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=1920&q=90')">
             <div class="overlay">
-                <h1>2D Tasarım → <span style="color:#D4AF37">3D Önizleme</span></h1>
-                <p>Anlık tasarım • 360° döndürülebilir</p>
+                <h1>2D Tasarım → <span style="color:var(--gold)">3D Önizleme</span></h1>
+                <p>Profesyonel pasta fotoğrafları üzerine tasarım • 360° döndürülebilir</p>
                 <button class="btn-hero" onclick="openStudio()">🎨 PASTANI SEN TASARLA</button>
             </div>
         </div>
@@ -260,79 +453,206 @@
         </div>
     </div>
 
+    <!-- PRODUCTS -->
     <div class="container">
-        <h2>🎂 Hazır Lüks Modeller</h2>
-        <div class="grid" id="grid"></div>
+        <h2>🎂 Hazır Premium Modeller</h2>
+        <p class="section-subtitle">Seçkin pastanelerimizin özel koleksiyonları — Sadece yazı ve kişi sayısı düzenlenebilir (Min. 4 kişi)</p>
+        <div class="grid" id="productGrid"></div>
+    </div>
+
+    <!-- LOCATION MODAL -->
+    <div class="modal" id="locationModal">
+        <div class="modal-content">
+            <div class="btn-close" onclick="closeModal('locationModal')">✕</div>
+            <div class="modal-header">
+                <h2 class="modal-title">📍 Konumunuzu Seçin</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="label">Şehir</label>
+                    <select id="citySelect">
+                        <option value="">Şehir Seçin</option>
+                        <option value="istanbul">İstanbul</option>
+                        <option value="ankara">Ankara</option>
+                        <option value="izmir">İzmir</option>
+                        <option value="bursa">Bursa</option>
+                        <option value="antalya">Antalya</option>
+                        <option value="adana">Adana</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="label">İlçe</label>
+                    <select id="districtSelect">
+                        <option value="">Önce şehir seçin</option>
+                    </select>
+                </div>
+                <button class="btn-submit" onclick="setLocation()">✅ Konumu Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="btn-close" onclick="closeModal('authModal')">✕</div>
+            <div class="modal-header">
+                <h2 class="modal-title">👤 Giriş Yap / Kayıt Ol</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="label">E-posta</label>
+                    <input type="email" placeholder="ornek@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="label">Şifre</label>
+                    <input type="password" placeholder="••••••••">
+                </div>
+                <button class="btn-submit">🔐 Giriş Yap</button>
+                <button class="btn-submit" style="background:var(--glass); color:var(--white); margin-top:12px;">📝 Kayıt Ol</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV (Mobile) -->
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <span>🏠</span>
+            <span>Ana Sayfa</span>
+        </div>
+        <div class="nav-item">
+            <span>🔍</span>
+            <span>Ara</span>
+        </div>
+        <div class="nav-item" onclick="openStudio()">
+            <span>🎨</span>
+            <span>Tasarla</span>
+        </div>
+        <div class="nav-item">
+            <span>🛍</span>
+            <span>Sepet</span>
+        </div>
     </div>
 
     <script>
         const products = [
-            {id:1, name:'Premium Çikolata', vendor:'Şef Ahmet', rating:'4.9', city:'istanbul', price:850, img:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80'},
-            {id:2, name:'Tropikal Meyveli', vendor:'Elit Cake', rating:'4.8', city:'ankara', price:750, img:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80'},
-            {id:3, name:'Vanilyalı Rüya', vendor:'Bursa Atölyesi', rating:'4.7', city:'bursa', price:680, img:'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=800&q=80'},
-            {id:4, name:'Muz Karamel', vendor:'Antalya Patisserie', rating:'4.9', city:'antalya', price:820, img:'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80'},
-            {id:5, name:'Berry Mix', vendor:'İzmir Studio', rating:'4.8', city:'izmir', price:890, img:'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=800&q=80'},
-            {id:6, name:'Frambuazlı', vendor:'Adana Lezzet', rating:'4.6', city:'adana', price:780, img:'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800&q=80'}
+            {id:1, name:'Premium Çikolata Delight', vendor:'Şef Ahmet Pastanesi', rating:'4.9', city:'istanbul', price:850, tags:['24K Altın','Belçika Çikolata'], img:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80'},
+            {id:2, name:'Tropikal Meyveli Özel', vendor:'Elit Cake House', rating:'4.8', city:'ankara', price:750, tags:['Taze Meyve','Premium'], img:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80'},
+            {id:3, name:'Vanilyalı Rüya', vendor:'Bursa Atölyesi', rating:'4.7', city:'bursa', price:680, tags:['Bourbon Vanilya'], img:'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?w=800&q=80'},
+            {id:4, name:'Muz Karamel', vendor:'Antalya Patisserie', rating:'4.9', city:'antalya', price:820, tags:['Organik','Toffee'], img:'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80'},
+            {id:5, name:'Berry Mix', vendor:'İzmir Studio', rating:'4.8', city:'izmir', price:890, tags:['Çilek','Ahududu'], img:'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=800&q=80'},
+            {id:6, name:'Frambuazlı', vendor:'Adana Lezzet', rating:'4.6', city:'adana', price:780, tags:['Frambuaz Püresi'], img:'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800&q=80'}
         ];
 
-        let cart = [], city = '', slide = 0;
+        let state = { cart:[], city:'', district:'', slide:0 };
 
-        function render() {
-            let list = city ? products.filter(p => p.city === city) : products;
-            document.getElementById('grid').innerHTML = list.map(p => `
+        function renderProducts() {
+            let filtered = state.city ? products.filter(p => p.city === state.city) : products;
+            document.getElementById('productGrid').innerHTML = filtered.map(p => `
                 <div class="card">
-                    <div class="card-img"><img src="${p.img}"></div>
+                    <div class="card-img">
+                        <img src="${p.img}" alt="${p.name}">
+                        <div class="badge">HAZIR TESLİMAT</div>
+                    </div>
                     <div class="card-body">
-                        <div class="vendor">${p.vendor}</div>
+                        <div class="vendor-row">
+                            <span class="vendor">${p.vendor}</span>
+                            <span class="rating">⭐ ${p.rating}</span>
+                        </div>
                         <h3>${p.name}</h3>
-                        <div class="rating">⭐ ${p.rating}</div>
-                        <div class="price">₺${p.price}</div>
-                        <div class="btns">
-                            <button class="btn btn-sec">✏️ Düzenle</button>
-                            <button class="btn btn-pri" onclick="add(${p.id})">Ekle</button>
+                        <div class="tags">
+                            ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                        </div>
+                        <div class="card-footer">
+                            <div>
+                                <div class="price-label">Başlangıç</div>
+                                <div class="price">₺${p.price}</div>
+                            </div>
+                            <div class="btns">
+                                <button class="btn btn-sec">✏️ Düzenle</button>
+                                <button class="btn btn-pri" onclick="addCart(${p.id})">Ekle</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function add(id) {
-            cart.push(id);
-            document.getElementById('count').textContent = cart.length;
-            alert('✅ Eklendi!');
+        function addCart(id) {
+            state.cart.push(id);
+            document.getElementById('cartCount').textContent = state.cart.length;
+            alert('✅ Sepete eklendi!');
         }
 
-        function filter() {
-            city = document.getElementById('city').value;
-            render();
+        function openLocationModal() {
+            document.getElementById('locationModal').classList.add('active');
+        }
+
+        function openAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function setLocation() {
+            const city = document.getElementById('citySelect').value;
+            const district = document.getElementById('districtSelect').value;
+            if(!city) { alert('Lütfen şehir seçin!'); return; }
+            state.city = city;
+            state.district = district;
+            document.getElementById('currentCity').textContent = `📍 ${city.charAt(0).toUpperCase() + city.slice(1)}`;
+            closeModal('locationModal');
+            renderProducts();
         }
 
         function openStudio() {
+            if(!state.city) {
+                alert('❌ Önce şehir seçmelisiniz!');
+                openLocationModal();
+                return;
+            }
             const path = window.location.pathname.split('/')[1];
             window.open(`/${path}/cake-studio.html`, '_blank');
         }
 
         // Slider
         setInterval(() => {
-            slide = (slide + 1) % 3;
+            state.slide = (state.slide + 1) % 3;
             updateSlider();
         }, 5000);
 
         function goSlide(i) {
-            slide = i;
+            state.slide = i;
             updateSlider();
         }
 
         function updateSlider() {
             document.querySelectorAll('.slide').forEach((s, i) => {
-                s.classList.toggle('active', i === slide);
+                s.classList.toggle('active', i === state.slide);
             });
             document.querySelectorAll('.dot').forEach((d, i) => {
-                d.classList.toggle('active', i === slide);
+                d.classList.toggle('active', i === state.slide);
             });
         }
 
-        render();
+        // District data
+        document.getElementById('citySelect').addEventListener('change', (e) => {
+            const districts = {
+                istanbul: ['Beşiktaş','Kadıköy','Şişli','Beyoğlu'],
+                ankara: ['Çankaya','Keçiören','Yenimahalle'],
+                izmir: ['Konak','Karşıyaka','Bornova'],
+                bursa: ['Nilüfer','Osmangazi'],
+                antalya: ['Muratpaşa','Kepez'],
+                adana: ['Seyhan','Çukurova']
+            };
+            const sel = document.getElementById('districtSelect');
+            sel.innerHTML = districts[e.target.value] 
+                ? districts[e.target.value].map(d => `<option value="${d}">${d}</option>`).join('')
+                : '<option value="">İlçe seçin</option>';
+        });
+
+        renderProducts();
     </script>
 </body>
 </html>
