@@ -508,12 +508,17 @@
         /* 3D GÖRÜNÜM */
         #canvas-3d {
             width: 100%;
-            height: 100%;
-            display: none;
+            height: 500px;
+            display: block;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
         }
 
-        #canvas-3d.active {
+        #canvas-3d canvas {
             display: block;
+            width: 100% !important;
+            height: 100% !important;
         }
 
         /* FİNAL EKRANI */
@@ -521,10 +526,11 @@
             display: none;
             text-align: center;
             padding: 60px 40px;
+            width: 100%;
         }
 
         .final-screen.active {
-            display: block;
+            display: block !important;
             animation: fadeIn 0.5s ease;
         }
 
@@ -896,7 +902,7 @@
                     <h2>Tasarımınız Tamamlandı!</h2>
                     <p>Aşağıda pastanızın 3D görünümünü inceleyebilirsiniz</p>
 
-                    <div id="canvas-3d" class="active" style="height: 500px; margin: 30px 0;"></div>
+                    <div id="canvas-3d" style="height: 500px; margin: 30px auto; max-width: 900px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);"></div>
 
                     <div class="order-summary">
                         <h3 style="margin-bottom: 20px; color: #333;">📋 Sipariş Özeti</h3>
@@ -1237,7 +1243,9 @@
             
             // Son adımda 3D modeli oluştur
             if (step === 6) {
-                showFinalPreview();
+                setTimeout(() => {
+                    showFinalPreview();
+                }, 100);
             }
             
             updateProgress();
@@ -1525,37 +1533,50 @@
         let cakeMeshes = [];
 
         function showFinalPreview() {
+            // Final review ekranını göster
+            document.getElementById('final-review').style.display = 'block';
+            document.getElementById('final-review').classList.add('active');
+            document.getElementById('order-confirmed').style.display = 'none';
+            document.getElementById('order-confirmed').classList.remove('active');
+            
             document.getElementById('loading').classList.add('active');
             
             setTimeout(() => {
                 if (!scene) {
                     init3D();
+                } else {
+                    // Eğer scene varsa, sadece pastayı yeniden oluştur
+                    create3DCake();
                 }
                 
-                create3DCake();
                 updateSummary();
                 
                 document.getElementById('loading').classList.remove('active');
-            }, 1000);
+            }, 800);
         }
 
         function init3D() {
             const container = document.getElementById('canvas-3d');
+            
+            // Container boyutlarını al
+            const width = container.clientWidth || 800;
+            const height = container.clientHeight || 500;
             
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xf8f9fa);
             
             camera = new THREE.PerspectiveCamera(
                 50,
-                container.clientWidth / container.clientHeight,
+                width / height,
                 0.1,
                 1000
             );
             camera.position.set(6, 5, 6);
             
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setSize(width, height);
             renderer.shadowMap.enabled = true;
+            container.innerHTML = ''; // Önceki içeriği temizle
             container.appendChild(renderer.domElement);
             
             controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -1592,6 +1613,15 @@
             scene.add(ground);
             
             animate3D();
+            
+            // Resize handler
+            window.addEventListener('resize', () => {
+                const newWidth = container.clientWidth || 800;
+                const newHeight = container.clientHeight || 500;
+                camera.aspect = newWidth / newHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(newWidth, newHeight);
+            });
         }
 
         function create3DCake() {
@@ -1660,17 +1690,19 @@
             const shapeNames = { 'round': 'Yuvarlak', 'square': 'Kare', 'heart': 'Kalp' };
             const sizeNames = { 'small': 'Küçük (8-10 kişi)', 'medium': 'Orta (15-20 kişi)', 'large': 'Büyük (30-40 kişi)' };
             
-            document.getElementById('summary-shape').textContent = shapeNames[cakeData.shape];
+            document.getElementById('summary-shape').textContent = shapeNames[cakeData.shape] + ` - ${cakeData.layerCount} Kat`;
             document.getElementById('summary-size').textContent = sizeNames[cakeData.size];
             document.getElementById('summary-text').textContent = cakeData.text.content || 'Yazı yok';
             
-            let decoText = cakeData.decorations.top.join(', ') || 'Yok';
+            let decoText = cakeData.decorations.top.length > 0 ? cakeData.decorations.top.join(', ') : 'Yok';
             if (cakeData.decorations.edge) decoText += `, Kenar: ${cakeData.decorations.edge}`;
             if (cakeData.decorations.topper) decoText += `, Topper: ${cakeData.decorations.topper}`;
             document.getElementById('summary-decorations').textContent = decoText;
             
-            document.getElementById('summary-delivery').textContent = 
-                `${cakeData.special.deliveryDate} ${cakeData.special.deliveryTime}`;
+            const deliveryText = cakeData.special.deliveryDate ? 
+                `${cakeData.special.deliveryDate} ${cakeData.special.deliveryTime}` : 
+                'Belirtilmedi';
+            document.getElementById('summary-delivery').textContent = deliveryText;
             
             document.getElementById('summary-total').textContent = document.getElementById('live-price').textContent;
         }
