@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎂 Pasta Tasarım Stüdyosu - Final</title>
+    <title>🎂 Pasta Tasarım Stüdyosu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Dancing+Script:wght@700&family=Satisfy&family=Allura&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -15,9 +16,8 @@
 
         .app-container { display: flex; height: 100vh; }
 
-        /* SOL PANEL */
         .control-panel {
-            width: 400px;
+            width: 420px;
             background: white;
             overflow-y: auto;
             box-shadow: 2px 0 20px rgba(0,0,0,0.1);
@@ -46,7 +46,6 @@
             gap: 10px;
         }
 
-        /* BUTONLAR */
         .btn {
             padding: 12px 24px;
             border: none;
@@ -67,17 +66,9 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* OPTION CARDS */
         .option-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -108,7 +99,6 @@
         .option-card .icon { font-size: 32px; margin-bottom: 8px; }
         .option-card .title { font-weight: 600; font-size: 13px; color: #333; }
 
-        /* LAYER CONTROLS */
         .layer-item {
             background: #f8f9fa;
             border-radius: 10px;
@@ -132,7 +122,6 @@
             cursor: pointer;
         }
 
-        /* FORM */
         .form-group { margin-bottom: 15px; }
         .form-group label {
             display: block;
@@ -151,7 +140,6 @@
             font-size: 14px;
         }
 
-        /* COLOR PICKER */
         .color-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -174,36 +162,72 @@
             box-shadow: 0 0 0 2px white, 0 0 0 5px #333;
         }
 
-        /* DECORATION CHIPS */
-        .chip-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
+        .font-grid {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
         }
 
-        .chip {
-            padding: 8px 16px;
+        .font-option {
+            padding: 15px;
             background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .font-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .font-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .font-great-vibes { font-family: 'Great Vibes', cursive; }
+        .font-pacifico { font-family: 'Pacifico', cursive; }
+        .font-dancing { font-family: 'Dancing Script', cursive; }
+        .font-satisfy { font-family: 'Satisfy', cursive; }
+        .font-allura { font-family: 'Allura', cursive; }
+
+        .deco-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .deco-card {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
             transition: all 0.3s;
             user-select: none;
         }
 
-        .chip:hover { border-color: #667eea; }
-
-        .chip.selected {
-            background: #667eea;
-            color: white;
+        .deco-card:hover {
             border-color: #667eea;
+            transform: translateY(-3px);
         }
 
-        .draggable-deco { cursor: pointer; }
+        .deco-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
 
-        /* SAĞ PANEL */
+        .deco-card .emoji { font-size: 36px; margin-bottom: 8px; }
+        .deco-card .name { font-size: 12px; font-weight: 600; }
+
         .preview-panel {
             flex: 1;
             display: flex;
@@ -225,7 +249,6 @@
             cursor: crosshair;
         }
 
-        /* PRICE BOX */
         .price-box {
             position: absolute;
             bottom: 40px;
@@ -249,7 +272,6 @@
             font-weight: bold;
         }
 
-        /* COMPLETE BUTTON */
         .complete-section {
             padding: 25px;
             background: #f8f9fa;
@@ -266,15 +288,27 @@
             font-weight: bold;
             cursor: pointer;
         }
+
+        .alert-box {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #1565C0;
+            line-height: 1.6;
+        }
+
+        .alert-box strong { display: block; margin-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- SOL PANEL -->
         <div class="control-panel">
             <div class="panel-header">
                 <h1>🎂 Pasta Tasarım Stüdyosu</h1>
-                <p>Hayalinizdeki pastayı oluşturun</p>
+                <p>Profesyonel Pasta Tasarımı</p>
             </div>
 
             <!-- ŞEKİL -->
@@ -336,9 +370,9 @@
                     📤 Görsel Yükle
                 </button>
                 <div id="image-preview" style="margin-top: 15px; display: none;">
-                    <img id="preview-img" style="width: 100%; border-radius: 8px;">
+                    <img id="preview-img" style="width: 100%; border-radius: 8px; border: 2px solid #e0e0e0;">
                     <button class="btn btn-secondary" onclick="removeImage()" style="width: 100%; margin-top: 10px;">
-                        🗑️ Kaldır
+                        🗑️ Görseli Kaldır
                     </button>
                 </div>
             </div>
@@ -346,26 +380,27 @@
             <!-- YAZI -->
             <div class="section">
                 <h3>✍️ Yazı</h3>
-                <div class="chip-container">
-                    <div class="chip" onclick="selectTextTemplate('İyi ki doğdun!', this)">🎉 İyi ki doğdun!</div>
-                    <div class="chip" onclick="selectTextTemplate('Mutlu Yıllar', this)">🎊 Mutlu Yıllar</div>
-                    <div class="chip" onclick="selectTextTemplate('Tebrikler', this)">👏 Tebrikler</div>
-                </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Özel Metin</label>
-                    <input type="text" id="custom-text" maxlength="30" placeholder="Mesajınızı yazın..." 
+                <div class="form-group">
+                    <label>Metin</label>
+                    <input type="text" id="custom-text" maxlength="30" placeholder="İyi ki doğdun..." 
                            oninput="store.setText(this.value)">
                 </div>
                 <div class="form-group">
-                    <label>Yazı Pozisyonu</label>
-                    <select id="text-position" onchange="store.setTextPosition(this.value)">
-                        <option value="top">Üst Kat</option>
-                        <option value="middle">Orta</option>
-                        <option value="bottom">Alt Kat</option>
-                    </select>
+                    <label>Yazı Stili (Tıklayın)</label>
+                    <div class="font-grid">
+                        <div class="font-option font-great-vibes selected" onclick="store.setFont('Great Vibes', this)">
+                            İyi ki doğdun
+                        </div>
+                        <div class="font-option font-pacifico" onclick="store.setFont('Pacifico', this)">
+                            İyi ki doğdun
+                        </div>
+                        <div class="font-option font-dancing" onclick="store.setFont('Dancing Script', this)">
+                            İyi ki doğdun
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Yazı Rengi</label>
+                    <label>Renk</label>
                     <div class="color-grid">
                         <div class="color-option selected" style="background: #8B4513" onclick="store.setTextColor('#8B4513', this)"></div>
                         <div class="color-option" style="background: #FFFFFF; border: 1px solid #ccc" onclick="store.setTextColor('#FFFFFF', this)"></div>
@@ -379,22 +414,39 @@
             <!-- SÜSLEMELER -->
             <div class="section">
                 <h3>🌸 Süslemeler</h3>
-                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
-                    <strong>1)</strong> Süslemeyi tıklayın<br>
-                    <strong>2)</strong> Pastanın istediğiniz yerine tıklayın
-                </p>
-                <div class="chip-container">
-                    <div class="chip" data-deco="strawberry" onclick="selectDecoration('strawberry', this)">🍓 Çilek</div>
-                    <div class="chip" data-deco="berry" onclick="selectDecoration('berry', this)">🫐 Mersini</div>
-                    <div class="chip" data-deco="chocolate" onclick="selectDecoration('chocolate', this)">🍫 Çikolata</div>
-                    <div class="chip" data-deco="macaron" onclick="selectDecoration('macaron', this)">🧁 Macaron</div>
-                    <div class="chip" data-deco="flower" onclick="selectDecoration('flower', this)">🌺 Çiçek</div>
-                    <div class="chip" data-deco="star" onclick="selectDecoration('star', this)">⭐ Yıldız</div>
+                <div class="deco-grid">
+                    <div class="deco-card" data-deco="strawberry" onclick="addDecorationQuick('strawberry', this)">
+                        <div class="emoji">🍓</div>
+                        <div class="name">Çilek</div>
+                    </div>
+                    <div class="deco-card" data-deco="chocolate" onclick="addDecorationQuick('chocolate', this)">
+                        <div class="emoji">🍫</div>
+                        <div class="name">Çikolata</div>
+                    </div>
+                    <div class="deco-card" data-deco="flower" onclick="addDecorationQuick('flower', this)">
+                        <div class="emoji">🌺</div>
+                        <div class="name">Çiçek</div>
+                    </div>
+                    <div class="deco-card" data-deco="star" onclick="addDecorationQuick('star', this)">
+                        <div class="emoji">⭐</div>
+                        <div class="name">Yıldız</div>
+                    </div>
+                    <div class="deco-card" data-deco="candle" onclick="addDecorationQuick('candle', this)">
+                        <div class="emoji">🕯️</div>
+                        <div class="name">Mum</div>
+                    </div>
+                    <div class="deco-card" data-deco="berry" onclick="addDecorationQuick('berry', this)">
+                        <div class="emoji">🫐</div>
+                        <div class="name">Mersini</div>
+                    </div>
+                </div>
+                <div class="alert-box">
+                    <strong>💡 Kolay Kullanım:</strong>
+                    Süslemeye tıklayın, otomatik olarak pastanın üstüne eklenir. Aynı süslemeden istediğiniz kadar ekleyebilirsiniz!
                 </div>
                 <div id="decoration-list" style="margin-top: 15px;"></div>
             </div>
 
-            <!-- SİPARİŞ -->
             <div class="complete-section">
                 <button class="btn-complete" onclick="completeOrder()">
                     ✅ Siparişi Tamamla
@@ -402,7 +454,6 @@
             </div>
         </div>
 
-        <!-- SAĞ PANEL -->
         <div class="preview-panel">
             <div id="canvas-container"></div>
             
@@ -417,11 +468,9 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
-        // STATE MANAGEMENT
         const createStore = (initialState) => {
             let state = initialState;
             const listeners = new Set();
-
             return {
                 getState: () => state,
                 setState: (partial) => {
@@ -439,17 +488,19 @@
             shape: 'round',
             size: 'medium',
             layers: [
-                { id: 1, flavor: 'vanilla', color: '#FFF5E1' },
-                { id: 2, flavor: 'chocolate', color: '#FFB6C1' },
-                { id: 3, flavor: 'strawberry', color: '#E6E6FA' }
+                { id: 1, color: '#FFF5E1' },
+                { id: 2, color: '#FFB6C1' },
+                { id: 3, color: '#E6E6FA' }
             ],
-            text: { content: '', color: '#8B4513', position: 'top' },
+            text: { content: '', color: '#8B4513', font: 'Great Vibes' },
             image: null,
             decorations: [],
-            pricing: { base: 200, decorationPrices: { strawberry: 30, berry: 25, chocolate: 20, macaron: 35, flower: 40, star: 20 } }
+            pricing: { 
+                base: 200, 
+                decorationPrices: { strawberry: 30, berry: 25, chocolate: 20, flower: 40, star: 20, candle: 15 } 
+            }
         });
 
-        // ACTIONS
         const store = {
             setShape: (shape) => {
                 useStore.setState({ shape });
@@ -457,14 +508,19 @@
                 render3D();
             },
             setSize: (size) => {
-                useStore.setState((s) => ({ size, pricing: { ...s.pricing, base: size === 'small' ? 150 : size === 'large' ? 300 : 200 } }));
+                useStore.setState((s) => ({ 
+                    size, 
+                    pricing: { ...s.pricing, base: size === 'small' ? 150 : size === 'large' ? 300 : 200 } 
+                }));
                 updateSizeUI(size);
                 calculatePrice();
             },
             addLayer: () => {
                 const s = useStore.getState();
-                if (s.layers.length >= 5) return alert('Maks 5 kat!');
-                useStore.setState((s) => ({ layers: [...s.layers, { id: Date.now(), flavor: 'vanilla', color: '#FFE4B5' }] }));
+                if (s.layers.length >= 5) return alert('Maksimum 5 kat!');
+                useStore.setState((s) => ({ 
+                    layers: [...s.layers, { id: Date.now(), color: '#FFE4B5' }] 
+                }));
                 renderLayers();
                 render3D();
             },
@@ -476,21 +532,24 @@
                 render3D();
             },
             updateLayer: (id, prop, val) => {
-                useStore.setState((s) => ({ layers: s.layers.map(l => l.id === id ? { ...l, [prop]: val } : l) }));
+                useStore.setState((s) => ({ 
+                    layers: s.layers.map(l => l.id === id ? { ...l, [prop]: val } : l) 
+                }));
                 render3D();
             },
             setText: (content) => {
                 useStore.setState((s) => ({ text: { ...s.text, content } }));
-                document.getElementById('custom-text').value = content;
-                render3D();
-            },
-            setTextPosition: (position) => {
-                useStore.setState((s) => ({ text: { ...s.text, position } }));
                 render3D();
             },
             setTextColor: (color, el) => {
                 useStore.setState((s) => ({ text: { ...s.text, color } }));
                 el.parentElement.querySelectorAll('.color-option').forEach(e => e.classList.remove('selected'));
+                el.classList.add('selected');
+                render3D();
+            },
+            setFont: (font, el) => {
+                useStore.setState((s) => ({ text: { ...s.text, font } }));
+                el.parentElement.querySelectorAll('.font-option').forEach(e => e.classList.remove('selected'));
                 el.classList.add('selected');
                 render3D();
             },
@@ -503,32 +562,33 @@
                 render3D();
             },
             addDecoration: (type, position) => {
-                useStore.setState((s) => ({ decorations: [...s.decorations, { id: Date.now(), type, position }] }));
+                useStore.setState((s) => ({ 
+                    decorations: [...s.decorations, { id: Date.now(), type, position }] 
+                }));
                 updateDecorationList();
                 calculatePrice();
                 render3D();
             },
             removeDecoration: (id) => {
-                useStore.setState((s) => ({ decorations: s.decorations.filter(d => d.id !== id) }));
+                useStore.setState((s) => ({ 
+                    decorations: s.decorations.filter(d => d.id !== id) 
+                }));
                 updateDecorationList();
                 calculatePrice();
                 render3D();
             }
         };
 
-        // UI HELPERS
         function updateShapeUI(shape) {
-            document.querySelectorAll('[data-shape]').forEach(el => el.classList.toggle('selected', el.dataset.shape === shape));
+            document.querySelectorAll('[data-shape]').forEach(el => 
+                el.classList.toggle('selected', el.dataset.shape === shape)
+            );
         }
 
         function updateSizeUI(size) {
-            document.querySelectorAll('[data-size]').forEach(el => el.classList.toggle('selected', el.dataset.size === size));
-        }
-
-        function selectTextTemplate(text, el) {
-            el.parentElement.querySelectorAll('.chip').forEach(e => e.classList.remove('selected'));
-            el.classList.add('selected');
-            store.setText(text);
+            document.querySelectorAll('[data-size]').forEach(el => 
+                el.classList.toggle('selected', el.dataset.size === size)
+            );
         }
 
         function handleImageUpload(event) {
@@ -536,9 +596,11 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = (e) => {
-                store.setImage(e.target.result);
-                document.getElementById('preview-img').src = e.target.result;
+                const imgData = e.target.result;
+                store.setImage(imgData);
+                document.getElementById('preview-img').src = imgData;
                 document.getElementById('image-preview').style.display = 'block';
+                console.log('✅ Görsel yüklendi ve 3D\'ye eklendi');
             };
             reader.readAsDataURL(file);
         }
@@ -549,35 +611,29 @@
             document.getElementById('image-upload').value = '';
         }
 
-        // DECORATION SELECTION
-        let selectedDecoType = null;
-
-        function selectDecoration(type, el) {
-            selectedDecoType = type;
-            document.querySelectorAll('[data-deco]').forEach(e => e.classList.remove('selected'));
+        // HIZLI SÜSLEME SİSTEMİ
+        let decoIndex = 0;
+        function addDecorationQuick(type, el) {
+            const s = useStore.getState();
+            
+            // Pastanın üstüne otomatik yerleştir
+            const radius = 1.2;
+            const angle = (decoIndex * Math.PI * 2) / 8;
+            const position = {
+                x: Math.cos(angle) * radius,
+                y: 0,
+                z: Math.sin(angle) * radius
+            };
+            
+            decoIndex = (decoIndex + 1) % 8;
+            
+            store.addDecoration(type, position);
+            
+            // Animasyon efekti
             el.classList.add('selected');
-            alert(`${el.textContent} seçildi - Pastanın istediğiniz yerine tıklayın`);
-        }
-
-        function onCanvasClick(event) {
-            if (!selectedDecoType) return;
+            setTimeout(() => el.classList.remove('selected'), 300);
             
-            const container = document.getElementById('canvas-container');
-            const rect = container.getBoundingClientRect();
-            const mouse = new THREE.Vector2(
-                ((event.clientX - rect.left) / rect.width) * 2 - 1,
-                -((event.clientY - rect.top) / rect.height) * 2 + 1
-            );
-            
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(cakeMeshes, true);
-            
-            if (intersects.length > 0) {
-                const point = intersects[0].point;
-                store.addDecoration(selectedDecoType, { x: point.x, y: 0, z: point.z });
-                document.querySelectorAll('[data-deco]').forEach(e => e.classList.remove('selected'));
-                selectedDecoType = null;
-            }
+            console.log(`✅ ${type} eklendi:`, position);
         }
 
         function updateDecorationList() {
@@ -587,12 +643,18 @@
                 container.innerHTML = '';
                 return;
             }
-            const emojis = { strawberry: '🍓', berry: '🫐', chocolate: '🍫', macaron: '🧁', flower: '🌺', star: '⭐' };
-            container.innerHTML = '<div style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 8px;">Eklenenler:</div>';
+            const emojis = { strawberry: '🍓', berry: '🫐', chocolate: '🍫', flower: '🌺', star: '⭐', candle: '🕯️' };
+            container.innerHTML = '<div style="font-size: 13px; color: #666; font-weight: 600; margin-bottom: 10px;">Eklenen Süslemeler:</div>';
             s.decorations.forEach((d, i) => {
                 const div = document.createElement('div');
-                div.style.cssText = 'display: flex; justify-content: space-between; padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px; border: 1px solid #e0e0e0;';
-                div.innerHTML = `<span style="font-size: 13px;">${emojis[d.type]} #${i + 1}</span><button onclick="store.removeDecoration(${d.id})" style="background: #ff4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px;">Sil</button>`;
+                div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 12px; background: white; border-radius: 8px; margin-bottom: 8px; border: 2px solid #e0e0e0;';
+                div.innerHTML = `
+                    <span style="font-size: 15px; font-weight: 600;">${emojis[d.type]} ${i + 1}</span>
+                    <button onclick="store.removeDecoration(${d.id})" 
+                            style="background: #ff4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                        Sil
+                    </button>
+                `;
                 container.appendChild(div);
             });
         }
@@ -606,8 +668,7 @@
                 div.className = 'layer-item';
                 div.innerHTML = `
                     <div class="layer-header">
-                        <h4>${i === 0 ? 'Alt' : i === s.layers.length - 1 ? 'Üst' : i + 1}. Kat</h4>
-                        ${s.layers.length > 1 ? `<button class="btn-remove" onclick="store.removeLayer()">✕</button>` : ''}
+                        <h4>${i === 0 ? 'Alt' : i === s.layers.length - 1 ? 'Üst' : (i + 1) + '.'} Kat</h4>
                     </div>
                     <div class="form-group">
                         <label>Renk</label>
@@ -645,22 +706,25 @@
             const s = useStore.getState();
             const orderData = {
                 orderNumber: Math.floor(100000 + Math.random() * 900000),
+                date: new Date().toISOString(),
                 cake: s,
                 totalPrice: document.getElementById('total-price').textContent
             };
-            console.log('═══ SİPARİŞ ═══');
+            console.log('═══════════════════════════════');
+            console.log('🎂 SİPARİŞ DETAYI');
+            console.log('═══════════════════════════════');
             console.log(JSON.stringify(orderData, null, 2));
-            alert(`✅ Sipariş #${orderData.orderNumber} alındı!\n\nDetaylar console'da (F12)`);
+            alert(`✅ Sipariş #${orderData.orderNumber} alındı!\nDetaylar console'da (F12)`);
         }
 
         // THREE.JS
-        let scene, camera, renderer, controls, raycaster;
+        let scene, camera, renderer, controls;
         let cakeMeshes = [], decorationMeshes = [];
 
         function init3D() {
             const container = document.getElementById('canvas-container');
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xf8f9fa);
+            scene.background = new THREE.Color(0xf5f5f5);
             camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.set(5, 4, 5);
             renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -669,9 +733,8 @@
             container.appendChild(renderer.domElement);
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            raycaster = new THREE.Raycaster();
             
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
             scene.add(ambientLight);
             const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
             dirLight.position.set(5, 10, 5);
@@ -687,7 +750,6 @@
             ground.receiveShadow = true;
             scene.add(ground);
             
-            container.addEventListener('click', onCanvasClick);
             animate();
         }
 
@@ -708,7 +770,7 @@
             const baseSize = 2;
             const sizeDecrement = (baseSize - 0.8) / Math.max(1, s.layers.length - 1);
 
-            // CREATE LAYERS
+            // LAYERS
             s.layers.forEach((layer, i) => {
                 const layerSize = baseSize - (i * sizeDecrement);
                 let geometry;
@@ -718,108 +780,140 @@
                 } else if (s.shape === 'square') {
                     geometry = new THREE.BoxGeometry(layerSize * 1.8, LAYER_HEIGHT, layerSize * 1.8);
                 } else {
-                    // HEART
+                    // KALP - DÜZELTİLMİŞ
                     const heart = new THREE.Shape();
-                    heart.moveTo(0.5, 0.5);
-                    heart.bezierCurveTo(0.5, 0.5, 0.4, 0, 0, 0);
-                    heart.bezierCurveTo(-0.6, 0, -0.6, 0.7, -0.6, 0.7);
-                    heart.bezierCurveTo(-0.6, 1.1, -0.3, 1.54, 0.5, 1.9);
-                    heart.bezierCurveTo(1.2, 1.54, 1.6, 1.1, 1.6, 0.7);
-                    heart.bezierCurveTo(1.6, 0.7, 1.6, 0, 1, 0);
-                    heart.bezierCurveTo(0.7, 0, 0.5, 0.5, 0.5, 0.5);
-                    geometry = new THREE.ExtrudeGeometry(heart, { depth: LAYER_HEIGHT, bevelEnabled: false });
+                    heart.moveTo(0, 0.2);
+                    heart.bezierCurveTo(0, 0, -0.4, -0.2, -0.4, 0.2);
+                    heart.bezierCurveTo(-0.4, 0.5, -0.2, 0.7, 0, 1);
+                    heart.bezierCurveTo(0.2, 0.7, 0.4, 0.5, 0.4, 0.2);
+                    heart.bezierCurveTo(0.4, -0.2, 0, 0, 0, 0.2);
+                    
+                    geometry = new THREE.ExtrudeGeometry(heart, { 
+                        depth: LAYER_HEIGHT, 
+                        bevelEnabled: true,
+                        bevelThickness: 0.03,
+                        bevelSize: 0.03,
+                        bevelSegments: 2
+                    });
                     geometry.rotateX(Math.PI / 2);
-                    geometry.scale(layerSize * 0.5, layerSize * 0.5, 1);
+                    geometry.rotateZ(Math.PI);
+                    geometry.scale(layerSize * 1.2, layerSize * 1.2, 1);
                 }
 
-                const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: layer.color, roughness: 0.3, metalness: 0.1 }));
+                const mesh = new THREE.Mesh(
+                    geometry, 
+                    new THREE.MeshStandardMaterial({ color: layer.color, roughness: 0.3, metalness: 0.1 })
+                );
                 mesh.position.y = s.shape === 'heart' ? (i * LAYER_HEIGHT) : (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
                 scene.add(mesh);
                 cakeMeshes.push(mesh);
 
-                // IMAGE ON TOP
+                // GÖRSEL - ÜST YÜZEYE TAM OTURACAK
                 if (s.image && i === s.layers.length - 1) {
-                    const texture = new THREE.TextureLoader().load(s.image);
+                    const texture = new THREE.TextureLoader().load(s.image, () => {
+                        console.log('✅ Görsel texture yüklendi');
+                    });
+                    
                     let topGeo;
                     if (s.shape === 'round') {
-                        topGeo = new THREE.CircleGeometry(layerSize * 0.95, 64);
+                        topGeo = new THREE.CircleGeometry(layerSize, 64);
                     } else if (s.shape === 'square') {
-                        topGeo = new THREE.PlaneGeometry(layerSize * 1.7, layerSize * 1.7);
+                        topGeo = new THREE.PlaneGeometry(layerSize * 1.8, layerSize * 1.8);
                     } else {
                         const h2 = new THREE.Shape();
-                        h2.moveTo(0.5, 0.5);
-                        h2.bezierCurveTo(0.5, 0.5, 0.4, 0, 0, 0);
-                        h2.bezierCurveTo(-0.6, 0, -0.6, 0.7, -0.6, 0.7);
-                        h2.bezierCurveTo(-0.6, 1.1, -0.3, 1.54, 0.5, 1.9);
-                        h2.bezierCurveTo(1.2, 1.54, 1.6, 1.1, 1.6, 0.7);
-                        h2.bezierCurveTo(1.6, 0.7, 1.6, 0, 1, 0);
-                        h2.bezierCurveTo(0.7, 0, 0.5, 0.5, 0.5, 0.5);
+                        h2.moveTo(0, 0.2);
+                        h2.bezierCurveTo(0, 0, -0.4, -0.2, -0.4, 0.2);
+                        h2.bezierCurveTo(-0.4, 0.5, -0.2, 0.7, 0, 1);
+                        h2.bezierCurveTo(0.2, 0.7, 0.4, 0.5, 0.4, 0.2);
+                        h2.bezierCurveTo(0.4, -0.2, 0, 0, 0, 0.2);
                         topGeo = new THREE.ShapeGeometry(h2);
-                        topGeo.scale(layerSize * 0.45, layerSize * 0.45, 1);
+                        topGeo.scale(layerSize * 1.2, layerSize * 1.2, 1);
                     }
-                    const topMesh = new THREE.Mesh(topGeo, new THREE.MeshStandardMaterial({ map: texture, roughness: 0.2, metalness: 0.1 }));
+                    
+                    const topMesh = new THREE.Mesh(topGeo, new THREE.MeshStandardMaterial({ 
+                        map: texture, 
+                        roughness: 0.2,
+                        metalness: 0.1
+                    }));
                     topMesh.rotation.x = -Math.PI / 2;
-                    topMesh.position.y = s.shape === 'heart' ? (i * LAYER_HEIGHT) + LAYER_HEIGHT + 0.01 : (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2) + 0.01;
-                    if (s.shape === 'heart') topMesh.rotation.z = Math.PI;
+                    if (s.shape === 'heart') {
+                        topMesh.rotation.z = Math.PI;
+                        topMesh.position.y = (i * LAYER_HEIGHT) + LAYER_HEIGHT + 0.005;
+                    } else {
+                        topMesh.position.y = (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2) + 0.005;
+                    }
+                    topMesh.receiveShadow = true;
                     scene.add(topMesh);
                     cakeMeshes.push(topMesh);
                 }
             });
 
-            // TEXT
+            // TEXT - ÜST KATA
             if (s.text.content) {
-                let targetIdx = s.layers.length - 1;
-                if (s.text.position === 'middle') targetIdx = Math.floor(s.layers.length / 2);
-                if (s.text.position === 'bottom') targetIdx = 0;
-                
-                const layerY = (targetIdx * LAYER_HEIGHT) + (LAYER_HEIGHT / 2);
-                const layerSize = baseSize - (targetIdx * sizeDecrement);
+                const topIdx = s.layers.length - 1;
+                const layerY = (topIdx * LAYER_HEIGHT) + (LAYER_HEIGHT / 2);
+                const layerSize = baseSize - (topIdx * sizeDecrement);
                 
                 const canvas = document.createElement('canvas');
                 canvas.width = 1024;
                 canvas.height = 256;
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, 1024, 256);
-                ctx.fillStyle = s.text.color;
-                ctx.font = 'bold 100px Georgia';
+                
+                const fontSizes = { 'Great Vibes': '120px', 'Pacifico': '100px', 'Dancing Script': '110px' };
+                ctx.font = `${fontSizes[s.text.font] || '100px'} "${s.text.font}", cursive`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-                ctx.lineWidth = 10;
+                ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+                ctx.lineWidth = 14;
                 ctx.strokeText(s.text.content, 512, 128);
-                ctx.shadowColor = 'rgba(0,0,0,0.6)';
-                ctx.shadowBlur = 10;
+                ctx.shadowColor = 'rgba(0,0,0,0.7)';
+                ctx.shadowBlur = 12;
+                ctx.shadowOffsetX = 4;
+                ctx.shadowOffsetY = 4;
+                ctx.fillStyle = s.text.color;
                 ctx.fillText(s.text.content, 512, 128);
                 
                 const textMesh = new THREE.Mesh(
-                    new THREE.PlaneGeometry(layerSize * 1.6, 0.4),
-                    new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, alphaTest: 0.05 })
+                    new THREE.PlaneGeometry(layerSize * 1.8, 0.5),
+                    new THREE.MeshStandardMaterial({ 
+                        map: new THREE.CanvasTexture(canvas), 
+                        transparent: true, 
+                        alphaTest: 0.05
+                    })
                 );
                 textMesh.rotation.x = -Math.PI / 2;
-                textMesh.position.set(0, s.shape === 'heart' ? (targetIdx * LAYER_HEIGHT) + LAYER_HEIGHT + 0.03 : layerY + (LAYER_HEIGHT / 2) + 0.03, s.shape === 'heart' ? 0.3 : 0);
+                if (s.shape === 'heart') {
+                    textMesh.position.set(0, (topIdx * LAYER_HEIGHT) + LAYER_HEIGHT + 0.01, 0.1);
+                } else {
+                    textMesh.position.set(0, layerY + (LAYER_HEIGHT / 2) + 0.01, 0);
+                }
                 scene.add(textMesh);
                 decorationMeshes.push(textMesh);
             }
 
-            // DECORATIONS
+            // SÜSLEMELER - PASTAYA YAPIŞIK
+            const topY = s.shape === 'heart' ? (s.layers.length * LAYER_HEIGHT) : (s.layers.length * LAYER_HEIGHT) - (LAYER_HEIGHT / 2);
             s.decorations.forEach(d => {
-                const topY = (s.layers.length * LAYER_HEIGHT);
-                const colors = { strawberry: 0xff0000, berry: 0x4169e1, chocolate: 0x8b4513, macaron: 0xffb6c1, flower: 0xff69b4, star: 0xffff00 };
+                const colors = { strawberry: 0xff0000, berry: 0x4169e1, chocolate: 0x8b4513, flower: 0xff69b4, star: 0xffff00, candle: 0xffffe0 };
                 const mesh = new THREE.Mesh(
-                    new THREE.SphereGeometry(0.15, 16, 16),
-                    new THREE.MeshStandardMaterial({ color: colors[d.type] || 0xff0000, roughness: 0.3, metalness: 0.5 })
+                    new THREE.SphereGeometry(0.12, 16, 16),
+                    new THREE.MeshStandardMaterial({ color: colors[d.type] || 0xff0000, roughness: 0.3, metalness: 0.6 })
                 );
-                mesh.position.set(d.position.x, topY + 0.15, d.position.z);
+                mesh.position.set(d.position.x, topY + 0.06, d.position.z);
                 mesh.castShadow = true;
                 scene.add(mesh);
                 decorationMeshes.push(mesh);
             });
         }
 
-        // INIT
         window.addEventListener('load', () => {
+            if (typeof THREE === 'undefined') {
+                alert('THREE.js yüklenemedi!');
+                return;
+            }
             init3D();
             renderLayers();
             render3D();
