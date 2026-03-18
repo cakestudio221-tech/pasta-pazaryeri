@@ -3,312 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎂 Pasta Tasarım Stüdyosu - Premium</title>
+    <title>🎂 Pasta Tasarım Stüdyosu - Final</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             overflow-x: hidden;
         }
 
-        /* ANA CONTAINER */
-        .app-container {
-            display: flex;
-            height: 100vh;
-        }
+        .app-container { display: flex; height: 100vh; }
 
-        /* SOL PANEL - ADIMLAR */
-        .steps-sidebar {
-            width: 80px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px 0;
-            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-        }
-
-        .step-indicator {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .step-indicator.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .step-indicator.completed {
-            background: #4CAF50;
-        }
-
-        .step-indicator::after {
-            content: '';
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 20px;
-            background: #e0e0e0;
-        }
-
-        .step-indicator:last-child::after {
-            display: none;
-        }
-
-        /* ORTA PANEL - İÇERİK */
-        .content-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .content-header {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px 40px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .content-header h1 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .content-header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .progress-bar-container {
-            height: 4px;
-            background: #e0e0e0;
-            margin-top: 15px;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.5s ease;
-            width: 0%;
-        }
-
-        .content-body {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            display: none;
-        }
-
-        .content-body.active {
-            display: block;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .content-footer {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        /* SAĞ PANEL - CANLI ÖNİZLEME */
-        .preview-panel {
-            width: 450px;
+        /* SOL PANEL */
+        .control-panel {
+            width: 400px;
             background: white;
-            display: flex;
-            flex-direction: column;
-            box-shadow: -2px 0 20px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
         }
 
-        .preview-header {
-            padding: 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .preview-header h3 {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .preview-header p {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .preview-body {
-            flex: 1;
-            padding: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .cake-preview-2d {
-            width: 100%;
-            max-width: 350px;
-        }
-
-        .preview-layer {
-            position: relative;
-            margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-
-        .layer-visual {
-            height: 100px;
-            border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-        }
-
-        .preview-layer:nth-child(1) .layer-visual {
-            width: 100%;
-        }
-
-        .preview-layer:nth-child(2) .layer-visual {
-            width: 85%;
-            margin: 0 auto;
-        }
-
-        .preview-layer:nth-child(3) .layer-visual {
-            width: 70%;
-            margin: 0 auto;
-        }
-
-        .layer-visual::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 30%;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), transparent);
-        }
-
-        .layer-visual::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 20%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.15), transparent);
-        }
-
-        .layer-text-preview {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
-            z-index: 10;
-            white-space: nowrap;
-            max-width: 90%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .layer-decorations-preview {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 6px;
-            z-index: 10;
-        }
-
-        .deco-emoji {
-            font-size: 20px;
-            animation: floatDeco 3s ease-in-out infinite;
-        }
-
-        @keyframes floatDeco {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        .preview-footer {
-            padding: 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .price-display {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        .panel-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px;
-            border-radius: 12px;
+            padding: 30px;
             text-align: center;
         }
 
-        .price-display .label {
-            font-size: 12px;
-            opacity: 0.9;
-            margin-bottom: 5px;
+        .panel-header h1 { font-size: 26px; margin-bottom: 8px; }
+
+        .section {
+            padding: 25px;
+            border-bottom: 1px solid #eee;
         }
 
-        .price-display .amount {
-            font-size: 36px;
-            font-weight: bold;
+        .section h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         /* BUTONLAR */
         .btn {
-            padding: 14px 28px;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .btn-primary {
@@ -318,22 +64,12 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-secondary {
-            background: transparent;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-secondary:hover {
             background: #f0f0f0;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
+            color: #333;
         }
 
         .btn:disabled {
@@ -341,19 +77,19 @@
             cursor: not-allowed;
         }
 
-        /* FORM ELEMENTLERİ */
+        /* OPTION CARDS */
         .option-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .option-card {
             background: white;
             border: 3px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 15px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
@@ -361,94 +97,43 @@
 
         .option-card:hover {
             border-color: #667eea;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
         }
 
         .option-card.selected {
             border-color: #667eea;
             background: #f0f4ff;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
         }
 
-        .option-card .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
+        .option-card .icon { font-size: 32px; margin-bottom: 8px; }
+        .option-card .title { font-weight: 600; font-size: 13px; color: #333; }
 
-        .option-card .title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .option-card .subtitle {
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* RENK SEÇİCİ */
-        .color-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .color-option {
-            aspect-ratio: 1;
-            border-radius: 12px;
-            border: 4px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .color-option:hover {
-            transform: scale(1.1);
-        }
-
-        .color-option.selected {
-            border-color: #333;
-            box-shadow: 0 0 0 2px white, 0 0 0 6px #333;
-        }
-
-        .color-option::after {
-            content: attr(data-name);
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 10px;
-            color: white;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .color-option:hover::after {
-            opacity: 1;
-        }
-
-        /* KATMAN TASARIMI */
-        .layer-designer {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .layer-designer h4 {
-            color: #333;
+        /* LAYER CONTROLS */
+        .layer-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
             margin-bottom: 15px;
-            font-size: 16px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .layer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
+        .btn-remove {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* FORM */
+        .form-group { margin-bottom: 15px; }
         .form-group label {
             display: block;
             font-size: 13px;
@@ -458,46 +143,57 @@
         }
 
         .form-group select,
-        .form-group input[type="text"],
-        .form-group textarea {
+        .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 14px;
-            transition: border-color 0.3s;
         }
 
-        .form-group select:focus,
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
+        /* COLOR PICKER */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-top: 10px;
         }
 
-        /* SÜSLEME ÇİPLERİ */
+        .color-option {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover { transform: scale(1.15); }
+
+        .color-option.selected {
+            border-color: #333;
+            box-shadow: 0 0 0 2px white, 0 0 0 5px #333;
+        }
+
+        /* DECORATION CHIPS */
         .chip-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
+            margin-top: 12px;
         }
 
         .chip {
-            padding: 10px 18px;
+            padding: 8px 16px;
             background: white;
             border: 2px solid #e0e0e0;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
+            font-size: 13px;
             transition: all 0.3s;
-            font-size: 14px;
             user-select: none;
         }
 
-        .chip:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-        }
+        .chip:hover { border-color: #667eea; }
 
         .chip.selected {
             background: #667eea;
@@ -505,1280 +201,631 @@
             border-color: #667eea;
         }
 
-        /* 3D GÖRÜNÜM */
-        #canvas-3d {
-            width: 100%;
-            height: 500px;
-            display: block;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        }
+        .draggable-deco { cursor: pointer; }
 
-        #canvas-3d canvas {
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        /* FİNAL EKRANI */
-        .final-screen {
-            display: none;
-            text-align: center;
-            padding: 60px 40px;
-            width: 100%;
-        }
-
-        .final-screen.active {
-            display: block !important;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .final-screen .success-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-
-        .final-screen h2 {
-            font-size: 32px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .final-screen p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .order-summary {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 600px;
-            margin: 0 auto 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            text-align: left;
-        }
-
-        .summary-row {
+        /* SAĞ PANEL */
+        .preview-panel {
+            flex: 1;
             display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .summary-row:last-child {
-            border-bottom: none;
-            font-weight: bold;
-            font-size: 18px;
-            margin-top: 10px;
-            padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
-        }
-
-        /* LOADING ANIMATION */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.95);
-            display: none;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
+            padding: 40px;
+            position: relative;
         }
 
-        .loading-overlay.active {
-            display: flex;
+        #canvas-container {
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            cursor: crosshair;
         }
 
-        .loading-content {
+        /* PRICE BOX */
+        .price-box {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             text-align: center;
         }
 
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid #f0f0f0;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+        .price-box .label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 5px;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .price-box .amount {
+            font-size: 42px;
+            font-weight: bold;
         }
 
-        /* SECTION BAŞLIKLARI */
-        .section-title {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 25px;
-            font-weight: 600;
+        /* COMPLETE BUTTON */
+        .complete-section {
+            padding: 25px;
+            background: #f8f9fa;
         }
 
-        .section-subtitle {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .preview-panel {
-                display: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .steps-sidebar {
-                width: 60px;
-                padding: 20px 0;
-            }
-
-            .step-indicator {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
-            }
-
-            .content-header,
-            .content-body,
-            .content-footer {
-                padding: 20px;
-            }
-
-            .option-grid {
-                grid-template-columns: 1fr 1fr;
-            }
+        .btn-complete {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- SOL - ADIM GÖSTERGELERİ -->
-        <div class="steps-sidebar">
-            <div class="step-indicator active" data-step="1" onclick="goToStep(1)">🎂</div>
-            <div class="step-indicator" data-step="2" onclick="goToStep(2)">🎨</div>
-            <div class="step-indicator" data-step="3" onclick="goToStep(3)">✍️</div>
-            <div class="step-indicator" data-step="4" onclick="goToStep(4)">🌸</div>
-            <div class="step-indicator" data-step="5" onclick="goToStep(5)">📋</div>
-            <div class="step-indicator" data-step="6" onclick="goToStep(6)">✅</div>
-        </div>
-
-        <!-- ORTA - İÇERİK PANELİ -->
-        <div class="content-panel">
-            <div class="content-header">
-                <h1 id="step-title">Pasta Boyutu ve Şekli</h1>
-                <p id="step-description">Pastanızın temel özelliklerini seçin</p>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="progress-bar"></div>
-                </div>
+        <!-- SOL PANEL -->
+        <div class="control-panel">
+            <div class="panel-header">
+                <h1>🎂 Pasta Tasarım Stüdyosu</h1>
+                <p>Hayalinizdeki pastayı oluşturun</p>
             </div>
 
-            <div class="content-body active" id="step-1">
-                <div class="section-title">Pasta Şekli Seçin</div>
+            <!-- ŞEKİL -->
+            <div class="section">
+                <h3>🎨 Pasta Şekli</h3>
                 <div class="option-grid">
-                    <div class="option-card selected" data-shape="round" onclick="selectShape('round')">
+                    <div class="option-card selected" data-shape="round" onclick="store.setShape('round')">
                         <div class="icon">🔵</div>
                         <div class="title">Yuvarlak</div>
-                        <div class="subtitle">Klasik & Şık</div>
                     </div>
-                    <div class="option-card" data-shape="square" onclick="selectShape('square')">
+                    <div class="option-card" data-shape="square" onclick="store.setShape('square')">
                         <div class="icon">⬜</div>
                         <div class="title">Kare</div>
-                        <div class="subtitle">Modern</div>
                     </div>
-                    <div class="option-card" data-shape="heart" onclick="selectShape('heart')">
+                    <div class="option-card" data-shape="heart" onclick="store.setShape('heart')">
                         <div class="icon">❤️</div>
                         <div class="title">Kalp</div>
-                        <div class="subtitle">Romantik</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="section-title" style="margin-top: 40px;">Pasta Boyutu</div>
+            <!-- BOYUT -->
+            <div class="section">
+                <h3>📏 Boyut</h3>
                 <div class="option-grid">
-                    <div class="option-card" data-size="small" onclick="selectSize('small')">
+                    <div class="option-card" data-size="small" onclick="store.setSize('small')">
                         <div class="icon">🧁</div>
                         <div class="title">Küçük</div>
-                        <div class="subtitle">8-10 kişilik<br><strong>150₺</strong></div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">150₺</div>
                     </div>
-                    <div class="option-card selected" data-size="medium" onclick="selectSize('medium')">
+                    <div class="option-card selected" data-size="medium" onclick="store.setSize('medium')">
                         <div class="icon">🎂</div>
                         <div class="title">Orta</div>
-                        <div class="subtitle">15-20 kişilik<br><strong>200₺</strong></div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">200₺</div>
                     </div>
-                    <div class="option-card" data-size="large" onclick="selectSize('large')">
+                    <div class="option-card" data-size="large" onclick="store.setSize('large')">
                         <div class="icon">🎉</div>
                         <div class="title">Büyük</div>
-                        <div class="subtitle">30-40 kişilik<br><strong>300₺</strong></div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">300₺</div>
                     </div>
                 </div>
             </div>
 
-            <!-- ADIM 2: KATMAN TASARIMI -->
-            <div class="content-body" id="step-2">
-                <div class="section-title">Dinamik Pasta Tasarımı</div>
-                <div class="section-subtitle">İstediğiniz kadar kat ekleyin (1-5 arası)</div>
-
-                <!-- KAT SAYISI KONTROLÜ -->
-                <div class="layer-designer" style="display: flex; align-items: center; justify-content: space-between;">
-                    <h4>Kat Sayısı: <span id="layer-count-display">3</span></h4>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-secondary" onclick="removeLayer()" id="remove-layer-btn" style="padding: 10px 20px;">
-                            ➖ Kat Çıkar
-                        </button>
-                        <button class="btn btn-primary" onclick="addLayer()" id="add-layer-btn" style="padding: 10px 20px;">
-                            ➕ Kat Ekle
-                        </button>
-                    </div>
-                </div>
-
-                <!-- DİNAMİK KATMAN TASARIMLARI -->
+            <!-- KATMANLAR -->
+            <div class="section">
+                <h3>🍰 Katmanlar (<span id="layer-count">3</span>/5)</h3>
                 <div id="layers-container"></div>
-            </div>
-
-            <!-- ADIM 3: YAZI -->
-            <div class="content-body" id="step-3">
-                <div class="section-title">Pasta Yazısı</div>
-                <div class="section-subtitle">Pastanıza özel bir mesaj ekleyin</div>
-
-                <div class="layer-designer">
-                    <h4>Hazır Şablonlar</h4>
-                    <div class="chip-container">
-                        <div class="chip" onclick="selectTextTemplate('İyi ki doğdun!')">🎉 İyi ki doğdun!</div>
-                        <div class="chip" onclick="selectTextTemplate('Mutlu Yıllar')">🎊 Mutlu Yıllar</div>
-                        <div class="chip" onclick="selectTextTemplate('Geçmiş Olsun')">🎓 Geçmiş Olsun</div>
-                        <div class="chip" onclick="selectTextTemplate('Tebrikler')">👏 Tebrikler</div>
-                        <div class="chip" onclick="selectTextTemplate('Seni Seviyorum')">❤️ Seni Seviyorum</div>
-                        <div class="chip" onclick="selectTextTemplate('Mutluluklar Dilerim')">💐 Mutluluklar</div>
-                    </div>
-
-                    <div class="form-group" style="margin-top: 25px;">
-                        <label>Özel Metin (Maksimum 30 karakter)</label>
-                        <input type="text" id="custom-text" maxlength="30" placeholder="Örn: Ayşe 25 Yaşında!" oninput="updateText(this.value)">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Yazı Pozisyonu</label>
-                        <select id="text-position" onchange="updateTextPosition(this.value)">
-                            <option value="top">Üst Kat (Klasik)</option>
-                            <option value="middle">Orta Kat</option>
-                            <option value="bottom">Alt Kat</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Yazı Stili</label>
-                        <select id="text-font" onchange="updateTextFont(this.value)">
-                            <option value="cursive">✨ El Yazısı</option>
-                            <option value="serif">📜 Klasik</option>
-                            <option value="bold">💪 Kalın</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Yazı Rengi</label>
-                        <div class="color-grid">
-                            <div class="color-option selected" style="background: #8B4513" data-color="#8B4513" onclick="selectTextColor('#8B4513', this)"></div>
-                            <div class="color-option" style="background: #FFFFFF; border: 1px solid #ccc" data-color="#FFFFFF" onclick="selectTextColor('#FFFFFF', this)"></div>
-                            <div class="color-option" style="background: #FFD700" data-color="#FFD700" onclick="selectTextColor('#FFD700', this)"></div>
-                            <div class="color-option" style="background: #FF1493" data-color="#FF1493" onclick="selectTextColor('#FF1493', this)"></div>
-                            <div class="color-option" style="background: #000000" data-color="#000000" onclick="selectTextColor('#000000', this)"></div>
-                            <div class="color-option" style="background: #4169E1" data-color="#4169E1" onclick="selectTextColor('#4169E1', this)"></div>
-                        </div>
-                    </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn btn-secondary" onclick="store.removeLayer()" id="btn-remove-layer">➖</button>
+                    <button class="btn btn-primary" onclick="store.addLayer()" id="btn-add-layer">➕ Kat Ekle</button>
                 </div>
             </div>
 
-            <!-- ADIM 4: SÜSLEMELER -->
-            <div class="content-body" id="step-4">
-                <div class="section-title">Süslemeler ve Dekorasyon</div>
-                
-                <div class="layer-designer">
-                    <h4>🌸 Üst Süsleme (Birden fazla seçebilirsiniz)</h4>
-                    <div class="chip-container" id="top-decorations">
-                        <div class="chip" data-deco="strawberries" onclick="toggleDecoration('strawberries', this)">🍓 Taze Çilek (+30₺)</div>
-                        <div class="chip" data-deco="berries" onclick="toggleDecoration('berries', this)">🫐 Yaban Mersini (+25₺)</div>
-                        <div class="chip" data-deco="chocolate" onclick="toggleDecoration('chocolate', this)">🍫 Çikolata Parçaları (+20₺)</div>
-                        <div class="chip" data-deco="macaron" onclick="toggleDecoration('macaron', this)">🧁 Macaron (+35₺)</div>
-                        <div class="chip" data-deco="flowers" onclick="toggleDecoration('flowers', this)">🌺 Şeker Çiçek (+40₺)</div>
-                        <div class="chip" data-deco="gold" onclick="toggleDecoration('gold', this)">✨ Altın Yaldız (+50₺)</div>
-                    </div>
+            <!-- GÖRSEL -->
+            <div class="section">
+                <h3>🖼️ Pasta Görseli</h3>
+                <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <button class="btn btn-primary" onclick="document.getElementById('image-upload').click()" style="width: 100%;">
+                    📤 Görsel Yükle
+                </button>
+                <div id="image-preview" style="margin-top: 15px; display: none;">
+                    <img id="preview-img" style="width: 100%; border-radius: 8px;">
+                    <button class="btn btn-secondary" onclick="removeImage()" style="width: 100%; margin-top: 10px;">
+                        🗑️ Kaldır
+                    </button>
                 </div>
+            </div>
 
-                <div class="layer-designer">
-                    <h4>🎀 Kenar Süsleme (Bir tane seçin)</h4>
-                    <div class="chip-container" id="edge-decorations">
-                        <div class="chip" data-edge="drip" onclick="selectEdge('drip', this)">💧 Drip Effect (+25₺)</div>
-                        <div class="chip" data-edge="ribbon" onclick="selectEdge('ribbon', this)">🎀 Kuşak/Kurdele (+25₺)</div>
-                        <div class="chip" data-edge="ruffles" onclick="selectEdge('ruffles', this)">🌊 Kıvrımlar (+25₺)</div>
-                        <div class="chip" data-edge="pearls" onclick="selectEdge('pearls', this)">⚪ İnci Taneleri (+25₺)</div>
-                    </div>
+            <!-- YAZI -->
+            <div class="section">
+                <h3>✍️ Yazı</h3>
+                <div class="chip-container">
+                    <div class="chip" onclick="selectTextTemplate('İyi ki doğdun!', this)">🎉 İyi ki doğdun!</div>
+                    <div class="chip" onclick="selectTextTemplate('Mutlu Yıllar', this)">🎊 Mutlu Yıllar</div>
+                    <div class="chip" onclick="selectTextTemplate('Tebrikler', this)">👏 Tebrikler</div>
                 </div>
-
-                <div class="layer-designer">
-                    <h4>🎯 Topper / Üst Figür (Bir tane seçin)</h4>
-                    <div class="chip-container" id="topper-decorations">
-                        <div class="chip" data-topper="number" onclick="selectTopper('number', this)">🔢 Yaş Numarası (+30₺)</div>
-                        <div class="chip" data-topper="star" onclick="selectTopper('star', this)">⭐ Yıldız (+30₺)</div>
-                        <div class="chip" data-topper="heart" onclick="selectTopper('heart', this)">❤️ Kalp (+30₺)</div>
-                        <div class="chip" data-topper="name" onclick="selectTopper('name', this)">📛 İsim Plakası (+30₺)</div>
-                    </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Özel Metin</label>
+                    <input type="text" id="custom-text" maxlength="30" placeholder="Mesajınızı yazın..." 
+                           oninput="store.setText(this.value)">
                 </div>
-
-                <div class="layer-designer">
-                    <h4>🥧 Katlar Arası Dolgu</h4>
-                    <select id="filling-select" onchange="updateFilling(this.value)">
-                        <option value="fruit">🍓 Meyveli Dolgu</option>
-                        <option value="chocolate" selected>🍫 Çikolata Ganache</option>
-                        <option value="caramel">🍮 Karamel</option>
-                        <option value="oreo">🍪 Oreo Kremalı</option>
-                        <option value="hazelnut">🌰 Fındıklı</option>
+                <div class="form-group">
+                    <label>Yazı Pozisyonu</label>
+                    <select id="text-position" onchange="store.setTextPosition(this.value)">
+                        <option value="top">Üst Kat</option>
+                        <option value="middle">Orta</option>
+                        <option value="bottom">Alt Kat</option>
                     </select>
                 </div>
-            </div>
-
-            <!-- ADIM 5: ÖZEL TALEPLER -->
-            <div class="content-body" id="step-5">
-                <div class="section-title">Özel Talepler ve Notlar</div>
-                
-                <div class="layer-designer">
-                    <h4>⚙️ Özel Tercihler</h4>
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="sugar-free" onchange="updateSpecial('sugarFree', this.checked)"> 
-                            Şekersiz / Diyet Pasta (+40₺)
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="gluten-free" onchange="updateSpecial('glutenFree', this.checked)"> 
-                            Glutensiz Pasta (+50₺)
-                        </label>
-                    </div>
-                </div>
-
-                <div class="layer-designer">
-                    <h4>📝 Pastacıya Özel Not</h4>
-                    <div class="form-group">
-                        <textarea id="special-note" rows="4" placeholder="Ek taleplerinizi buraya yazabilirsiniz..." oninput="updateNote(this.value)"></textarea>
-                    </div>
-                </div>
-
-                <div class="layer-designer">
-                    <h4>📅 Teslimat Bilgileri</h4>
-                    <div class="form-group">
-                        <label>Teslimat Tarihi</label>
-                        <input type="date" id="delivery-date" min="" onchange="updateDeliveryDate(this.value)">
-                    </div>
-                    <div class="form-group">
-                        <label>Teslimat Saati</label>
-                        <select id="delivery-time" onchange="updateDeliveryTime(this.value)">
-                            <option value="09:00">09:00</option>
-                            <option value="10:00">10:00</option>
-                            <option value="11:00">11:00</option>
-                            <option value="12:00">12:00</option>
-                            <option value="13:00">13:00</option>
-                            <option value="14:00">14:00</option>
-                            <option value="15:00">15:00</option>
-                            <option value="16:00">16:00</option>
-                            <option value="17:00">17:00</option>
-                            <option value="18:00">18:00</option>
-                        </select>
+                <div class="form-group">
+                    <label>Yazı Rengi</label>
+                    <div class="color-grid">
+                        <div class="color-option selected" style="background: #8B4513" onclick="store.setTextColor('#8B4513', this)"></div>
+                        <div class="color-option" style="background: #FFFFFF; border: 1px solid #ccc" onclick="store.setTextColor('#FFFFFF', this)"></div>
+                        <div class="color-option" style="background: #FFD700" onclick="store.setTextColor('#FFD700', this)"></div>
+                        <div class="color-option" style="background: #FF1493" onclick="store.setTextColor('#FF1493', this)"></div>
+                        <div class="color-option" style="background: #000000" onclick="store.setTextColor('#000000', this)"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- ADIM 6: ONAY VE 3D GÖRÜNÜM -->
-            <div class="content-body" id="step-6">
-                <div class="final-screen" id="final-review">
-                    <div class="success-icon">🎉</div>
-                    <h2>Tasarımınız Tamamlandı!</h2>
-                    <p>Aşağıda pastanızın 3D görünümünü inceleyebilirsiniz</p>
-
-                    <div id="canvas-3d" style="height: 500px; margin: 30px auto; max-width: 900px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);"></div>
-
-                    <div class="order-summary">
-                        <h3 style="margin-bottom: 20px; color: #333;">📋 Sipariş Özeti</h3>
-                        <div class="summary-row">
-                            <span>Pasta Şekli:</span>
-                            <span id="summary-shape">-</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Boyut:</span>
-                            <span id="summary-size">-</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Yazı:</span>
-                            <span id="summary-text">-</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Süslemeler:</span>
-                            <span id="summary-decorations">-</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Teslimat:</span>
-                            <span id="summary-delivery">-</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>TOPLAM FİYAT:</span>
-                            <span id="summary-total" style="color: #f5576c;">-</span>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-success" onclick="confirmOrder()" style="font-size: 18px; padding: 18px 40px;">
-                        ✅ Siparişi Onayla ve Tamamla
-                    </button>
+            <!-- SÜSLEMELER -->
+            <div class="section">
+                <h3>🌸 Süslemeler</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+                    <strong>1)</strong> Süslemeyi tıklayın<br>
+                    <strong>2)</strong> Pastanın istediğiniz yerine tıklayın
+                </p>
+                <div class="chip-container">
+                    <div class="chip" data-deco="strawberry" onclick="selectDecoration('strawberry', this)">🍓 Çilek</div>
+                    <div class="chip" data-deco="berry" onclick="selectDecoration('berry', this)">🫐 Mersini</div>
+                    <div class="chip" data-deco="chocolate" onclick="selectDecoration('chocolate', this)">🍫 Çikolata</div>
+                    <div class="chip" data-deco="macaron" onclick="selectDecoration('macaron', this)">🧁 Macaron</div>
+                    <div class="chip" data-deco="flower" onclick="selectDecoration('flower', this)">🌺 Çiçek</div>
+                    <div class="chip" data-deco="star" onclick="selectDecoration('star', this)">⭐ Yıldız</div>
                 </div>
-
-                <div class="final-screen" id="order-confirmed">
-                    <div class="success-icon">✅</div>
-                    <h2>Siparişiniz Alındı!</h2>
-                    <p>Sipariş numaranız: <strong>#CAKE-<span id="order-number"></span></strong></p>
-                    <p>Detaylar e-posta adresinize gönderildi.</p>
-
-                    <div class="order-summary">
-                        <h3 style="margin-bottom: 20px; color: #333;">🎂 Sipariş Detayları</h3>
-                        <div id="confirmed-summary"></div>
-                    </div>
-
-                    <button class="btn btn-primary" onclick="location.reload()">
-                        🔄 Yeni Pasta Tasarla
-                    </button>
-                </div>
+                <div id="decoration-list" style="margin-top: 15px;"></div>
             </div>
 
-            <div class="content-footer">
-                <button class="btn btn-secondary" id="prev-btn" onclick="previousStep()" style="display: none;">
-                    ← Geri
-                </button>
-                <div></div>
-                <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
-                    İleri →
+            <!-- SİPARİŞ -->
+            <div class="complete-section">
+                <button class="btn-complete" onclick="completeOrder()">
+                    ✅ Siparişi Tamamla
                 </button>
             </div>
         </div>
 
-        <!-- SAĞ - CANLI ÖNİZLEME PANELİ -->
+        <!-- SAĞ PANEL -->
         <div class="preview-panel">
-            <div class="preview-header">
-                <h3>Canlı Önizleme</h3>
-                <p>Tasarımınız anlık güncelleniyor</p>
-            </div>
-
-            <div class="preview-body">
-                <div class="cake-preview-2d">
-                    <!-- Dinamik katmanlar JavaScript ile oluşturulacak -->
-                </div>
-            </div>
-
-            <div class="preview-footer">
-                <div class="price-display">
-                    <div class="label">TOPLAM FİYAT</div>
-                    <div class="amount" id="live-price">200₺</div>
-                </div>
+            <div id="canvas-container"></div>
+            
+            <div class="price-box">
+                <div class="label">TOPLAM FİYAT</div>
+                <div class="amount" id="total-price">200₺</div>
             </div>
         </div>
     </div>
 
-    <!-- LOADING OVERLAY -->
-    <div class="loading-overlay" id="loading">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <h3>3D Model Hazırlanıyor...</h3>
-            <p>Lütfen bekleyin</p>
-        </div>
-    </div>
-
-    <!-- Three.js Kütüphaneleri -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onload="console.log('Three.js yüklendi')"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" onload="console.log('OrbitControls yüklendi')"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
-        // Three.js yüklenene kadar bekle
-        window.addEventListener('load', function() {
-            console.log('Sayfa tamamen yüklendi');
-            if (typeof THREE === 'undefined') {
-                console.error('THREE tanımlı değil!');
-                alert('3D kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
-            } else {
-                console.log('THREE başarıyla yüklendi:', THREE.REVISION);
-            }
-        });
-        // ==========================================
-        // GLOBAL STATE
-        // ==========================================
-        let currentStep = 1;
-        const totalSteps = 6;
+        // STATE MANAGEMENT
+        const createStore = (initialState) => {
+            let state = initialState;
+            const listeners = new Set();
 
-        let cakeData = {
+            return {
+                getState: () => state,
+                setState: (partial) => {
+                    state = { ...state, ...(typeof partial === 'function' ? partial(state) : partial) };
+                    listeners.forEach(l => l(state));
+                },
+                subscribe: (listener) => {
+                    listeners.add(listener);
+                    return () => listeners.delete(listener);
+                }
+            };
+        };
+
+        const useStore = createStore({
             shape: 'round',
             size: 'medium',
-            layerCount: 3, // Başlangıçta 3 kat
             layers: [
-                { flavor: 'vanilla', color: '#FFF5E1', coating: 'buttercream' },
-                { flavor: 'chocolate', color: '#FFB6C1', coating: 'buttercream' },
-                { flavor: 'strawberry', color: '#E6E6FA', coating: 'buttercream' }
+                { id: 1, flavor: 'vanilla', color: '#FFF5E1' },
+                { id: 2, flavor: 'chocolate', color: '#FFB6C1' },
+                { id: 3, flavor: 'strawberry', color: '#E6E6FA' }
             ],
-            text: {
-                content: '',
-                position: 'top',
-                font: 'serif',
-                color: '#8B4513'
-            },
-            decorations: {
-                top: [],
-                edge: null,
-                topper: null
-            },
-            filling: 'chocolate',
-            special: {
-                sugarFree: false,
-                glutenFree: false,
-                note: '',
-                deliveryDate: '',
-                deliveryTime: '14:00'
-            }
-        };
-
-        let pricing = {
-            base: 200,
-            decorations: {
-                strawberries: 30,
-                berries: 25,
-                chocolate: 20,
-                macaron: 35,
-                flowers: 40,
-                gold: 50
-            },
-            edge: 25,
-            topper: 30,
-            sugarFree: 40,
-            glutenFree: 50
-        };
-
-        // ==========================================
-        // SAYFA YÜKLENDİĞİNDE
-        // ==========================================
-        document.addEventListener('DOMContentLoaded', function() {
-            updateProgress();
-            updatePreview();
-            calculatePrice();
-            setMinDeliveryDate();
-            renderLayers(); // Katmanları başlangıçta render et
+            text: { content: '', color: '#8B4513', position: 'top' },
+            image: null,
+            decorations: [],
+            pricing: { base: 200, decorationPrices: { strawberry: 30, berry: 25, chocolate: 20, macaron: 35, flower: 40, star: 20 } }
         });
 
-        function setMinDeliveryDate() {
-            const today = new Date();
-            today.setDate(today.getDate() + 2); // Minimum 2 gün sonra
-            const dateStr = today.toISOString().split('T')[0];
-            document.getElementById('delivery-date').min = dateStr;
-            document.getElementById('delivery-date').value = dateStr;
-            cakeData.special.deliveryDate = dateStr;
+        // ACTIONS
+        const store = {
+            setShape: (shape) => {
+                useStore.setState({ shape });
+                updateShapeUI(shape);
+                render3D();
+            },
+            setSize: (size) => {
+                useStore.setState((s) => ({ size, pricing: { ...s.pricing, base: size === 'small' ? 150 : size === 'large' ? 300 : 200 } }));
+                updateSizeUI(size);
+                calculatePrice();
+            },
+            addLayer: () => {
+                const s = useStore.getState();
+                if (s.layers.length >= 5) return alert('Maks 5 kat!');
+                useStore.setState((s) => ({ layers: [...s.layers, { id: Date.now(), flavor: 'vanilla', color: '#FFE4B5' }] }));
+                renderLayers();
+                render3D();
+            },
+            removeLayer: () => {
+                const s = useStore.getState();
+                if (s.layers.length <= 1) return alert('En az 1 kat!');
+                useStore.setState((s) => ({ layers: s.layers.slice(0, -1) }));
+                renderLayers();
+                render3D();
+            },
+            updateLayer: (id, prop, val) => {
+                useStore.setState((s) => ({ layers: s.layers.map(l => l.id === id ? { ...l, [prop]: val } : l) }));
+                render3D();
+            },
+            setText: (content) => {
+                useStore.setState((s) => ({ text: { ...s.text, content } }));
+                document.getElementById('custom-text').value = content;
+                render3D();
+            },
+            setTextPosition: (position) => {
+                useStore.setState((s) => ({ text: { ...s.text, position } }));
+                render3D();
+            },
+            setTextColor: (color, el) => {
+                useStore.setState((s) => ({ text: { ...s.text, color } }));
+                el.parentElement.querySelectorAll('.color-option').forEach(e => e.classList.remove('selected'));
+                el.classList.add('selected');
+                render3D();
+            },
+            setImage: (img) => {
+                useStore.setState({ image: img });
+                render3D();
+            },
+            removeImage: () => {
+                useStore.setState({ image: null });
+                render3D();
+            },
+            addDecoration: (type, position) => {
+                useStore.setState((s) => ({ decorations: [...s.decorations, { id: Date.now(), type, position }] }));
+                updateDecorationList();
+                calculatePrice();
+                render3D();
+            },
+            removeDecoration: (id) => {
+                useStore.setState((s) => ({ decorations: s.decorations.filter(d => d.id !== id) }));
+                updateDecorationList();
+                calculatePrice();
+                render3D();
+            }
+        };
+
+        // UI HELPERS
+        function updateShapeUI(shape) {
+            document.querySelectorAll('[data-shape]').forEach(el => el.classList.toggle('selected', el.dataset.shape === shape));
         }
 
-        // ==========================================
-        // DİNAMİK KATMAN YÖNETİMİ
-        // ==========================================
-        function addLayer() {
-            if (cakeData.layerCount >= 5) {
-                alert('Maksimum 5 kat ekleyebilirsiniz!');
-                return;
-            }
+        function updateSizeUI(size) {
+            document.querySelectorAll('[data-size]').forEach(el => el.classList.toggle('selected', el.dataset.size === size));
+        }
 
-            // Rastgele renk seç
-            const colors = ['#FFF5E1', '#FFB6C1', '#E6E6FA', '#B0E0E6', '#98FB98', '#8B4513'];
-            const flavors = ['vanilla', 'chocolate', 'strawberry', 'lemon', 'red-velvet', 'carrot'];
-            
-            const newLayer = {
-                flavor: flavors[Math.floor(Math.random() * flavors.length)],
-                color: colors[Math.floor(Math.random() * colors.length)],
-                coating: 'buttercream'
+        function selectTextTemplate(text, el) {
+            el.parentElement.querySelectorAll('.chip').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            store.setText(text);
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                store.setImage(e.target.result);
+                document.getElementById('preview-img').src = e.target.result;
+                document.getElementById('image-preview').style.display = 'block';
             };
-
-            cakeData.layers.push(newLayer);
-            cakeData.layerCount++;
-            
-            renderLayers();
-            updatePreview();
-            updateLayerButtons();
+            reader.readAsDataURL(file);
         }
 
-        function removeLayer() {
-            if (cakeData.layerCount <= 1) {
-                alert('En az 1 kat olmalıdır!');
+        function removeImage() {
+            store.removeImage();
+            document.getElementById('image-preview').style.display = 'none';
+            document.getElementById('image-upload').value = '';
+        }
+
+        // DECORATION SELECTION
+        let selectedDecoType = null;
+
+        function selectDecoration(type, el) {
+            selectedDecoType = type;
+            document.querySelectorAll('[data-deco]').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            alert(`${el.textContent} seçildi - Pastanın istediğiniz yerine tıklayın`);
+        }
+
+        function onCanvasClick(event) {
+            if (!selectedDecoType) return;
+            
+            const container = document.getElementById('canvas-container');
+            const rect = container.getBoundingClientRect();
+            const mouse = new THREE.Vector2(
+                ((event.clientX - rect.left) / rect.width) * 2 - 1,
+                -((event.clientY - rect.top) / rect.height) * 2 + 1
+            );
+            
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(cakeMeshes, true);
+            
+            if (intersects.length > 0) {
+                const point = intersects[0].point;
+                store.addDecoration(selectedDecoType, { x: point.x, y: 0, z: point.z });
+                document.querySelectorAll('[data-deco]').forEach(e => e.classList.remove('selected'));
+                selectedDecoType = null;
+            }
+        }
+
+        function updateDecorationList() {
+            const s = useStore.getState();
+            const container = document.getElementById('decoration-list');
+            if (s.decorations.length === 0) {
+                container.innerHTML = '';
                 return;
             }
-
-            cakeData.layers.pop();
-            cakeData.layerCount--;
-            
-            renderLayers();
-            updatePreview();
-            updateLayerButtons();
-        }
-
-        function updateLayerButtons() {
-            document.getElementById('add-layer-btn').disabled = cakeData.layerCount >= 5;
-            document.getElementById('remove-layer-btn').disabled = cakeData.layerCount <= 1;
-            document.getElementById('layer-count-display').textContent = cakeData.layerCount;
+            const emojis = { strawberry: '🍓', berry: '🫐', chocolate: '🍫', macaron: '🧁', flower: '🌺', star: '⭐' };
+            container.innerHTML = '<div style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 8px;">Eklenenler:</div>';
+            s.decorations.forEach((d, i) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; justify-content: space-between; padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px; border: 1px solid #e0e0e0;';
+                div.innerHTML = `<span style="font-size: 13px;">${emojis[d.type]} #${i + 1}</span><button onclick="store.removeDecoration(${d.id})" style="background: #ff4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px;">Sil</button>`;
+                container.appendChild(div);
+            });
         }
 
         function renderLayers() {
+            const s = useStore.getState();
             const container = document.getElementById('layers-container');
             container.innerHTML = '';
-
-            const layerIcons = ['🥇', '🥈', '🥉', '🏅', '⭐'];
-            const layerNames = ['Alt Kat (En Büyük)', '2. Kat', '3. Kat', '4. Kat', 'Üst Kat (En Küçük)'];
-
-            cakeData.layers.forEach((layer, index) => {
-                const layerNum = index + 1;
-                const icon = layerIcons[Math.min(index, 4)];
-                const name = index === cakeData.layerCount - 1 ? 'Üst Kat (En Küçük)' : 
-                             index === 0 ? 'Alt Kat (En Büyük)' : `${layerNum}. Kat`;
-
-                const layerHTML = `
-                    <div class="layer-designer">
-                        <h4>${icon} ${name}</h4>
-                        <div class="form-group">
-                            <label>Lezzet</label>
-                            <select id="layer-${layerNum}-flavor" onchange="updateLayer(${layerNum}, 'flavor', this.value)">
-                                <option value="vanilla" ${layer.flavor === 'vanilla' ? 'selected' : ''}>🌸 Vanilya</option>
-                                <option value="chocolate" ${layer.flavor === 'chocolate' ? 'selected' : ''}>🍫 Çikolata</option>
-                                <option value="strawberry" ${layer.flavor === 'strawberry' ? 'selected' : ''}>🍓 Çilek</option>
-                                <option value="lemon" ${layer.flavor === 'lemon' ? 'selected' : ''}>🍋 Limon</option>
-                                <option value="red-velvet" ${layer.flavor === 'red-velvet' ? 'selected' : ''}>❤️ Red Velvet</option>
-                                <option value="carrot" ${layer.flavor === 'carrot' ? 'selected' : ''}>🥕 Havuç Keki</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Renk</label>
-                            <div class="color-grid">
-                                <div class="color-option ${layer.color === '#FFF5E1' ? 'selected' : ''}" 
-                                     style="background: #FFF5E1" data-color="#FFF5E1" data-name="Krem" 
-                                     onclick="selectLayerColor(${layerNum}, '#FFF5E1', this)"></div>
-                                <div class="color-option ${layer.color === '#FFB6C1' ? 'selected' : ''}" 
-                                     style="background: #FFB6C1" data-color="#FFB6C1" data-name="Pembe" 
-                                     onclick="selectLayerColor(${layerNum}, '#FFB6C1', this)"></div>
-                                <div class="color-option ${layer.color === '#E6E6FA' ? 'selected' : ''}" 
-                                     style="background: #E6E6FA" data-color="#E6E6FA" data-name="Lila" 
-                                     onclick="selectLayerColor(${layerNum}, '#E6E6FA', this)"></div>
-                                <div class="color-option ${layer.color === '#B0E0E6' ? 'selected' : ''}" 
-                                     style="background: #B0E0E6" data-color="#B0E0E6" data-name="Mavi" 
-                                     onclick="selectLayerColor(${layerNum}, '#B0E0E6', this)"></div>
-                                <div class="color-option ${layer.color === '#98FB98' ? 'selected' : ''}" 
-                                     style="background: #98FB98" data-color="#98FB98" data-name="Yeşil" 
-                                     onclick="selectLayerColor(${layerNum}, '#98FB98', this)"></div>
-                                <div class="color-option ${layer.color === '#8B4513' ? 'selected' : ''}" 
-                                     style="background: #8B4513" data-color="#8B4513" data-name="Çikolata" 
-                                     onclick="selectLayerColor(${layerNum}, '#8B4513', this)"></div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Kaplama</label>
-                            <select id="layer-${layerNum}-coating" onchange="updateLayer(${layerNum}, 'coating', this.value)">
-                                <option value="buttercream" ${layer.coating === 'buttercream' ? 'selected' : ''}>Buttercream (Klasik Krema)</option>
-                                <option value="fondant" ${layer.coating === 'fondant' ? 'selected' : ''}>Fondant (Düz Yüzey)</option>
-                                <option value="ganache" ${layer.coating === 'ganache' ? 'selected' : ''}>Ganache (Çikolata)</option>
-                                <option value="whipped" ${layer.coating === 'whipped' ? 'selected' : ''}>Whipped Cream (Şanti)</option>
-                            </select>
+            s.layers.forEach((layer, i) => {
+                const div = document.createElement('div');
+                div.className = 'layer-item';
+                div.innerHTML = `
+                    <div class="layer-header">
+                        <h4>${i === 0 ? 'Alt' : i === s.layers.length - 1 ? 'Üst' : i + 1}. Kat</h4>
+                        ${s.layers.length > 1 ? `<button class="btn-remove" onclick="store.removeLayer()">✕</button>` : ''}
+                    </div>
+                    <div class="form-group">
+                        <label>Renk</label>
+                        <div class="color-grid">
+                            <div class="color-option ${layer.color === '#FFF5E1' ? 'selected' : ''}" style="background: #FFF5E1" onclick="selectLayerColor(${layer.id}, '#FFF5E1', this)"></div>
+                            <div class="color-option ${layer.color === '#FFB6C1' ? 'selected' : ''}" style="background: #FFB6C1" onclick="selectLayerColor(${layer.id}, '#FFB6C1', this)"></div>
+                            <div class="color-option ${layer.color === '#E6E6FA' ? 'selected' : ''}" style="background: #E6E6FA" onclick="selectLayerColor(${layer.id}, '#E6E6FA', this)"></div>
+                            <div class="color-option ${layer.color === '#B0E0E6' ? 'selected' : ''}" style="background: #B0E0E6" onclick="selectLayerColor(${layer.id}, '#B0E0E6', this)"></div>
+                            <div class="color-option ${layer.color === '#98FB98' ? 'selected' : ''}" style="background: #98FB98" onclick="selectLayerColor(${layer.id}, '#98FB98', this)"></div>
+                            <div class="color-option ${layer.color === '#8B4513' ? 'selected' : ''}" style="background: #8B4513" onclick="selectLayerColor(${layer.id}, '#8B4513', this)"></div>
                         </div>
                     </div>
                 `;
-                container.innerHTML += layerHTML;
+                container.appendChild(div);
             });
-
-            updateLayerButtons();
+            document.getElementById('layer-count').textContent = s.layers.length;
+            document.getElementById('btn-remove-layer').disabled = s.layers.length <= 1;
+            document.getElementById('btn-add-layer').disabled = s.layers.length >= 5;
         }
 
-        // ==========================================
-        // ADIM NAVİGASYONU
-        // ==========================================
-        function goToStep(step) {
-            if (step < 1 || step > totalSteps) return;
-            
-            currentStep = step;
-            
-            // Tüm içerikleri gizle
-            document.querySelectorAll('.content-body').forEach(body => {
-                body.classList.remove('active');
-            });
-            
-            // Seçili adımı göster
-            document.getElementById(`step-${step}`).classList.add('active');
-            
-            // Adım göstergelerini güncelle
-            document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
-                indicator.classList.remove('active');
-                if (index + 1 < step) {
-                    indicator.classList.add('completed');
-                } else if (index + 1 === step) {
-                    indicator.classList.add('active');
-                } else {
-                    indicator.classList.remove('completed');
-                }
-            });
-            
-            // Başlıkları güncelle
-            const titles = [
-                'Pasta Boyutu ve Şekli',
-                'Katman Tasarımı',
-                'Pasta Yazısı',
-                'Süslemeler ve Dekorasyon',
-                'Özel Talepler',
-                'Önizleme ve Onay'
-            ];
-            
-            const descriptions = [
-                'Pastanızın temel özelliklerini seçin',
-                'Her kat için lezzet, renk ve kaplama belirleyin',
-                'Pastanıza özel bir mesaj ekleyin',
-                'Süslemelerle pastanızı kişiselleştirin',
-                'Son dokunuşlar ve teslimat bilgileri',
-                'Tasarımınızı gözden geçirin ve onaylayın'
-            ];
-            
-            document.getElementById('step-title').textContent = titles[step - 1];
-            document.getElementById('step-description').textContent = descriptions[step - 1];
-            
-            // Buton görünürlüğü
-            document.getElementById('prev-btn').style.display = step > 1 ? 'block' : 'none';
-            document.getElementById('next-btn').textContent = step < totalSteps ? 'İleri →' : 'Önizleme';
-            
-            // Son adımda 3D modeli oluştur
-            if (step === 6) {
-                setTimeout(() => {
-                    showFinalPreview();
-                }, 100);
-            }
-            
-            updateProgress();
+        function selectLayerColor(id, color, el) {
+            el.parentElement.querySelectorAll('.color-option').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            store.updateLayer(id, 'color', color);
         }
 
-        function nextStep() {
-            if (currentStep < totalSteps) {
-                goToStep(currentStep + 1);
-            }
-        }
-
-        function previousStep() {
-            if (currentStep > 1) {
-                goToStep(currentStep - 1);
-            }
-        }
-
-        function updateProgress() {
-            const progress = (currentStep / totalSteps) * 100;
-            document.getElementById('progress-bar').style.width = progress + '%';
-        }
-
-        // ==========================================
-        // ADIM 1: ŞEKİL VE BOYUT
-        // ==========================================
-        function selectShape(shape) {
-            document.querySelectorAll('[data-shape]').forEach(card => {
-                card.classList.remove('selected');
-            });
-            document.querySelector(`[data-shape="${shape}"]`).classList.add('selected');
-            cakeData.shape = shape;
-            updatePreview();
-        }
-
-        function selectSize(size) {
-            document.querySelectorAll('[data-size]').forEach(card => {
-                card.classList.remove('selected');
-            });
-            document.querySelector(`[data-size="${size}"]`).classList.add('selected');
-            cakeData.size = size;
-            
-            pricing.base = size === 'small' ? 150 : size === 'large' ? 300 : 200;
-            calculatePrice();
-        }
-
-        // ==========================================
-        // ADIM 2: KATMAN TASARIMI
-        // ==========================================
-        function updateLayer(layerNum, property, value) {
-            cakeData.layers[layerNum - 1][property] = value;
-            updatePreview();
-        }
-
-        function selectLayerColor(layerNum, color, element) {
-            // Aynı katmandaki diğer renklerin seçimini kaldır
-            element.parentElement.querySelectorAll('.color-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            element.classList.add('selected');
-            
-            cakeData.layers[layerNum - 1].color = color;
-            updatePreview();
-        }
-
-        // ==========================================
-        // ADIM 3: YAZI
-        // ==========================================
-        function selectTextTemplate(text) {
-            document.getElementById('custom-text').value = text;
-            cakeData.text.content = text;
-            updatePreview();
-        }
-
-        function updateText(text) {
-            cakeData.text.content = text;
-            updatePreview();
-        }
-
-        function updateTextPosition(position) {
-            cakeData.text.position = position;
-            updatePreview();
-        }
-
-        function updateTextFont(font) {
-            cakeData.text.font = font;
-            updatePreview();
-        }
-
-        function selectTextColor(color, element) {
-            element.parentElement.querySelectorAll('.color-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            element.classList.add('selected');
-            
-            cakeData.text.color = color;
-            updatePreview();
-        }
-
-        // ==========================================
-        // ADIM 4: SÜSLEMELER
-        // ==========================================
-        function toggleDecoration(decoration, element) {
-            element.classList.toggle('selected');
-            
-            if (element.classList.contains('selected')) {
-                if (!cakeData.decorations.top.includes(decoration)) {
-                    cakeData.decorations.top.push(decoration);
-                }
-            } else {
-                cakeData.decorations.top = cakeData.decorations.top.filter(d => d !== decoration);
-            }
-            
-            updatePreview();
-            calculatePrice();
-        }
-
-        function selectEdge(edge, element) {
-            document.querySelectorAll('#edge-decorations .chip').forEach(chip => {
-                chip.classList.remove('selected');
-            });
-            element.classList.add('selected');
-            
-            cakeData.decorations.edge = edge;
-            calculatePrice();
-        }
-
-        function selectTopper(topper, element) {
-            document.querySelectorAll('#topper-decorations .chip').forEach(chip => {
-                chip.classList.remove('selected');
-            });
-            element.classList.add('selected');
-            
-            cakeData.decorations.topper = topper;
-            updatePreview();
-            calculatePrice();
-        }
-
-        function updateFilling(filling) {
-            cakeData.filling = filling;
-        }
-
-        // ==========================================
-        // ADIM 5: ÖZEL TALEPLER
-        // ==========================================
-        function updateSpecial(key, value) {
-            cakeData.special[key] = value;
-            calculatePrice();
-        }
-
-        function updateNote(note) {
-            cakeData.special.note = note;
-        }
-
-        function updateDeliveryDate(date) {
-            cakeData.special.deliveryDate = date;
-        }
-
-        function updateDeliveryTime(time) {
-            cakeData.special.deliveryTime = time;
-        }
-
-        // ==========================================
-        // ÖNİZLEME GÜNCELLEME
-        // ==========================================
-        function updatePreview() {
-            // Önizleme panelini yeniden oluştur
-            const previewContainer = document.querySelector('.cake-preview-2d');
-            previewContainer.innerHTML = '';
-
-            // Katmanları tersten göster (üstten alta)
-            for (let i = cakeData.layerCount - 1; i >= 0; i--) {
-                const layer = cakeData.layers[i];
-                const layerNum = i + 1;
-                
-                // Genişlik hesaplama (üstten alta büyüyen)
-                const widthPercent = 100 - ((cakeData.layerCount - 1 - i) * (30 / cakeData.layerCount));
-                
-                const layerHTML = `
-                    <div class="preview-layer" id="preview-layer-${layerNum}">
-                        <div class="layer-decorations-preview" id="preview-deco-${layerNum}"></div>
-                        <div class="layer-visual" style="background: ${layer.color}; width: ${widthPercent}%; margin: 0 auto;">
-                            <div class="layer-text-preview" id="preview-text-${layerNum}"></div>
-                        </div>
-                    </div>
-                `;
-                previewContainer.innerHTML += layerHTML;
-            }
-
-            // Yazı pozisyonunu güncelle
-            const textPositionMap = {
-                'top': cakeData.layerCount,
-                'middle': Math.ceil(cakeData.layerCount / 2),
-                'bottom': 1
-            };
-            
-            // Seçili pozisyona yazıyı ekle
-            if (cakeData.text.content) {
-                const targetLayer = textPositionMap[cakeData.text.position];
-                const textEl = document.getElementById(`preview-text-${targetLayer}`);
-                if (textEl) {
-                    textEl.textContent = cakeData.text.content;
-                    textEl.style.color = cakeData.text.color;
-                    
-                    const fontStyles = {
-                        'cursive': 'Brush Script MT, cursive',
-                        'serif': 'Georgia, serif',
-                        'bold': 'Impact, sans-serif'
-                    };
-                    textEl.style.fontFamily = fontStyles[cakeData.text.font];
-                }
-            }
-
-            // Süslemeleri en üst kata ekle
-            const topLayerNum = cakeData.layerCount;
-            const decoContainer = document.getElementById(`preview-deco-${topLayerNum}`);
-            if (decoContainer) {
-                decoContainer.innerHTML = '';
-                
-                const decoEmojis = {
-                    'strawberries': '🍓',
-                    'berries': '🫐',
-                    'chocolate': '🍫',
-                    'macaron': '🧁',
-                    'flowers': '🌺',
-                    'gold': '✨'
-                };
-
-                cakeData.decorations.top.forEach(deco => {
-                    const span = document.createElement('span');
-                    span.className = 'deco-emoji';
-                    span.textContent = decoEmojis[deco] || '🎀';
-                    decoContainer.appendChild(span);
-                });
-
-                // Topper ekle
-                if (cakeData.decorations.topper) {
-                    const topperEmojis = {
-                        'number': '🔢',
-                        'star': '⭐',
-                        'heart': '❤️',
-                        'name': '📛'
-                    };
-                    const span = document.createElement('span');
-                    span.className = 'deco-emoji';
-                    span.textContent = topperEmojis[cakeData.decorations.topper];
-                    span.style.fontSize = '28px';
-                    decoContainer.appendChild(span);
-                }
-            }
-        }
-
-        // ==========================================
-        // FİYAT HESAPLAMA
-        // ==========================================
         function calculatePrice() {
-            let total = pricing.base;
-
-            // Süslemeler
-            cakeData.decorations.top.forEach(deco => {
-                total += pricing.decorations[deco] || 0;
-            });
-
-            // Kenar süsleme
-            if (cakeData.decorations.edge) {
-                total += pricing.edge;
-            }
-
-            // Topper
-            if (cakeData.decorations.topper) {
-                total += pricing.topper;
-            }
-
-            // Özel talepler
-            if (cakeData.special.sugarFree) total += pricing.sugarFree;
-            if (cakeData.special.glutenFree) total += pricing.glutenFree;
-
-            document.getElementById('live-price').textContent = `${total}₺`;
-            return total;
+            const s = useStore.getState();
+            let total = s.pricing.base;
+            s.decorations.forEach(d => total += s.pricing.decorationPrices[d.type] || 0);
+            document.getElementById('total-price').textContent = `${total}₺`;
         }
 
-        // ==========================================
-        // SON ADIM: 3D GÖRÜNÜM
-        // ==========================================
-        let scene, camera, renderer, controls;
-        let cakeMeshes = [];
-
-        function showFinalPreview() {
-            // Final review ekranını göster
-            document.getElementById('final-review').style.display = 'block';
-            document.getElementById('final-review').classList.add('active');
-            document.getElementById('order-confirmed').style.display = 'none';
-            document.getElementById('order-confirmed').classList.remove('active');
-            
-            document.getElementById('loading').classList.add('active');
-            
-            setTimeout(() => {
-                if (!scene) {
-                    init3D();
-                } else {
-                    // Eğer scene varsa, sadece pastayı yeniden oluştur
-                    create3DCake();
-                }
-                
-                updateSummary();
-                
-                document.getElementById('loading').classList.remove('active');
-            }, 800);
+        function completeOrder() {
+            const s = useStore.getState();
+            const orderData = {
+                orderNumber: Math.floor(100000 + Math.random() * 900000),
+                cake: s,
+                totalPrice: document.getElementById('total-price').textContent
+            };
+            console.log('═══ SİPARİŞ ═══');
+            console.log(JSON.stringify(orderData, null, 2));
+            alert(`✅ Sipariş #${orderData.orderNumber} alındı!\n\nDetaylar console'da (F12)`);
         }
+
+        // THREE.JS
+        let scene, camera, renderer, controls, raycaster;
+        let cakeMeshes = [], decorationMeshes = [];
 
         function init3D() {
-            // THREE kontrolü
-            if (typeof THREE === 'undefined') {
-                console.error('THREE tanımlı değil! Kütüphane yüklenmedi.');
-                alert('3D görüntüleme için gerekli kütüphane yüklenemedi. Lütfen sayfayı yenileyin.');
-                return;
-            }
-
-            console.log('init3D çağrıldı, THREE versiyonu:', THREE.REVISION);
-
-            const container = document.getElementById('canvas-3d');
-            
-            // Container boyutlarını al
-            const width = container.clientWidth || 800;
-            const height = container.clientHeight || 500;
-            
+            const container = document.getElementById('canvas-container');
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xf8f9fa);
-            
-            camera = new THREE.PerspectiveCamera(
-                50,
-                width / height,
-                0.1,
-                1000
-            );
-            camera.position.set(6, 5, 6);
-            
+            camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(5, 4, 5);
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(width, height);
+            renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.shadowMap.enabled = true;
-            container.innerHTML = ''; // Önceki içeriği temizle
             container.appendChild(renderer.domElement);
-            
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.minDistance = 4;
-            controls.maxDistance = 12;
+            raycaster = new THREE.Raycaster();
             
-            // Işıklar
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(5, 10, 5);
+            dirLight.castShadow = true;
+            scene.add(dirLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(8, 10, 8);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            scene.add(directionalLight);
-            
-            const pointLight = new THREE.PointLight(0xffffff, 0.5);
-            pointLight.position.set(-5, 5, -5);
-            scene.add(pointLight);
-            
-            // Zemin
-            const groundGeometry = new THREE.CircleGeometry(6, 32);
-            const groundMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0xffffff,
-                roughness: 0.8
-            });
-            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            const ground = new THREE.Mesh(
+                new THREE.CircleGeometry(5, 32),
+                new THREE.MeshStandardMaterial({ color: 0xffffff })
+            );
             ground.rotation.x = -Math.PI / 2;
             ground.position.y = -0.1;
             ground.receiveShadow = true;
             scene.add(ground);
             
-            animate3D();
-            
-            // Resize handler
-            window.addEventListener('resize', () => {
-                const newWidth = container.clientWidth || 800;
-                const newHeight = container.clientHeight || 500;
-                camera.aspect = newWidth / newHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(newWidth, newHeight);
-            });
-
-            console.log('3D sahne başarıyla oluşturuldu');
+            container.addEventListener('click', onCanvasClick);
+            animate();
         }
 
-        function create3DCake() {
-            if (typeof THREE === 'undefined') {
-                console.error('THREE tanımlı değil!');
-                return;
-            }
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
 
-            console.log('create3DCake çağrıldı, kat sayısı:', cakeData.layerCount);
-
-            // Mevcut mesh'leri temizle
-            cakeMeshes.forEach(mesh => scene.remove(mesh));
+        function render3D() {
+            const s = useStore.getState();
+            cakeMeshes.forEach(m => scene.remove(m));
+            decorationMeshes.forEach(m => scene.remove(m));
             cakeMeshes = [];
-            
-            const LAYER_HEIGHT = 1;
-            
-            // Boyutları dinamik hesapla
-            const baseSize = 2.2;
-            const sizeDecrement = (baseSize - 0.8) / Math.max(1, cakeData.layerCount - 1);
-            
-            cakeData.layers.forEach((layer, index) => {
-                const layerSize = baseSize - (index * sizeDecrement);
+            decorationMeshes = [];
+
+            const LAYER_HEIGHT = 0.8;
+            const baseSize = 2;
+            const sizeDecrement = (baseSize - 0.8) / Math.max(1, s.layers.length - 1);
+
+            // CREATE LAYERS
+            s.layers.forEach((layer, i) => {
+                const layerSize = baseSize - (i * sizeDecrement);
                 let geometry;
-                
-                // Şekle göre geometri
-                if (cakeData.shape === 'round') {
-                    geometry = new THREE.CylinderGeometry(
-                        layerSize,
-                        layerSize,
-                        LAYER_HEIGHT,
-                        64
-                    );
-                } else if (cakeData.shape === 'square') {
-                    geometry = new THREE.BoxGeometry(
-                        layerSize * 1.8,
-                        LAYER_HEIGHT,
-                        layerSize * 1.8
-                    );
-                } else if (cakeData.shape === 'heart') {
-                    geometry = new THREE.CylinderGeometry(
-                        layerSize,
-                        layerSize,
-                        LAYER_HEIGHT,
-                        64
-                    );
+
+                if (s.shape === 'round') {
+                    geometry = new THREE.CylinderGeometry(layerSize, layerSize, LAYER_HEIGHT, 64);
+                } else if (s.shape === 'square') {
+                    geometry = new THREE.BoxGeometry(layerSize * 1.8, LAYER_HEIGHT, layerSize * 1.8);
+                } else {
+                    // HEART
+                    const heart = new THREE.Shape();
+                    heart.moveTo(0.5, 0.5);
+                    heart.bezierCurveTo(0.5, 0.5, 0.4, 0, 0, 0);
+                    heart.bezierCurveTo(-0.6, 0, -0.6, 0.7, -0.6, 0.7);
+                    heart.bezierCurveTo(-0.6, 1.1, -0.3, 1.54, 0.5, 1.9);
+                    heart.bezierCurveTo(1.2, 1.54, 1.6, 1.1, 1.6, 0.7);
+                    heart.bezierCurveTo(1.6, 0.7, 1.6, 0, 1, 0);
+                    heart.bezierCurveTo(0.7, 0, 0.5, 0.5, 0.5, 0.5);
+                    geometry = new THREE.ExtrudeGeometry(heart, { depth: LAYER_HEIGHT, bevelEnabled: false });
+                    geometry.rotateX(Math.PI / 2);
+                    geometry.scale(layerSize * 0.5, layerSize * 0.5, 1);
                 }
-                
-                const material = new THREE.MeshStandardMaterial({
-                    color: layer.color,
-                    roughness: 0.4,
-                    metalness: 0.1
-                });
-                
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.y = (index * LAYER_HEIGHT) + (LAYER_HEIGHT / 2);
+
+                const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: layer.color, roughness: 0.3, metalness: 0.1 }));
+                mesh.position.y = s.shape === 'heart' ? (i * LAYER_HEIGHT) : (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
-                
                 scene.add(mesh);
                 cakeMeshes.push(mesh);
 
-                console.log(`Kat ${index + 1} oluşturuldu - Renk: ${layer.color}`);
+                // IMAGE ON TOP
+                if (s.image && i === s.layers.length - 1) {
+                    const texture = new THREE.TextureLoader().load(s.image);
+                    let topGeo;
+                    if (s.shape === 'round') {
+                        topGeo = new THREE.CircleGeometry(layerSize * 0.95, 64);
+                    } else if (s.shape === 'square') {
+                        topGeo = new THREE.PlaneGeometry(layerSize * 1.7, layerSize * 1.7);
+                    } else {
+                        const h2 = new THREE.Shape();
+                        h2.moveTo(0.5, 0.5);
+                        h2.bezierCurveTo(0.5, 0.5, 0.4, 0, 0, 0);
+                        h2.bezierCurveTo(-0.6, 0, -0.6, 0.7, -0.6, 0.7);
+                        h2.bezierCurveTo(-0.6, 1.1, -0.3, 1.54, 0.5, 1.9);
+                        h2.bezierCurveTo(1.2, 1.54, 1.6, 1.1, 1.6, 0.7);
+                        h2.bezierCurveTo(1.6, 0.7, 1.6, 0, 1, 0);
+                        h2.bezierCurveTo(0.7, 0, 0.5, 0.5, 0.5, 0.5);
+                        topGeo = new THREE.ShapeGeometry(h2);
+                        topGeo.scale(layerSize * 0.45, layerSize * 0.45, 1);
+                    }
+                    const topMesh = new THREE.Mesh(topGeo, new THREE.MeshStandardMaterial({ map: texture, roughness: 0.2, metalness: 0.1 }));
+                    topMesh.rotation.x = -Math.PI / 2;
+                    topMesh.position.y = s.shape === 'heart' ? (i * LAYER_HEIGHT) + LAYER_HEIGHT + 0.01 : (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2) + 0.01;
+                    if (s.shape === 'heart') topMesh.rotation.z = Math.PI;
+                    scene.add(topMesh);
+                    cakeMeshes.push(topMesh);
+                }
             });
 
-            console.log('Tüm katmanlar oluşturuldu, toplam:', cakeMeshes.length);
-        }
-
-        function animate3D() {
-            requestAnimationFrame(animate3D);
-            if (controls) controls.update();
-            if (renderer && scene && camera) {
-                renderer.render(scene, camera);
+            // TEXT
+            if (s.text.content) {
+                let targetIdx = s.layers.length - 1;
+                if (s.text.position === 'middle') targetIdx = Math.floor(s.layers.length / 2);
+                if (s.text.position === 'bottom') targetIdx = 0;
+                
+                const layerY = (targetIdx * LAYER_HEIGHT) + (LAYER_HEIGHT / 2);
+                const layerSize = baseSize - (targetIdx * sizeDecrement);
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 1024;
+                canvas.height = 256;
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, 1024, 256);
+                ctx.fillStyle = s.text.color;
+                ctx.font = 'bold 100px Georgia';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+                ctx.lineWidth = 10;
+                ctx.strokeText(s.text.content, 512, 128);
+                ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                ctx.shadowBlur = 10;
+                ctx.fillText(s.text.content, 512, 128);
+                
+                const textMesh = new THREE.Mesh(
+                    new THREE.PlaneGeometry(layerSize * 1.6, 0.4),
+                    new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, alphaTest: 0.05 })
+                );
+                textMesh.rotation.x = -Math.PI / 2;
+                textMesh.position.set(0, s.shape === 'heart' ? (targetIdx * LAYER_HEIGHT) + LAYER_HEIGHT + 0.03 : layerY + (LAYER_HEIGHT / 2) + 0.03, s.shape === 'heart' ? 0.3 : 0);
+                scene.add(textMesh);
+                decorationMeshes.push(textMesh);
             }
+
+            // DECORATIONS
+            s.decorations.forEach(d => {
+                const topY = (s.layers.length * LAYER_HEIGHT);
+                const colors = { strawberry: 0xff0000, berry: 0x4169e1, chocolate: 0x8b4513, macaron: 0xffb6c1, flower: 0xff69b4, star: 0xffff00 };
+                const mesh = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.15, 16, 16),
+                    new THREE.MeshStandardMaterial({ color: colors[d.type] || 0xff0000, roughness: 0.3, metalness: 0.5 })
+                );
+                mesh.position.set(d.position.x, topY + 0.15, d.position.z);
+                mesh.castShadow = true;
+                scene.add(mesh);
+                decorationMeshes.push(mesh);
+            });
         }
 
-        function updateSummary() {
-            const shapeNames = { 'round': 'Yuvarlak', 'square': 'Kare', 'heart': 'Kalp' };
-            const sizeNames = { 'small': 'Küçük (8-10 kişi)', 'medium': 'Orta (15-20 kişi)', 'large': 'Büyük (30-40 kişi)' };
-            
-            document.getElementById('summary-shape').textContent = shapeNames[cakeData.shape] + ` - ${cakeData.layerCount} Kat`;
-            document.getElementById('summary-size').textContent = sizeNames[cakeData.size];
-            document.getElementById('summary-text').textContent = cakeData.text.content || 'Yazı yok';
-            
-            let decoText = cakeData.decorations.top.length > 0 ? cakeData.decorations.top.join(', ') : 'Yok';
-            if (cakeData.decorations.edge) decoText += `, Kenar: ${cakeData.decorations.edge}`;
-            if (cakeData.decorations.topper) decoText += `, Topper: ${cakeData.decorations.topper}`;
-            document.getElementById('summary-decorations').textContent = decoText;
-            
-            const deliveryText = cakeData.special.deliveryDate ? 
-                `${cakeData.special.deliveryDate} ${cakeData.special.deliveryTime}` : 
-                'Belirtilmedi';
-            document.getElementById('summary-delivery').textContent = deliveryText;
-            
-            document.getElementById('summary-total').textContent = document.getElementById('live-price').textContent;
-        }
-
-        // ==========================================
-        // SİPARİŞ ONAY
-        // ==========================================
-        function confirmOrder() {
-            document.getElementById('final-review').style.display = 'none';
-            document.getElementById('order-confirmed').classList.add('active');
-            
-            // Sipariş numarası oluştur
-            const orderNumber = Math.floor(100000 + Math.random() * 900000);
-            document.getElementById('order-number').textContent = orderNumber;
-            
-            // Sipariş detayını hazırla
-            const orderData = {
-                orderNumber: orderNumber,
-                orderDate: new Date().toISOString(),
-                cakeDetails: cakeData,
-                totalPrice: document.getElementById('live-price').textContent,
-                status: 'confirmed'
-            };
-            
-            // Console'a yazdır
-            console.log('═══════════════════════════════════');
-            console.log('🎂 SİPARİŞ DETAYI');
-            console.log('═══════════════════════════════════');
-            console.log(JSON.stringify(orderData, null, 2));
-            console.log('═══════════════════════════════════');
-            
-            // Özet göster
-            const summaryHTML = `
-                <div class="summary-row"><span>Sipariş No:</span><span>#CAKE-${orderNumber}</span></div>
-                <div class="summary-row"><span>Şekil:</span><span>${document.getElementById('summary-shape').textContent}</span></div>
-                <div class="summary-row"><span>Boyut:</span><span>${document.getElementById('summary-size').textContent}</span></div>
-                <div class="summary-row"><span>Teslimat:</span><span>${document.getElementById('summary-delivery').textContent}</span></div>
-                <div class="summary-row"><span>TOPLAM:</span><span style="color: #f5576c;">${document.getElementById('summary-total').textContent}</span></div>
-            `;
-            document.getElementById('confirmed-summary').innerHTML = summaryHTML;
-            
-            // Butonları gizle
-            document.querySelector('.content-footer').style.display = 'none';
-        }
+        // INIT
+        window.addEventListener('load', () => {
+            init3D();
+            renderLayers();
+            render3D();
+            calculatePrice();
+            console.log('✅ Uygulama hazır!');
+        });
     </script>
 </body>
 </html>
