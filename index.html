@@ -996,11 +996,21 @@
         </div>
     </div>
 
-    <!-- Three.js -->
-    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
-    <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Three.js Kütüphaneleri -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onload="console.log('Three.js yüklendi')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" onload="console.log('OrbitControls yüklendi')"></script>
 
     <script>
+        // Three.js yüklenene kadar bekle
+        window.addEventListener('load', function() {
+            console.log('Sayfa tamamen yüklendi');
+            if (typeof THREE === 'undefined') {
+                console.error('THREE tanımlı değil!');
+                alert('3D kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
+            } else {
+                console.log('THREE başarıyla yüklendi:', THREE.REVISION);
+            }
+        });
         // ==========================================
         // GLOBAL STATE
         // ==========================================
@@ -1556,6 +1566,15 @@
         }
 
         function init3D() {
+            // THREE kontrolü
+            if (typeof THREE === 'undefined') {
+                console.error('THREE tanımlı değil! Kütüphane yüklenmedi.');
+                alert('3D görüntüleme için gerekli kütüphane yüklenemedi. Lütfen sayfayı yenileyin.');
+                return;
+            }
+
+            console.log('init3D çağrıldı, THREE versiyonu:', THREE.REVISION);
+
             const container = document.getElementById('canvas-3d');
             
             // Container boyutlarını al
@@ -1622,9 +1641,18 @@
                 camera.updateProjectionMatrix();
                 renderer.setSize(newWidth, newHeight);
             });
+
+            console.log('3D sahne başarıyla oluşturuldu');
         }
 
         function create3DCake() {
+            if (typeof THREE === 'undefined') {
+                console.error('THREE tanımlı değil!');
+                return;
+            }
+
+            console.log('create3DCake çağrıldı, kat sayısı:', cakeData.layerCount);
+
             // Mevcut mesh'leri temizle
             cakeMeshes.forEach(mesh => scene.remove(mesh));
             cakeMeshes = [];
@@ -1675,7 +1703,11 @@
                 
                 scene.add(mesh);
                 cakeMeshes.push(mesh);
+
+                console.log(`Kat ${index + 1} oluşturuldu - Renk: ${layer.color}`);
             });
+
+            console.log('Tüm katmanlar oluşturuldu, toplam:', cakeMeshes.length);
         }
 
         function animate3D() {
