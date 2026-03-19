@@ -835,7 +835,7 @@
                 scene.add(mesh);
                 cakeMeshes.push(mesh);
 
-                // GÖRSEL - ÜST TABAKAYA TAM KAPLA
+                // GÖRSEL - ÜST TABAKAYA YAPIŞTIR
                 if (s.image && i === s.layers.length - 1) {
                     console.log('🖼️ Görsel yükleniyor...');
                     
@@ -844,14 +844,16 @@
                     });
                     
                     let topGeo;
+                    let topY;
+                    
                     if (s.shape === 'round') {
-                        // TAM KAPLA - radius %100
                         topGeo = new THREE.CircleGeometry(layerSize, 64);
+                        topY = (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2) + (LAYER_HEIGHT / 2) + 0.001;
                     } else if (s.shape === 'square') {
-                        // TAM KAPLA - boyut %100
                         topGeo = new THREE.PlaneGeometry(layerSize * 1.8, layerSize * 1.8);
+                        topY = (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2) + (LAYER_HEIGHT / 2) + 0.001;
                     } else {
-                        // KALP - TAM KAPLA
+                        // KALP
                         const h2 = new THREE.Shape();
                         h2.moveTo(0, 0.25);
                         h2.bezierCurveTo(0, 0, -0.5, -0.25, -0.5, 0.25);
@@ -860,6 +862,7 @@
                         h2.bezierCurveTo(0.5, -0.25, 0, 0, 0, 0.25);
                         topGeo = new THREE.ShapeGeometry(h2);
                         topGeo.scale(layerSize * 0.85, layerSize * 0.85, 1);
+                        topY = (i * LAYER_HEIGHT) + LAYER_HEIGHT + 0.001;
                     }
                     
                     const topMesh = new THREE.Mesh(topGeo, new THREE.MeshStandardMaterial({ 
@@ -868,23 +871,25 @@
                         metalness: 0.1
                     }));
                     topMesh.rotation.x = -Math.PI / 2;
-                    if (s.shape === 'heart') {
-                        topMesh.position.y = (i * LAYER_HEIGHT) + LAYER_HEIGHT + 0.002;
-                    } else {
-                        topMesh.position.y = (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2) + 0.002;
-                    }
+                    topMesh.position.y = topY;
                     topMesh.receiveShadow = true;
                     scene.add(topMesh);
                     cakeMeshes.push(topMesh);
-                    console.log('✅ Görsel 3D\'ye eklendi');
+                    console.log('✅ Görsel pastanın üstüne yapıştırıldı, Y:', topY);
                 }
             });
 
-            // TEXT - ÜST KATA
+            // TEXT - PASTANIN ÜSTÜ
             if (s.text.content) {
                 const topIdx = s.layers.length - 1;
-                const layerY = (topIdx * LAYER_HEIGHT) + (LAYER_HEIGHT / 2);
                 const layerSize = baseSize - (topIdx * sizeDecrement);
+                
+                let textY;
+                if (s.shape === 'heart') {
+                    textY = (topIdx * LAYER_HEIGHT) + LAYER_HEIGHT + 0.003;
+                } else {
+                    textY = (topIdx * LAYER_HEIGHT) + LAYER_HEIGHT + 0.003;
+                }
                 
                 const canvas = document.createElement('canvas');
                 canvas.width = 1024;
@@ -915,27 +920,39 @@
                     })
                 );
                 textMesh.rotation.x = -Math.PI / 2;
-                if (s.shape === 'heart') {
-                    textMesh.position.set(0, (topIdx * LAYER_HEIGHT) + LAYER_HEIGHT + 0.01, 0);
-                } else {
-                    textMesh.position.set(0, layerY + (LAYER_HEIGHT / 2) + 0.01, 0);
-                }
+                textMesh.position.set(0, textY, 0);
                 scene.add(textMesh);
                 decorationMeshes.push(textMesh);
+                console.log('✅ Yazı pastanın üstüne yapıştırıldı, Y:', textY);
             }
 
-            // SÜSLEMELER - PASTAYA YAKIN
-            const topY = s.shape === 'heart' ? (s.layers.length * LAYER_HEIGHT) : (s.layers.length * LAYER_HEIGHT) - (LAYER_HEIGHT / 2);
+            // SÜSLEMELER - PASTANIN TAM ÜSTÜNDEki
             s.decorations.forEach(d => {
-                const colors = { strawberry: 0xff0000, berry: 0x4169e1, chocolate: 0x8b4513, flower: 0xff69b4, star: 0xffff00, candle: 0xffffe0 };
+                const topIdx = s.layers.length - 1;
+                const topY = (topIdx * LAYER_HEIGHT) + LAYER_HEIGHT + 0.07;
+                
+                const colors = { 
+                    strawberry: 0xff0000, 
+                    berry: 0x4169e1, 
+                    chocolate: 0x8b4513, 
+                    flower: 0xff69b4, 
+                    star: 0xffff00, 
+                    candle: 0xffffe0 
+                };
+                
                 const mesh = new THREE.Mesh(
                     new THREE.SphereGeometry(0.12, 16, 16),
-                    new THREE.MeshStandardMaterial({ color: colors[d.type] || 0xff0000, roughness: 0.3, metalness: 0.6 })
+                    new THREE.MeshStandardMaterial({ 
+                        color: colors[d.type] || 0xff0000, 
+                        roughness: 0.3, 
+                        metalness: 0.6 
+                    })
                 );
-                mesh.position.set(d.position.x, topY + 0.06, d.position.z);
+                mesh.position.set(d.position.x, topY, d.position.z);
                 mesh.castShadow = true;
                 scene.add(mesh);
                 decorationMeshes.push(mesh);
+                console.log(`✅ Süsleme (${d.type}) pastanın üstüne yapıştırıldı, Y:`, topY);
             });
             
             console.log('✅ 3D render tamamlandı');
