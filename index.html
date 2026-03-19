@@ -3,40 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎂 Pasta Tasarım Stüdyosu</title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Dancing+Script:wght@700&family=Satisfy&family=Allura&display=swap" rel="stylesheet">
+    <title>🎂 Pasta Tasarım Stüdyosu - Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             overflow-x: hidden;
         }
-
         .app-container { display: flex; height: 100vh; }
-
         .control-panel {
             width: 420px;
             background: white;
             overflow-y: auto;
             box-shadow: 2px 0 20px rgba(0,0,0,0.1);
         }
-
         .panel-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-
         .panel-header h1 { font-size: 26px; margin-bottom: 8px; }
-
         .section {
             padding: 25px;
             border-bottom: 1px solid #eee;
         }
-
         .section h3 {
             font-size: 18px;
             color: #333;
@@ -45,7 +38,6 @@
             align-items: center;
             gap: 10px;
         }
-
         .btn {
             padding: 12px 24px;
             border: none;
@@ -55,27 +47,22 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
-
         .btn-secondary { background: #f0f0f0; color: #333; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
         .option-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin-top: 15px;
         }
-
         .option-card {
             background: white;
             border: 3px solid #e0e0e0;
@@ -85,34 +72,28 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-
         .option-card:hover {
             border-color: #667eea;
             transform: translateY(-3px);
         }
-
         .option-card.selected {
             border-color: #667eea;
             background: #f0f4ff;
         }
-
         .option-card .icon { font-size: 32px; margin-bottom: 8px; }
         .option-card .title { font-weight: 600; font-size: 13px; color: #333; }
-
         .layer-item {
             background: #f8f9fa;
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 15px;
         }
-
         .layer-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
-
         .btn-remove {
             background: #ff4444;
             color: white;
@@ -121,7 +102,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
         .form-group { margin-bottom: 15px; }
         .form-group label {
             display: block;
@@ -130,7 +110,6 @@
             color: #555;
             margin-bottom: 8px;
         }
-
         .form-group select,
         .form-group input {
             width: 100%;
@@ -139,14 +118,12 @@
             border-radius: 6px;
             font-size: 14px;
         }
-
         .color-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 10px;
             margin-top: 10px;
         }
-
         .color-option {
             aspect-ratio: 1;
             border-radius: 8px;
@@ -154,20 +131,16 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .color-option:hover { transform: scale(1.15); }
-
         .color-option.selected {
             border-color: #333;
             box-shadow: 0 0 0 2px white, 0 0 0 5px #333;
         }
-
         .font-grid {
             display: grid;
             gap: 10px;
             margin-top: 10px;
         }
-
         .font-option {
             padding: 15px;
             background: white;
@@ -178,53 +151,46 @@
             text-align: center;
             font-size: 24px;
         }
-
         .font-option:hover {
             border-color: #667eea;
             transform: translateY(-2px);
         }
-
         .font-option.selected {
             border-color: #667eea;
             background: #f0f4ff;
         }
-
         .font-great-vibes { font-family: 'Great Vibes', cursive; }
         .font-pacifico { font-family: 'Pacifico', cursive; }
         .font-dancing { font-family: 'Dancing Script', cursive; }
-        .font-satisfy { font-family: 'Satisfy', cursive; }
-        .font-allura { font-family: 'Allura', cursive; }
 
+        /* SÜSLEME KARTLARI - SÜRÜKLENEBILIR */
         .deco-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin-top: 15px;
         }
-
         .deco-card {
             background: white;
             border: 3px solid #e0e0e0;
             border-radius: 10px;
             padding: 20px 10px;
             text-align: center;
-            cursor: pointer;
+            cursor: grab;
             transition: all 0.3s;
             user-select: none;
         }
-
+        .deco-card:active {
+            cursor: grabbing;
+        }
         .deco-card:hover {
             border-color: #667eea;
-            transform: translateY(-3px);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
-
-        .deco-card.selected {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        .deco-card.dragging {
+            opacity: 0.5;
         }
-
         .deco-card .emoji { font-size: 36px; margin-bottom: 8px; }
         .deco-card .name { font-size: 12px; font-weight: 600; }
 
@@ -237,7 +203,6 @@
             padding: 40px;
             position: relative;
         }
-
         #canvas-container {
             width: 100%;
             max-width: 800px;
@@ -246,9 +211,14 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             overflow: hidden;
-            cursor: crosshair;
+            border: 4px dashed transparent;
+            transition: all 0.3s;
         }
-
+        #canvas-container.drag-over {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+            box-shadow: 0 25px 70px rgba(102, 126, 234, 0.5);
+        }
         .price-box {
             position: absolute;
             bottom: 40px;
@@ -260,23 +230,19 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             text-align: center;
         }
-
         .price-box .label {
             font-size: 13px;
             opacity: 0.9;
             margin-bottom: 5px;
         }
-
         .price-box .amount {
             font-size: 42px;
             font-weight: bold;
         }
-
         .complete-section {
             padding: 25px;
             background: #f8f9fa;
         }
-
         .btn-complete {
             width: 100%;
             padding: 18px;
@@ -288,7 +254,6 @@
             font-weight: bold;
             cursor: pointer;
         }
-
         .alert-box {
             background: #e3f2fd;
             border: 2px solid #2196F3;
@@ -299,8 +264,7 @@
             color: #1565C0;
             line-height: 1.6;
         }
-
-        .alert-box strong { display: block; margin-bottom: 8px; }
+        .alert-box strong { display: block; margin-bottom: 8px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -364,7 +328,7 @@
 
             <!-- GÖRSEL -->
             <div class="section">
-                <h3>🖼️ Pasta Görseli</h3>
+                <h3>🖼️ Pasta Görseli (Üst Tabaka)</h3>
                 <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
                 <button class="btn btn-primary" onclick="document.getElementById('image-upload').click()" style="width: 100%;">
                     📤 Görsel Yükle
@@ -386,7 +350,7 @@
                            oninput="store.setText(this.value)">
                 </div>
                 <div class="form-group">
-                    <label>Yazı Stili (Tıklayın)</label>
+                    <label>Yazı Stili</label>
                     <div class="font-grid">
                         <div class="font-option font-great-vibes selected" onclick="store.setFont('Great Vibes', this)">
                             İyi ki doğdun
@@ -415,34 +379,36 @@
             <div class="section">
                 <h3>🌸 Süslemeler</h3>
                 <div class="deco-grid">
-                    <div class="deco-card" data-deco="strawberry" onclick="addDecorationQuick('strawberry', this)">
+                    <div class="deco-card" draggable="true" data-deco="strawberry" ondragstart="dragStart(event)">
                         <div class="emoji">🍓</div>
                         <div class="name">Çilek</div>
                     </div>
-                    <div class="deco-card" data-deco="chocolate" onclick="addDecorationQuick('chocolate', this)">
+                    <div class="deco-card" draggable="true" data-deco="chocolate" ondragstart="dragStart(event)">
                         <div class="emoji">🍫</div>
                         <div class="name">Çikolata</div>
                     </div>
-                    <div class="deco-card" data-deco="flower" onclick="addDecorationQuick('flower', this)">
+                    <div class="deco-card" draggable="true" data-deco="flower" ondragstart="dragStart(event)">
                         <div class="emoji">🌺</div>
                         <div class="name">Çiçek</div>
                     </div>
-                    <div class="deco-card" data-deco="star" onclick="addDecorationQuick('star', this)">
+                    <div class="deco-card" draggable="true" data-deco="star" ondragstart="dragStart(event)">
                         <div class="emoji">⭐</div>
                         <div class="name">Yıldız</div>
                     </div>
-                    <div class="deco-card" data-deco="candle" onclick="addDecorationQuick('candle', this)">
+                    <div class="deco-card" draggable="true" data-deco="candle" ondragstart="dragStart(event)">
                         <div class="emoji">🕯️</div>
                         <div class="name">Mum</div>
                     </div>
-                    <div class="deco-card" data-deco="berry" onclick="addDecorationQuick('berry', this)">
+                    <div class="deco-card" draggable="true" data-deco="berry" ondragstart="dragStart(event)">
                         <div class="emoji">🫐</div>
                         <div class="name">Mersini</div>
                     </div>
                 </div>
                 <div class="alert-box">
-                    <strong>💡 Kolay Kullanım:</strong>
-                    Süslemeye tıklayın, otomatik olarak pastanın üstüne eklenir. Aynı süslemeden istediğiniz kadar ekleyebilirsiniz!
+                    <strong>💡 Nasıl Kullanılır:</strong>
+                    1️⃣ Süslemeyi tutun ve <strong>3D pastanın üzerine sürükleyin</strong><br>
+                    2️⃣ İstediğiniz yere bırakın<br>
+                    3️⃣ Aynı süslemeden birden fazla ekleyebilirsiniz!
                 </div>
                 <div id="decoration-list" style="margin-top: 15px;"></div>
             </div>
@@ -455,7 +421,11 @@
         </div>
 
         <div class="preview-panel">
-            <div id="canvas-container"></div>
+            <div id="canvas-container" 
+                 ondrop="drop(event)" 
+                 ondragover="allowDrop(event)"
+                 ondragleave="dragLeave(event)">
+            </div>
             
             <div class="price-box">
                 <div class="label">TOPLAM FİYAT</div>
@@ -468,6 +438,8 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
+        console.log('🎂 Pasta Tasarım Stüdyosu başlatılıyor...');
+
         const createStore = (initialState) => {
             let state = initialState;
             const listeners = new Set();
@@ -594,6 +566,9 @@
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
+            
+            console.log('📤 Görsel yükleniyor:', file.name);
+            
             const reader = new FileReader();
             reader.onload = (e) => {
                 const imgData = e.target.result;
@@ -611,29 +586,74 @@
             document.getElementById('image-upload').value = '';
         }
 
-        // HIZLI SÜSLEME SİSTEMİ
-        let decoIndex = 0;
-        function addDecorationQuick(type, el) {
-            const s = useStore.getState();
+        // DRAG & DROP SİSTEMİ
+        let currentDragType = null;
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+
+        function dragStart(event) {
+            currentDragType = event.target.closest('.deco-card').dataset.deco;
+            event.target.closest('.deco-card').classList.add('dragging');
+            event.dataTransfer.effectAllowed = 'copy';
+            console.log('🎯 Süsleme sürükleniyor:', currentDragType);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy';
+            event.currentTarget.classList.add('drag-over');
+        }
+
+        function dragLeave(event) {
+            if (event.target.id === 'canvas-container') {
+                event.currentTarget.classList.remove('drag-over');
+            }
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drag-over');
             
-            // Pastanın üstüne otomatik yerleştir
-            const radius = 1.2;
-            const angle = (decoIndex * Math.PI * 2) / 8;
-            const position = {
-                x: Math.cos(angle) * radius,
-                y: 0,
-                z: Math.sin(angle) * radius
-            };
+            // Dragging class'ını temizle
+            document.querySelectorAll('.deco-card').forEach(el => el.classList.remove('dragging'));
             
-            decoIndex = (decoIndex + 1) % 8;
+            if (!currentDragType) return;
             
-            store.addDecoration(type, position);
+            console.log('📍 Süsleme bırakılıyor:', currentDragType);
             
-            // Animasyon efekti
-            el.classList.add('selected');
-            setTimeout(() => el.classList.remove('selected'), 300);
+            const container = document.getElementById('canvas-container');
+            const rect = container.getBoundingClientRect();
             
-            console.log(`✅ ${type} eklendi:`, position);
+            // Mouse pozisyonunu normalize et
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+            
+            console.log('Mouse koordinatları:', mouse.x, mouse.y);
+            
+            // Raycaster ile pastaya tıklanan yeri bul
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(cakeMeshes, true);
+            
+            console.log('Intersect sayısı:', intersects.length);
+            
+            if (intersects.length > 0) {
+                const point = intersects[0].point;
+                console.log('✅ Bırakılan nokta:', point);
+                
+                // Süslemeyi bu pozisyona ekle
+                const position = {
+                    x: point.x,
+                    y: 0,
+                    z: point.z
+                };
+                
+                store.addDecoration(currentDragType, position);
+                console.log('✅ Süsleme eklendi:', currentDragType, position);
+            } else {
+                console.log('⚠️ Pasta dışına bırakıldı');
+            }
+            
+            currentDragType = null;
         }
 
         function updateDecorationList() {
@@ -714,7 +734,7 @@
             console.log('🎂 SİPARİŞ DETAYI');
             console.log('═══════════════════════════════');
             console.log(JSON.stringify(orderData, null, 2));
-            alert(`✅ Sipariş #${orderData.orderNumber} alındı!\nDetaylar console'da (F12)`);
+            alert(`✅ Sipariş #${orderData.orderNumber} alındı!\n\nDetaylar console'da (F12)`);
         }
 
         // THREE.JS
@@ -722,6 +742,7 @@
         let cakeMeshes = [], decorationMeshes = [];
 
         function init3D() {
+            console.log('🎮 Three.js başlatılıyor...');
             const container = document.getElementById('canvas-container');
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xf5f5f5);
@@ -751,6 +772,7 @@
             scene.add(ground);
             
             animate();
+            console.log('✅ Three.js hazır');
         }
 
         function animate() {
@@ -760,6 +782,7 @@
         }
 
         function render3D() {
+            console.log('🎨 3D render başlıyor...');
             const s = useStore.getState();
             cakeMeshes.forEach(m => scene.remove(m));
             decorationMeshes.forEach(m => scene.remove(m));
@@ -780,24 +803,26 @@
                 } else if (s.shape === 'square') {
                     geometry = new THREE.BoxGeometry(layerSize * 1.8, LAYER_HEIGHT, layerSize * 1.8);
                 } else {
-                    // KALP - DÜZELTİLMİŞ
+                    // PROFESYONEL KALP ŞEKLİ
+                    const x = 0, y = 0;
                     const heart = new THREE.Shape();
-                    heart.moveTo(0, 0.2);
-                    heart.bezierCurveTo(0, 0, -0.4, -0.2, -0.4, 0.2);
-                    heart.bezierCurveTo(-0.4, 0.5, -0.2, 0.7, 0, 1);
-                    heart.bezierCurveTo(0.2, 0.7, 0.4, 0.5, 0.4, 0.2);
-                    heart.bezierCurveTo(0.4, -0.2, 0, 0, 0, 0.2);
+                    
+                    // Gerçekçi kalp bezier curve'leri
+                    heart.moveTo(x, y + 0.25);
+                    heart.bezierCurveTo(x, y, x - 0.5, y - 0.25, x - 0.5, y + 0.25);
+                    heart.bezierCurveTo(x - 0.5, y + 0.6, x - 0.25, y + 0.85, x, y + 1.2);
+                    heart.bezierCurveTo(x + 0.25, y + 0.85, x + 0.5, y + 0.6, x + 0.5, y + 0.25);
+                    heart.bezierCurveTo(x + 0.5, y - 0.25, x, y, x, y + 0.25);
                     
                     geometry = new THREE.ExtrudeGeometry(heart, { 
                         depth: LAYER_HEIGHT, 
                         bevelEnabled: true,
-                        bevelThickness: 0.03,
-                        bevelSize: 0.03,
-                        bevelSegments: 2
+                        bevelThickness: 0.02,
+                        bevelSize: 0.02,
+                        bevelSegments: 5
                     });
                     geometry.rotateX(Math.PI / 2);
-                    geometry.rotateZ(Math.PI);
-                    geometry.scale(layerSize * 1.2, layerSize * 1.2, 1);
+                    geometry.scale(layerSize * 0.85, layerSize * 0.85, 1);
                 }
 
                 const mesh = new THREE.Mesh(
@@ -810,26 +835,31 @@
                 scene.add(mesh);
                 cakeMeshes.push(mesh);
 
-                // GÖRSEL - ÜST YÜZEYE TAM OTURACAK
+                // GÖRSEL - ÜST TABAKAYA TAM KAPLA
                 if (s.image && i === s.layers.length - 1) {
+                    console.log('🖼️ Görsel yükleniyor...');
+                    
                     const texture = new THREE.TextureLoader().load(s.image, () => {
-                        console.log('✅ Görsel texture yüklendi');
+                        console.log('✅ Görsel texture başarıyla yüklendi');
                     });
                     
                     let topGeo;
                     if (s.shape === 'round') {
+                        // TAM KAPLA - radius %100
                         topGeo = new THREE.CircleGeometry(layerSize, 64);
                     } else if (s.shape === 'square') {
+                        // TAM KAPLA - boyut %100
                         topGeo = new THREE.PlaneGeometry(layerSize * 1.8, layerSize * 1.8);
                     } else {
+                        // KALP - TAM KAPLA
                         const h2 = new THREE.Shape();
-                        h2.moveTo(0, 0.2);
-                        h2.bezierCurveTo(0, 0, -0.4, -0.2, -0.4, 0.2);
-                        h2.bezierCurveTo(-0.4, 0.5, -0.2, 0.7, 0, 1);
-                        h2.bezierCurveTo(0.2, 0.7, 0.4, 0.5, 0.4, 0.2);
-                        h2.bezierCurveTo(0.4, -0.2, 0, 0, 0, 0.2);
+                        h2.moveTo(0, 0.25);
+                        h2.bezierCurveTo(0, 0, -0.5, -0.25, -0.5, 0.25);
+                        h2.bezierCurveTo(-0.5, 0.6, -0.25, 0.85, 0, 1.2);
+                        h2.bezierCurveTo(0.25, 0.85, 0.5, 0.6, 0.5, 0.25);
+                        h2.bezierCurveTo(0.5, -0.25, 0, 0, 0, 0.25);
                         topGeo = new THREE.ShapeGeometry(h2);
-                        topGeo.scale(layerSize * 1.2, layerSize * 1.2, 1);
+                        topGeo.scale(layerSize * 0.85, layerSize * 0.85, 1);
                     }
                     
                     const topMesh = new THREE.Mesh(topGeo, new THREE.MeshStandardMaterial({ 
@@ -839,14 +869,14 @@
                     }));
                     topMesh.rotation.x = -Math.PI / 2;
                     if (s.shape === 'heart') {
-                        topMesh.rotation.z = Math.PI;
-                        topMesh.position.y = (i * LAYER_HEIGHT) + LAYER_HEIGHT + 0.005;
+                        topMesh.position.y = (i * LAYER_HEIGHT) + LAYER_HEIGHT + 0.002;
                     } else {
-                        topMesh.position.y = (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2) + 0.005;
+                        topMesh.position.y = (i * LAYER_HEIGHT) + (LAYER_HEIGHT / 2) + 0.002;
                     }
                     topMesh.receiveShadow = true;
                     scene.add(topMesh);
                     cakeMeshes.push(topMesh);
+                    console.log('✅ Görsel 3D\'ye eklendi');
                 }
             });
 
@@ -886,7 +916,7 @@
                 );
                 textMesh.rotation.x = -Math.PI / 2;
                 if (s.shape === 'heart') {
-                    textMesh.position.set(0, (topIdx * LAYER_HEIGHT) + LAYER_HEIGHT + 0.01, 0.1);
+                    textMesh.position.set(0, (topIdx * LAYER_HEIGHT) + LAYER_HEIGHT + 0.01, 0);
                 } else {
                     textMesh.position.set(0, layerY + (LAYER_HEIGHT / 2) + 0.01, 0);
                 }
@@ -894,7 +924,7 @@
                 decorationMeshes.push(textMesh);
             }
 
-            // SÜSLEMELER - PASTAYA YAPIŞIK
+            // SÜSLEMELER - PASTAYA YAKIN
             const topY = s.shape === 'heart' ? (s.layers.length * LAYER_HEIGHT) : (s.layers.length * LAYER_HEIGHT) - (LAYER_HEIGHT / 2);
             s.decorations.forEach(d => {
                 const colors = { strawberry: 0xff0000, berry: 0x4169e1, chocolate: 0x8b4513, flower: 0xff69b4, star: 0xffff00, candle: 0xffffe0 };
@@ -907,18 +937,28 @@
                 scene.add(mesh);
                 decorationMeshes.push(mesh);
             });
+            
+            console.log('✅ 3D render tamamlandı');
         }
 
         window.addEventListener('load', () => {
+            console.log('═══════════════════════════════');
+            console.log('🎂 PASTA TASARIM STÜDYOSU');
+            console.log('═══════════════════════════════');
+            
             if (typeof THREE === 'undefined') {
-                alert('THREE.js yüklenemedi!');
+                alert('THREE.js yüklenemedi! Sayfayı yenileyin.');
                 return;
             }
+            
             init3D();
             renderLayers();
             render3D();
             calculatePrice();
+            
             console.log('✅ Uygulama hazır!');
+            console.log('Initial State:', useStore.getState());
+            console.log('═══════════════════════════════');
         });
     </script>
 </body>
