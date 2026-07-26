@@ -3,860 +3,2163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Takip Denetim Raporu</title>
+<title>Bursa İçki Rehberi — Fiyat Karşılaştırma</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --paper: #16171B;
-    --paper-dark: #1D1F24;
-    --ink: #ECE8DD;
-    --ink-faded: #8B8677;
-    --rule: #3A3B38;
-    --stamp-red: #E2604A;
-    --stamp-red-dark: #FF7B5E;
-    --stamp-green: #6FA37A;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:
-      repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 32px),
-      var(--paper);
-    color:var(--ink);
-    font-family:'IBM Plex Mono', monospace;
-    min-height:100vh;
-    padding:0 0 80px 0;
-  }
-  .sheet{
-    max-width:900px;
-    margin:0 auto;
-    padding:48px 32px 0 32px;
-  }
-  header.letterhead{
-    border-bottom:3px solid var(--ink);
-    padding-bottom:18px;
-    margin-bottom:28px;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    flex-wrap:wrap;
-    gap:12px;
-  }
-  .title-block h1{
-    font-family:'Oswald', sans-serif;
-    font-weight:700;
-    font-size:clamp(28px, 5vw, 42px);
-    letter-spacing:0.5px;
-    margin:0 0 4px 0;
-    text-transform:uppercase;
-  }
-  .title-block .sub{
-    font-size:12.5px;
-    color:var(--ink-faded);
-    letter-spacing:0.5px;
-  }
-  .credit{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    flex-wrap:wrap;
-    font-size:13px;
-    letter-spacing:0.3px;
-    color:var(--ink-faded);
-    padding:12px 0;
-    margin:0 0 28px 0;
-    border-top:1px solid var(--rule);
-    border-bottom:1px solid var(--rule);
-  }
-  .credit-name{font-weight:500;}
-  .credit-name b{color:var(--ink); font-weight:700;}
-  .credit-sep{color:var(--rule);}
-  .credit-ig{
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-    color:var(--ink);
-    font-weight:600;
-    text-decoration:none;
-    border-bottom:1px solid var(--rule);
-    padding-bottom:1px;
-    transition:color .15s ease, border-color .15s ease;
-  }
-  .credit-ig svg{flex-shrink:0;}
-  .credit-ig:hover{color:var(--stamp-red-dark); border-color:var(--stamp-red-dark);}
+/* ==========================================================
+   BURSA İÇKİ REHBERİ — Design Tokens
+   ========================================================== */
+:root {
+  /* Renk — antrasit/grafit/sıcak gri zemin, altın+zümrüt+mavi vurgu */
+  --bg-base: #16171b;
+  --bg-elevated: #1e1f24;
+  --bg-elevated-2: #27282e;
+  --border-hairline: #34353b;
+  --text-primary: #f3f1ea;
+  --text-secondary: #a6a29b;
+  --text-muted: #726d65;
 
-  .intro{
-    font-size:14px;
-    line-height:1.65;
-    color:var(--ink);
-    max-width:640px;
-    margin-bottom:32px;
-  }
-  .intro a{color:var(--stamp-red-dark);}
+  --gold: #c9a052;
+  --gold-soft: #e3c583;
+  --emerald: #3ab48c;
+  --emerald-bg: rgba(58, 180, 140, 0.12);
+  --red-warm: #d15c4b;
+  --red-bg: rgba(209, 92, 75, 0.12);
+  --sapphire: #6089d6;
 
-  details.howto{
-    margin-bottom:32px;
-    font-size:13px;
-    border:1px solid var(--rule);
-    background:rgba(255,255,255,0.03);
-  }
-  details.howto summary{
-    cursor:pointer;
-    padding:12px 16px;
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    letter-spacing:0.5px;
-    font-size:13px;
-    font-weight:600;
-  }
-  details.howto[open] summary{border-bottom:1px solid var(--rule);}
-  details.howto .steps{padding:14px 20px 18px 20px;}
-  details.howto ol{margin:0; padding-left:20px; line-height:1.9;}
-  details.howto code{background:var(--paper-dark); padding:1px 5px; border:1px solid var(--rule);}
+  /* Tipografi — karakterli serif başlık + sade gövde + mono veri */
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
 
-  .dropzone{
-    border:2px dashed var(--rule);
-    padding:42px 20px;
-    text-align:center;
-    cursor:pointer;
-    background:rgba(255,255,255,0.03);
-    transition:border-color .15s ease, background .15s ease;
-    margin-bottom:10px;
-    outline:none;
-  }
-  .dropzone:focus-visible{border-color:var(--ink);}
-  .dropzone.dragover{border-color:var(--stamp-green); background:rgba(111,163,122,0.08);}
-  .dropzone.done{border-style:solid; border-color:var(--stamp-green);}
-  .dropzone.dropzone-btn{
-    background:var(--ink);
-    border-style:solid;
-    border-color:var(--ink);
-  }
-  .dropzone.dropzone-btn.dragover{background:var(--stamp-green); border-color:var(--stamp-green);}
-  .dropzone.dropzone-btn.done{background:var(--stamp-green); border-color:var(--stamp-green);}
-  .dz-btn-label{
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    letter-spacing:0.8px;
-    font-size:15.5px;
-    font-weight:700;
-    color:var(--paper);
-  }
-  .dropzone.dropzone-btn .dz-sub{color:rgba(23,24,27,0.62);}
-  .dz-sub{font-size:12px; color:var(--ink-faded); margin-top:6px; max-width:420px; margin-left:auto; margin-right:auto;}
-  .dz-status{
-    font-size:12.5px;
-    color:var(--ink-faded);
-    min-height:18px;
-    margin-bottom:22px;
-    text-align:center;
-  }
-  .dz-status.error{color:var(--stamp-red-dark);}
-  .dz-status.ok{color:var(--stamp-green);}
+  /* Diğer */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 16px 40px -12px rgba(0, 0, 0, 0.55);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-  .manual-toggle{
-    margin-bottom:36px;
-    font-size:13px;
-    border:1px solid var(--rule);
-    background:rgba(255,255,255,0.02);
-  }
-  .manual-toggle summary{
-    cursor:pointer;
-    padding:10px 16px;
-    font-size:12px;
-    color:var(--ink-faded);
-    letter-spacing:0.3px;
-  }
-  .manual-toggle[open] summary{border-bottom:1px solid var(--rule);}
-  .manual-toggle .inner{padding:20px;}
+* {
+  box-sizing: border-box;
+}
 
-  .wizard{
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-    margin-bottom:18px;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
   }
-  .step-card{
-    display:flex;
-    gap:16px;
-    border:1px solid var(--rule);
-    background:rgba(255,255,255,0.02);
-    padding:24px;
-  }
-  @media (max-width:560px){ .step-card{padding:18px; gap:12px;} }
-  .step-num{
-    flex-shrink:0;
-    width:32px;
-    height:32px;
-    border:2px solid var(--ink);
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:'Oswald', sans-serif;
-    font-weight:700;
-    font-size:14px;
-  }
-  .step-body{flex:1; min-width:0;}
-  .step-title{
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    letter-spacing:0.5px;
-    font-size:16px;
-    font-weight:600;
-    margin-bottom:6px;
-  }
-  .step-desc{
-    font-size:13px;
-    color:var(--ink-faded);
-    line-height:1.6;
-    margin-bottom:16px;
-  }
-  .step-btn{
-    display:inline-block;
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    letter-spacing:0.8px;
-    font-size:13.5px;
-    font-weight:600;
-    padding:14px 24px;
-    background:var(--ink);
-    color:var(--paper);
-    border:none;
-    cursor:pointer;
-    text-decoration:none;
-    text-align:center;
-  }
-  .step-btn:hover{background:var(--stamp-red-dark); color:var(--paper);}
-  .step-note{
-    font-size:12px;
-    color:var(--ink-faded);
-    line-height:1.75;
-    margin-top:16px;
-  }
-  .step-note b{color:var(--ink);}
-  .dz-main-btn{width:100%;}
-  .dz-sub-below{
-    font-size:11.5px;
-    color:var(--ink-faded);
-    margin-top:10px;
-    text-align:center;
-  }
+}
 
-  .upload-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-    margin-bottom:20px;
-  }
-  @media (max-width:640px){ .upload-grid{grid-template-columns:1fr;} }
+html {
+  scroll-behavior: smooth;
+}
 
-  .field{
-    border:2px dashed var(--rule);
-    padding:20px;
-    text-align:center;
-    background:rgba(255,255,255,0.03);
-    transition:border-color .15s ease, background .15s ease;
-    position:relative;
-  }
-  .field.filled{border-style:solid; border-color:var(--stamp-green); background:rgba(111,163,122,0.08);}
-  .field .label{
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    font-size:12.5px;
-    letter-spacing:1px;
-    color:var(--ink-faded);
-    display:block;
-    margin-bottom:10px;
-  }
-  .field .filecount{
-    font-size:12px;
-    color:var(--stamp-green);
-    margin-top:8px;
-    min-height:16px;
-  }
-  .field input[type=file]{display:none;}
-  .field .btn{
-    display:inline-block;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12.5px;
-    padding:8px 16px;
-    border:1px solid var(--ink);
-    cursor:pointer;
-    background:var(--paper);
-  }
-  .field .btn:hover{background:var(--ink); color:var(--paper);}
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
 
-  .run-row{
-    display:flex;
-    align-items:center;
-    gap:16px;
-    flex-wrap:wrap;
-  }
-  button#runBtn{
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    font-size:14px;
-    font-weight:600;
-    padding:13px 28px;
-    background:var(--ink);
-    color:var(--paper);
-    border:none;
-    cursor:pointer;
-  }
-  button#runBtn:disabled{background:var(--rule); cursor:not-allowed;}
-  button#runBtn:not(:disabled):hover{background:var(--stamp-red-dark);}
-  .status-msg{font-size:12.5px; color:var(--ink-faded);}
-  .status-msg.error{color:var(--stamp-red-dark);}
+a { color: inherit; }
 
-  .results{display:none; margin-top:36px;}
-  .results.show{display:block;}
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
 
-  .summary-strip{
-    display:flex;
-    gap:0;
-    border:2px solid var(--ink);
-    margin-bottom:6px;
-  }
-  .summary-cell{
-    flex:1;
-    padding:16px 18px;
-    border-right:2px solid var(--ink);
-  }
-  .summary-cell:last-child{border-right:none;}
-  .summary-cell .num{
-    font-family:'Oswald', sans-serif;
-    font-size:30px;
-    font-weight:700;
-    line-height:1;
-  }
-  .summary-cell .lbl{
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:0.5px;
-    color:var(--ink-faded);
-    margin-top:4px;
-  }
-  .summary-cell.flag .num{color:var(--stamp-red);}
+/* ==========================================================
+   İMZA ÖĞE — Asılı fiyat etiketi
+   Fiziksel bir mağaza etiketi gibi: sivri uçlu, delikli, hafif
+   eğik. Logo ve mekan kartlarında tekrar ederek "fiyat
+   karşılaştırma" işlevini doğrudan simgeler.
+   ========================================================== */
+.fiyat-etiketi-sekli {
+  position: relative;
+  clip-path: polygon(0 0, 78% 0, 100% 50%, 78% 100%, 0 100%);
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold) 60%, #9a7638);
+  color: #191a1d;
+}
+.fiyat-etiketi-sekli::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--bg-base);
+}
 
-  .toolbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    padding:14px 0 10px 0;
-    flex-wrap:wrap;
-  }
-  .toolbar input[type=search]{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:13px;
-    padding:8px 10px;
-    border:1px solid var(--ink);
-    background:var(--paper);
-    color:var(--ink);
-    width:220px;
-  }
-  .export-links{font-size:12px;}
-  .export-links a{
-    color:var(--ink);
-    text-decoration:none;
-    border-bottom:1px solid var(--ink);
-    margin-left:14px;
-    cursor:pointer;
-  }
-  .export-links a:hover{color:var(--stamp-red-dark); border-color:var(--stamp-red-dark);}
+/* ==========================================================
+   Layout kapsayıcılar
+   ========================================================== */
+.sayfa {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
 
-  table.ledger{
-    width:100%;
-    border-collapse:collapse;
-    font-size:13.5px;
-  }
-  table.ledger thead th{
-    text-align:left;
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    font-size:11px;
-    letter-spacing:0.5px;
-    color:var(--ink-faded);
-    border-bottom:2px solid var(--ink);
-    padding:6px 8px;
-  }
-  table.ledger tbody td{
-    padding:10px 8px;
-    border-bottom:1px solid var(--rule);
-    vertical-align:middle;
-  }
-  table.ledger tbody tr:hover{background:rgba(255,255,255,0.035);}
-  .idx-col{color:var(--ink-faded); width:36px;}
-  .user-col a{color:var(--ink); text-decoration:none; font-weight:600;}
-  .user-col a:hover{color:var(--stamp-red-dark);}
-  .stamp{
-    display:inline-block;
-    font-family:'Oswald', sans-serif;
-    font-size:10.5px;
-    font-weight:700;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    color:var(--stamp-red);
-    border:2px solid var(--stamp-red);
-    padding:3px 8px;
-    transform:rotate(-3deg);
-    opacity:0.9;
-  }
-  .action-col{width:1%; white-space:nowrap; text-align:right;}
-  .profile-btn{
-    display:inline-block;
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    letter-spacing:0.5px;
-    font-size:11px;
-    font-weight:600;
-    color:var(--ink);
-    text-decoration:none;
-    border:1px solid var(--rule);
-    padding:6px 12px;
-    white-space:nowrap;
-  }
-  .profile-btn:hover{border-color:var(--stamp-red-dark); color:var(--stamp-red-dark);}
-  .empty-state{
-    padding:40px 10px;
-    text-align:center;
-    color:var(--ink-faded);
-    font-size:13.5px;
-  }
+/* ==========================================================
+   Üst bar
+   ========================================================== */
+.ust-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(18, 21, 26, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-hairline);
+}
+.ust-bar-ic {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+.logo-simge {
+  width: 34px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+}
 
-  footer.note{
-    margin-top:40px;
-    font-size:11.5px;
-    color:var(--ink-faded);
-    line-height:1.7;
-    border-top:1px solid var(--rule);
-    padding-top:16px;
-  }
+/* ==========================================================
+   Hero — fonksiyonel arama merkezli
+   ========================================================== */
+.hero {
+  padding: 64px 0 40px;
+  background:
+    radial-gradient(ellipse 900px 400px at 50% -10%, rgba(212, 166, 87, 0.10), transparent 60%),
+    var(--bg-base);
+  border-bottom: 1px solid var(--border-hairline);
+}
+.hero-ust {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 36px;
+}
+.hero-etiket {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--gold-soft);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.canli-gosterge {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 0 3px var(--emerald-bg);
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4.2vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 14px;
+  line-height: 1.15;
+}
+.hero p {
+  color: var(--text-secondary);
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Arama kutusu */
+.arama-kapsul {
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  padding: 8px;
+  box-shadow: var(--shadow-card);
+  transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
+}
+.arama-kapsul:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(212, 166, 87, 0.12);
+}
+.arama-satir {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+.arama-satir svg { flex-shrink: 0; color: var(--text-muted); }
+.arama-satir input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+}
+.arama-satir input::placeholder { color: var(--text-muted); }
+
+/* Filtre çubuğu */
+.filtre-cubugu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-hairline);
+}
+.filtre-cubugu select,
+.filtre-cubugu button.sifirla {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  background: var(--bg-elevated-2);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 150ms var(--ease), background 150ms var(--ease);
+}
+.filtre-cubugu select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a6a29b' stroke-width='2'><path d='m6 9 6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.filtre-cubugu select:focus-visible {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 160, 82, 0.15);
+}
+.filtre-cubugu select:hover,
+.filtre-cubugu button.sifirla:hover {
+  border-color: var(--gold);
+}
+
+/* ==========================================================
+   Dashboard istatistik şeridi
+   ========================================================== */
+.istatistik-seridi {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border-hairline);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: 32px;
+}
+.istatistik-kart {
+  background: var(--bg-elevated);
+  padding: 20px 22px;
+}
+.istatistik-etiket {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+.istatistik-deger {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold-soft);
+}
+.istatistik-deger.kucuk { font-size: 15px; color: var(--text-primary); }
+
+/* ==========================================================
+   Mekan grid + kart
+   ========================================================== */
+.icerik-bolumu {
+  padding: 40px 0 80px;
+}
+.bolum-baslik {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.bolum-baslik h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+.bolum-baslik .sayac {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+
+.mekan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.mekan-kart {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: 22px 20px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), border-color 200ms var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  overflow: visible;
+}
+.mekan-kart:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(201, 160, 82, 0.35);
+}
+.mekan-kart:hover .karti-fiyat-etiketi {
+  transform: rotate(-2deg) translateY(-2px);
+}
+
+.karti-fiyat-etiketi {
+  position: absolute;
+  top: -11px;
+  right: 20px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 5px 12px 5px 14px;
+  transform: rotate(4deg);
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.5);
+  transition: transform 200ms var(--ease);
+}
+
+.mekan-kart-ust {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.mekan-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background: var(--bg-elevated-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--gold-soft);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.mekan-isim {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 2px;
+  line-height: 1.3;
+}
+.mekan-konum {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.mekan-tur-rozeti {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--bg-elevated-2);
+  padding: 3px 9px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.mekan-fiyat-onizleme {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-hairline);
+  border-bottom: 1px solid var(--border-hairline);
+}
+.mini-fiyat-satiri {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+.mini-fiyat-satiri .urun { color: var(--text-secondary); }
+.mini-fiyat-satiri .tutar {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--emerald);
+}
+.veri-yok-notu {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 6px 0;
+}
+
+.mekan-kart-alt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.guncelleme-notu {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.aksiyon-butonlari {
+  display: flex;
+  gap: 6px;
+}
+.mini-buton {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--bg-elevated-2);
+  border: 1px solid var(--border-hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: border-color 150ms var(--ease), color 150ms var(--ease);
+}
+.mini-buton:hover {
+  border-color: var(--sapphire);
+  color: var(--sapphire);
+}
+
+.karsilastir-checkbox-satiri {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+.karsilastir-checkbox-satiri input {
+  accent-color: var(--gold);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   Fiyat rozeti — imza öğe (bilet çentiği)
+   ========================================================== */
+.fiyat-rozeti {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 5px 14px 5px 16px;
+  border-radius: 6px;
+  background: var(--bg-elevated-2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hairline);
+}
+.fiyat-rozeti::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: var(--bg-base);
+  border-radius: 50%;
+  border: 1px solid var(--border-hairline);
+}
+.fiyat-rozeti.en-ucuz {
+  background: var(--emerald-bg);
+  color: var(--emerald);
+  border-color: rgba(52, 199, 149, 0.35);
+}
+.fiyat-rozeti.en-pahali {
+  background: var(--red-bg);
+  color: var(--red-warm);
+  border-color: rgba(226, 87, 76, 0.35);
+}
+
+/* ==========================================================
+   Mekan detay paneli
+   ========================================================== */
+.detay-panel {
+  display: none;
+}
+.detay-panel.acik {
+  display: block;
+}
+.geri-buton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 20px;
+}
+.geri-buton:hover { color: var(--gold); }
+
+.detay-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-hairline);
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.detay-header h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.detay-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.detay-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.detay-notu {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--red-warm);
+  background: var(--red-bg);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.detay-notu svg { flex-shrink: 0; }
+.detay-meta span svg { flex-shrink: 0; color: var(--text-muted); }
+
+.kategori-akordeon {
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.kategori-baslik {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  user-select: none;
+}
+.kategori-baslik .sayi {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-left: 8px;
+}
+.kategori-ok {
+  transition: transform 200ms var(--ease);
+  color: var(--text-muted);
+}
+.kategori-akordeon.acik .kategori-ok { transform: rotate(180deg); }
+.kategori-icerik {
+  display: none;
+  background: var(--bg-base);
+}
+.kategori-akordeon.acik .kategori-icerik { display: block; }
+
+.urun-satiri {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-hairline);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.urun-bilgi .urun-adi { font-weight: 600; font-size: 14.5px; }
+.urun-bilgi .urun-detay {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+.urun-kaynak {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================
+   Karşılaştırma
+   ========================================================== */
+.karsilastir-cubugu {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(140%);
+  z-index: 50;
+  background: var(--bg-elevated);
+  border: 1px solid var(--gold);
+  border-radius: 100px;
+  padding: 10px 10px 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-card-hover);
+  transition: transform 260ms var(--ease);
+}
+.karsilastir-cubugu.gorunur {
+  transform: translateX(-50%) translateY(0);
+}
+.karsilastir-cubugu span {
+  font-size: 14px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+.karsilastir-cubugu button.karsilastir-btn {
+  background: var(--gold);
+  color: #14171c;
+  border: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  cursor: pointer;
+}
+.karsilastir-cubugu button.temizle-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px;
+}
+
+.karsilastirma-tablosu-sarici { overflow-x: auto; }
+.karsilastirma-tablosu {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 560px;
+}
+.karsilastirma-tablosu th,
+.karsilastirma-tablosu td {
+  padding: 13px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-hairline);
+  font-size: 13.5px;
+}
+.karsilastirma-tablosu thead th {
+  font-family: var(--font-display);
+  font-weight: 700;
+  background: var(--bg-elevated);
+  position: sticky;
+  top: 0;
+}
+.karsilastirma-tablosu td.urun-adi-hucre { color: var(--text-secondary); }
+.karsilastirma-tablosu td.fiyat-hucre { font-family: var(--font-mono); font-weight: 600; }
+.karsilastirma-tablosu td.fiyat-hucre.min { color: var(--emerald); }
+.karsilastirma-tablosu td.fiyat-hucre.maks { color: var(--red-warm); }
+.karsilastirma-tablosu td.veri-yok-hucre { color: var(--text-muted); font-style: italic; }
+
+.gizli { display: none !important; }
+
+/* ==========================================================
+   Boş durum
+   ========================================================== */
+.bos-durum {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.bos-durum h3 {
+  font-family: var(--font-display);
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* ==========================================================
+   Sayfa altbilgi
+   ========================================================== */
+footer.altbilgi {
+  border-top: 1px solid var(--border-hairline);
+  padding: 28px 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+/* ==========================================================
+   Responsive
+   ========================================================== */
+@media (max-width: 860px) {
+  .istatistik-seridi { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .sayfa { padding: 0 16px; }
+  .hero { padding: 40px 0 28px; }
+  .ust-bar-ic { padding: 14px 16px; }
+  .filtre-cubugu { flex-direction: column; }
+  .filtre-cubugu select, .filtre-cubugu button.sifirla { width: 100%; }
+  .istatistik-seridi { grid-template-columns: 1fr 1fr; }
+  .mekan-grid { grid-template-columns: 1fr; }
+  .detay-header { flex-direction: column; }
+}
+
 </style>
 </head>
 <body>
-<div class="sheet">
 
-  <header class="letterhead">
-    <div class="title-block">
-      <h1>Takip Denetim Raporu</h1>
-      <div class="sub">Takip etmeyen hesapları, takip listenizle karşılaştırarak tek raporda gösterir — tüm hesaplama tarayıcınızda gerçekleşir</div>
+  <!-- ÜST BAR -->
+  <header class="ust-bar">
+    <div class="sayfa ust-bar-ic">
+      <div class="logo">
+        <div class="logo-simge fiyat-etiketi-sekli">B</div>
+        Bursa İçki Rehberi
+      </div>
     </div>
   </header>
 
-  <div class="credit">
-    <span class="credit-name">Designed &amp; Developed by <b>Efe Çolak</b></span>
-    <span class="credit-sep">·</span>
-    <a class="credit-ig" href="https://instagram.com/efecolakx" target="_blank" rel="noopener noreferrer">
-      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor"/></svg>
-      Instagram: @efecolakx
-    </a>
-  </div>
-
-  <p class="intro">
-    Bu araç, Instagram'ın <b>resmi veri indirme</b> özelliğiyle edindiğiniz veri paketini karşılaştırarak raporu hazırlar.
-    Hiçbir veri sunucuya gönderilmez; işlem tamamen tarayıcınızda gerçekleşir. Kullanıcı adı veya şifre <b>hiçbir aşamada</b> istenmez.
-  </p>
-
-  <div class="wizard">
-    <div class="step-card">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <div class="step-title">Instagram'dan verinizi talep edin</div>
-        <div class="step-desc">
-          Takipçi ve takip listeniz yalnızca Instagram'ın resmi "Verinizi İndirin" sayfası üzerinden paylaşılabilir; aşağıdaki bağlantı sizi doğrudan bu sayfaya yönlendirir.
+  <!-- HERO + ARAMA + FİLTRE + DASHBOARD -->
+  <section class="hero">
+    <div class="sayfa">
+      <div class="hero-ust">
+        <div class="hero-etiket">
+          <span class="canli-gosterge"></span> Doğrulanmış fiyat verisi
         </div>
-        <a class="step-btn" href="https://www.instagram.com/download/request/" target="_blank" rel="noopener noreferrer">
-          Instagram Veri İndirme Sayfasını Aç ↗
-        </a>
-        <div class="step-note">
-          Açılan sayfada hesabınızı seçin → <b>"Bir kısmını indir"</b> seçeneğinde <b>"Takipçiler ve takip edilenler"</b> kutusunu işaretleyin → format olarak <b>JSON</b>'ı seçin → indirme talebini gönderin.
-          Instagram genellikle birkaç dakika, bazen birkaç saat içinde e-posta ile bilgilendirir ve ZIP dosyasını cihazınıza indirirsiniz.
-        </div>
+        <h1>Bursa'da içkinin gerçek fiyatı</h1>
+        <p>Mekan veya içecek adı yaz, saniyeler içinde karşılaştır.</p>
       </div>
-    </div>
 
-    <div class="step-card">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <div class="step-title">İndirdiğiniz ZIP dosyasını yükleyin</div>
-        <div class="step-desc">Dosyayı açmanıza veya ayıklamanıza gerek yok — olduğu gibi yükleyin, rapor otomatik olarak oluşturulur.</div>
-
-        <div class="dropzone dropzone-btn" id="dropzone" tabindex="0" role="button" aria-label="ZIP dosyasını seç">
-          <div class="dz-btn-label">ZIP Dosyasını Seç</div>
-          <div class="dz-sub">Mobil cihazda Dosyalar / İndirilenler klasöründen seçebilir, bilgisayarda bu alana sürükleyip bırakabilirsiniz</div>
-          <input type="file" id="zipInput" accept=".zip,application/zip" hidden>
+      <div class="arama-kapsul">
+        <div class="arama-satir">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="arama-kutusu" placeholder="Efes, rakı, The North Shield, Nilüfer...">
         </div>
-        <div class="dz-status" id="dzStatus"></div>
-      </div>
-    </div>
-  </div>
-
-  <details class="manual-toggle" id="manualToggle">
-    <summary>ZIP dosyasını zaten ayıkladıysanız, JSON dosyalarını ayrı ayrı yükleyebilirsiniz</summary>
-    <div class="inner">
-      <div class="upload-grid">
-        <div class="field" id="fieldFollowers">
-          <span class="label">Takipçiler (followers_*.json)</span>
-          <label class="btn" for="inputFollowers">Dosya Seç</label>
-          <input type="file" id="inputFollowers" accept="application/json,.json" multiple>
-          <div class="filecount" id="countFollowers"></div>
-        </div>
-        <div class="field" id="fieldFollowing">
-          <span class="label">Takip Edilenler (following.json)</span>
-          <label class="btn" for="inputFollowing">Dosya Seç</label>
-          <input type="file" id="inputFollowing" accept="application/json,.json">
-          <div class="filecount" id="countFollowing"></div>
+        <div class="filtre-cubugu">
+          <select id="ilce-filtre">
+            <option value="hepsi">Tüm İlçeler</option>
+          </select>
+          <select id="tur-filtre">
+            <option value="hepsi">Tüm Mekan Türleri</option>
+          </select>
+          <select id="fiyat-durum-filtre">
+            <option value="hepsi">Fiyat Durumu: Hepsi</option>
+            <option value="var">Yalnızca Fiyatı Olanlar</option>
+          </select>
+          <button class="sifirla" id="filtre-sifirla">Filtreleri Sıfırla</button>
         </div>
       </div>
-      <div class="run-row">
-        <button id="runBtn" disabled>Raporu Oluştur</button>
-        <span class="status-msg" id="statusMsg"></span>
-      </div>
+
+      <!-- DASHBOARD -->
+      <div class="istatistik-seridi" id="istatistik-seridi"></div>
     </div>
-  </details>
+  </section>
 
-  <div class="results" id="results">
-    <div class="summary-strip">
-      <div class="summary-cell">
-        <div class="num" id="sumFollowers">0</div>
-        <div class="lbl">Takipçi</div>
+  <!-- MEKAN LİSTESİ GÖRÜNÜMÜ -->
+  <main class="sayfa icerik-bolumu" id="liste-gorunumu">
+    <div class="bolum-baslik">
+      <div>
+        <h2>Mekanlar</h2>
       </div>
-      <div class="summary-cell">
-        <div class="num" id="sumFollowing">0</div>
-        <div class="lbl">Takip Edilen</div>
-      </div>
-      <div class="summary-cell flag">
-        <div class="num" id="sumNotBack">0</div>
-        <div class="lbl">Sizi Takip Etmiyor</div>
-      </div>
+      <span class="sayac" id="mekan-sayac"></span>
     </div>
+    <div class="mekan-grid" id="mekan-grid"></div>
+  </main>
 
-    <div class="toolbar">
-      <input type="search" id="searchBox" placeholder="Kullanıcı adına göre filtrele">
-      <span class="export-links">
-        <a id="exportTxt">TXT olarak indir</a><a id="exportCsv">CSV olarak indir</a>
-      </span>
+  <!-- MEKAN DETAY GÖRÜNÜMÜ -->
+  <main class="sayfa icerik-bolumu detay-panel" id="detay-gorunumu">
+    <button class="geri-buton" id="detay-geri">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      Tüm mekanlara dön
+    </button>
+    <div id="detay-icerik"></div>
+  </main>
+
+  <!-- KARŞILAŞTIRMA GÖRÜNÜMÜ -->
+  <main class="sayfa icerik-bolumu detay-panel" id="karsilastirma-gorunumu">
+    <button class="geri-buton" id="karsilastirma-geri">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      Tüm mekanlara dön
+    </button>
+    <div class="bolum-baslik">
+      <div><h2>Fiyat Karşılaştırma</h2></div>
     </div>
+    <div id="karsilastirma-icerik"></div>
+  </main>
 
-    <table class="ledger">
-      <thead>
-        <tr>
-          <th class="idx-col">#</th>
-          <th class="user-col">Kullanıcı Adı</th>
-          <th>Durum</th>
-          <th class="action-col"></th>
-        </tr>
-      </thead>
-      <tbody id="ledgerBody"></tbody>
-    </table>
-    <div class="empty-state" id="emptyState" style="display:none;">Listenizdeki herkes sizi geri takip ediyor.</div>
-  </div>
-
-  <footer class="note">
-    Not: Instagram, gizli hesapları veya sizi engellemiş kullanıcıları ayrı olarak listelemez; bu rapor yalnızca
-    indirdiğiniz veri dosyalarındaki takip ilişkisini yansıtır. Veriler yalnızca tarayıcı belleğinde tutulur ve sayfa kapatıldığında silinir.
+  <footer class="altbilgi">
+    Fiyatlar mekanların kendi dijital menülerinden alınmıştır. KDV dahildir. Güncelliği için "son güncelleme" tarihine bakınız.
   </footer>
 
-</div>
+  <!-- KARŞILAŞTIRMA YÜZEN ÇUBUĞU -->
+  <div class="karsilastir-cubugu" id="karsilastir-cubugu">
+    <span id="karsilastir-sayac">0 mekan seçildi</span>
+    <button class="temizle-btn" id="karsilastir-temizle">Temizle</button>
+    <button class="karsilastir-btn" id="karsilastir-ac">Karşılaştır</button>
+  </div>
 
-<script>
-(function(){
-  const dropzone = document.getElementById('dropzone');
-  const zipInput = document.getElementById('zipInput');
-  const dzStatus = document.getElementById('dzStatus');
-  const manualToggle = document.getElementById('manualToggle');
+  <script>
+const MEKANLAR_VERISI = [
+  {
+    "id": "north-shield",
+    "isim": "The North Shield",
+    "tur": "Pub",
+    "ilce": "Nilüfer",
+    "mahalle": "Cumhuriyet Mah.",
+    "adres": "Nilüfer Hatun Cad. Podyum Park AVM G Blok No:14-15",
+    "telefon": "(0224) 453 00 55",
+    "instagram": "thenorthshieldbursa",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "offline-the-bar",
+    "isim": "Offline The Bar",
+    "tur": "Bar",
+    "ilce": "Nilüfer",
+    "mahalle": "Podyumpark",
+    "adres": null,
+    "telefon": "0224 450 00 81",
+    "instagram": "offlinethebar",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "kule-pub",
+    "isim": "Kule Pub",
+    "tur": "Pub",
+    "ilce": "Nilüfer",
+    "mahalle": "Özlüce",
+    "adres": null,
+    "telefon": "0532 730 43 16",
+    "instagram": "kule.pub",
+    "son_guncelleme": "2026-07-26",
+    "fiyatlar": {
+      "Bira": [
+        {
+          "urun": "Efes Fıçı",
+          "hacim": "50 cl",
+          "fiyat": 165,
+          "kosul": "Happy Hour, 19:00'a kadar",
+          "kaynak": "menucebimde.com",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Belfast Şişe",
+          "hacim": "50 cl",
+          "fiyat": 185,
+          "kosul": "Happy Hour, 19:00'a kadar",
+          "kaynak": "menucebimde.com",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "+1 Şişe",
+          "hacim": "50 cl",
+          "fiyat": 180,
+          "kosul": "Happy Hour, 19:00'a kadar",
+          "kaynak": "menucebimde.com",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Malt Şişe",
+          "hacim": "50 cl",
+          "fiyat": 180,
+          "kosul": "Happy Hour, 19:00'a kadar",
+          "kaynak": "menucebimde.com",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Becks Fıçı",
+          "hacim": "50 cl",
+          "fiyat": 180,
+          "kosul": "Happy Hour, 19:00'a kadar",
+          "kaynak": "menucebimde.com",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Becks Şişe",
+          "hacim": "50 cl",
+          "fiyat": 225,
+          "kosul": "Happy Hour, 19:00'a kadar",
+          "kaynak": "menucebimde.com",
+          "tarih": "2026-07-26"
+        }
+      ]
+    }
+  },
+  {
+    "id": "sey-pub",
+    "isim": "Şey Pub",
+    "tur": "Pub",
+    "ilce": "Nilüfer",
+    "mahalle": "Parkora AVM",
+    "adres": "Parkora 1. Kat",
+    "telefon": "0(543) 573 97 82",
+    "instagram": "seypub",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "ajo",
+    "isim": "AJO Cocktail Bar & Art Space",
+    "tur": "Cocktail Bar",
+    "ilce": "Nilüfer",
+    "mahalle": "Podyumpark",
+    "adres": null,
+    "telefon": null,
+    "instagram": "ajobursa",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "coffee-shot-irish-pub",
+    "isim": "Coffee Shot Irish Pub",
+    "tur": "Irish Pub",
+    "ilce": "Mudanya / Gemlik",
+    "mahalle": null,
+    "adres": null,
+    "telefon": null,
+    "instagram": "coffeeshotbursa",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "pub-locale",
+    "isim": "Pub Locale Bursa",
+    "tur": "Pub",
+    "ilce": null,
+    "mahalle": null,
+    "adres": null,
+    "telefon": null,
+    "instagram": "bursapublocale",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "sosyo-pub",
+    "isim": "Sosyo Pub Bursa",
+    "tur": "Pub",
+    "ilce": null,
+    "mahalle": null,
+    "adres": null,
+    "telefon": null,
+    "instagram": "sosyopubbursa",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "hanci-meyhane",
+    "isim": "Hancı Meyhane",
+    "tur": "Meyhane",
+    "ilce": "Osmangazi",
+    "mahalle": "Mudanya Yolu Üzeri",
+    "adres": "Sanayi Cad No:347/A",
+    "telefon": "0537 669 72 89",
+    "instagram": "hancimeyhanebursa",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "afife-ocakbasi-meyhane",
+    "isim": "Afife Ocakbaşı Meyhane",
+    "tur": "Meyhane",
+    "ilce": "Nilüfer",
+    "mahalle": "Ataevler",
+    "adres": "Barış Mah. Ali Rıza Bey Cad. No:49, Havuzlu Konak",
+    "telefon": "0553 196 30 16",
+    "instagram": "afifeocakbasimeyhane",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "cetuni-meyhane",
+    "isim": "Çetuni \"Eski Nesil Meyhane\"",
+    "tur": "Meyhane",
+    "ilce": "Nilüfer",
+    "mahalle": "Parkora AVM",
+    "adres": "Parkora Kat 1",
+    "telefon": "0532 494 72 27",
+    "instagram": "cetunimeyhane",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "sarap-evi-bursa",
+    "isim": "Şarap Evi Bursa",
+    "tur": "Şarap Evi",
+    "ilce": null,
+    "mahalle": null,
+    "adres": null,
+    "telefon": null,
+    "instagram": "sarapevibursa",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "jung-bursa",
+    "isim": "JUNG BURSA",
+    "tur": "Gece Kulübü",
+    "ilce": null,
+    "mahalle": null,
+    "adres": null,
+    "telefon": "0531 034 07 07",
+    "instagram": "jung.bursa",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "turistik-koskum",
+    "isim": "Turistik Köşküm Night Club",
+    "tur": "Gece Kulübü",
+    "ilce": null,
+    "mahalle": null,
+    "adres": null,
+    "telefon": "0224 220 73 10",
+    "instagram": "turistikkoskumgazinosu",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "swan-irish-pub",
+    "isim": "The Swan Irish Pub",
+    "tur": "Irish Pub",
+    "ilce": "Nilüfer",
+    "mahalle": "Odunluk",
+    "adres": "Liman Cd. No: 7 D:42",
+    "telefon": null,
+    "instagram": "theswanirishpub",
+    "durum_notu": "Bazı kaynaklar kalıcı olarak kapandığını belirtiyor, durumu doğrulanmalı",
+    "son_guncelleme": null,
+    "fiyatlar": {}
+  },
+  {
+    "id": "raft-pub-ozluce",
+    "isim": "The Raft Pub",
+    "sube": "Özlüce",
+    "tur": "Pub",
+    "ilce": "Nilüfer",
+    "mahalle": "Özlüce",
+    "adres": null,
+    "telefon": null,
+    "instagram": null,
+    "son_guncelleme": "2026-07-26",
+    "fiyatlar": {
+      "Bira": [
+        {
+          "urun": "Efes Pilsen Fıçı",
+          "hacim": "40 cl",
+          "fiyat": 110,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Efes Serçe",
+          "hacim": "30 cl",
+          "fiyat": 120,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Stella Artois Fıçı",
+          "hacim": "30 cl",
+          "fiyat": 140,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Efes Malt",
+          "hacim": "50 cl",
+          "fiyat": 155,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "+1 Efes Pilsen",
+          "hacim": "50 cl",
+          "fiyat": 155,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Bomonti Filtresiz",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Stella Artois Fıçı",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Belfast",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Becks",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Efes Özel Seri",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Bud",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Ottakringer",
+          "hacim": "33 cl",
+          "fiyat": 180,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Stella Artois",
+          "hacim": "44 cl",
+          "fiyat": 210,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        }
+      ]
+    }
+  },
+  {
+    "id": "raft-pub-gorukle",
+    "isim": "The Raft Pub",
+    "sube": "Görükle",
+    "tur": "Pub",
+    "ilce": "Nilüfer",
+    "mahalle": "Görükle",
+    "adres": null,
+    "telefon": null,
+    "instagram": null,
+    "son_guncelleme": "2026-07-26",
+    "fiyatlar": {
+      "Bira": [
+        {
+          "urun": "Efes Pilsen Fıçı",
+          "hacim": "40 cl",
+          "fiyat": 110,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Efes Serçe",
+          "hacim": "30 cl",
+          "fiyat": 120,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Stella Artois Fıçı",
+          "hacim": "30 cl",
+          "fiyat": 140,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Efes Malt",
+          "hacim": "50 cl",
+          "fiyat": 155,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "+1 Efes Pilsen",
+          "hacim": "50 cl",
+          "fiyat": 155,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Bomonti Filtresiz",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Stella Artois Fıçı",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Belfast",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Becks",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Efes Özel Seri",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Bud",
+          "hacim": "50 cl",
+          "fiyat": 170,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Ottakringer",
+          "hacim": "33 cl",
+          "fiyat": 180,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Stella Artois",
+          "hacim": "44 cl",
+          "fiyat": 210,
+          "kosul": "Happy Hour, 19:23'e kadar",
+          "kaynak": "canlimenu.com/theraftozluce",
+          "tarih": "2026-07-26"
+        }
+      ]
+    }
+  },
+  {
+    "id": "barinaq-ozluce",
+    "isim": "Barınaq",
+    "sube": "Özlüce",
+    "tur": "Bar",
+    "ilce": "Nilüfer",
+    "mahalle": "Özlüce",
+    "adres": null,
+    "telefon": null,
+    "instagram": null,
+    "son_guncelleme": "2026-07-26",
+    "fiyatlar": {
+      "Bira": [
+        {
+          "urun": "Happy Tuborg Şişe",
+          "hacim": null,
+          "fiyat": 165,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Happy Carlsberg Şişe",
+          "hacim": null,
+          "fiyat": 175,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Happy Tuborg Ice",
+          "hacim": null,
+          "fiyat": 140,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Happy Tuborg Filtresiz",
+          "hacim": null,
+          "fiyat": 175,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        }
+      ],
+      "Shot": [
+        {
+          "urun": "Jägermeister Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Jack Daniel's Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Jack Daniel's Apple Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Jack Daniel's Fire Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Jack Daniel's Honey Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        }
+      ]
+    }
+  },
+  {
+    "id": "barinaq-kukurtlu",
+    "isim": "Barınaq",
+    "sube": "Kükürtlü",
+    "tur": "Bar",
+    "ilce": "Osmangazi",
+    "mahalle": "Kükürtlü",
+    "adres": null,
+    "telefon": null,
+    "instagram": null,
+    "son_guncelleme": "2026-07-26",
+    "fiyatlar": {
+      "Bira": [
+        {
+          "urun": "Happy Tuborg Şişe",
+          "hacim": null,
+          "fiyat": 165,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Happy Carlsberg Şişe",
+          "hacim": null,
+          "fiyat": 175,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Happy Tuborg Ice",
+          "hacim": null,
+          "fiyat": 140,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Happy Tuborg Filtresiz",
+          "hacim": null,
+          "fiyat": 175,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        }
+      ],
+      "Shot": [
+        {
+          "urun": "Jägermeister Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Jack Daniel's Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Jack Daniel's Apple Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Jack Daniel's Fire Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Jack Daniel's Honey Shot",
+          "hacim": null,
+          "fiyat": 130,
+          "kosul": "Happy Hour, 20:00'a kadar",
+          "kaynak": "canlimenu.com/barinaq",
+          "tarih": "2026-07-26"
+        }
+      ]
+    }
+  },
+  {
+    "id": "radyo-pub",
+    "isim": "Radyo Pub",
+    "tur": "Pub",
+    "ilce": null,
+    "mahalle": null,
+    "adres": null,
+    "telefon": null,
+    "instagram": null,
+    "son_guncelleme": "2026-07-26",
+    "fiyatlar": {
+      "Bira": [
+        {
+          "urun": "Efes Pilsen Fıçı",
+          "hacim": "40 cl",
+          "fiyat": 115,
+          "kosul": "Kampanya, 19:00'a kadar",
+          "kaynak": "mygoodvibe.co/menu/Kampanyalar",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Beck's Fıçı",
+          "hacim": "40 cl",
+          "fiyat": 120,
+          "kosul": "Kampanya, 19:00'a kadar",
+          "kaynak": "mygoodvibe.co/menu/Kampanyalar",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Efes Pilsen +1",
+          "hacim": "50 cl",
+          "fiyat": 150,
+          "kosul": "Kampanya, 19:00'a kadar",
+          "kaynak": "mygoodvibe.co/menu/Kampanyalar",
+          "tarih": "2026-07-26"
+        },
+        {
+          "urun": "Efes Malt",
+          "hacim": "50 cl",
+          "fiyat": 150,
+          "kosul": "Kampanya, 19:00'a kadar",
+          "kaynak": "mygoodvibe.co/menu/Kampanyalar",
+          "tarih": "2026-07-26"
+        }
+      ]
+    }
+  }
+];
 
-  const inputFollowers = document.getElementById('inputFollowers');
-  const inputFollowing = document.getElementById('inputFollowing');
-  const fieldFollowers = document.getElementById('fieldFollowers');
-  const fieldFollowing = document.getElementById('fieldFollowing');
-  const countFollowers = document.getElementById('countFollowers');
-  const countFollowing = document.getElementById('countFollowing');
-  const runBtn = document.getElementById('runBtn');
-  const statusMsg = document.getElementById('statusMsg');
+// ============================================================
+// BURSA İÇKİ REHBERİ — Uygulama Mantığı
+// ============================================================
+// Bu dosya component mantığıyla (fonksiyon = component) yazıldı.
+// Her render fonksiyonu kendi HTML parçasını üretir, tekrar
+// eden kod olmaması için ortak yardımcı fonksiyonlar (helpers)
+// en üstte toplandı.
+// ============================================================
 
-  const results = document.getElementById('results');
-  const ledgerBody = document.getElementById('ledgerBody');
-  const emptyState = document.getElementById('emptyState');
-  const searchBox = document.getElementById('searchBox');
+let TUM_MEKANLAR = [];
+let KARSILASTIRMA_SECIMI = new Set();
 
+const filtreler = {
+  arama: "",
+  ilce: "hepsi",
+  tur: "hepsi",
+  fiyatDurum: "hepsi",
+};
 
-  let followersFiles = [];
-  let followingFile = null;
-  let notFollowingBack = []; // {username, href}
+// ------------------------------------------------------------
+// DOM referansları
+// ------------------------------------------------------------
+const $ = (sel) => document.querySelector(sel);
+const aramaKutusu = $("#arama-kutusu");
+const ilceFiltre = $("#ilce-filtre");
+const turFiltre = $("#tur-filtre");
+const fiyatDurumFiltre = $("#fiyat-durum-filtre");
+const filtreSifirlaBtn = $("#filtre-sifirla");
+const istatistikSeridi = $("#istatistik-seridi");
+const mekanGrid = $("#mekan-grid");
+const mekanSayac = $("#mekan-sayac");
 
+const listeGorunumu = $("#liste-gorunumu");
+const detayGorunumu = $("#detay-gorunumu");
+const detayIcerik = $("#detay-icerik");
+const detayGeriBtn = $("#detay-geri");
 
-  // ---------- shared parsing helpers ----------
+const karsilastirmaGorunumu = $("#karsilastirma-gorunumu");
+const karsilastirmaIcerik = $("#karsilastirma-icerik");
+const karsilastirmaGeriBtn = $("#karsilastirma-geri");
 
-  // Instagram export formats vary: sometimes a raw array of entries,
-  // sometimes an object wrapping the array under a relationships_* key.
-  function extractEntries(json){
-    if(Array.isArray(json)) return json;
-    if(json && typeof json === 'object'){
-      for(const key of Object.keys(json)){
-        if(Array.isArray(json[key])) return json[key];
+const karsilastirCubugu = $("#karsilastir-cubugu");
+const karsilastirSayac = $("#karsilastir-sayac");
+const karsilastirTemizleBtn = $("#karsilastir-temizle");
+const karsilastirAcBtn = $("#karsilastir-ac");
+
+// ------------------------------------------------------------
+// Yardımcı fonksiyonlar (helpers)
+// ------------------------------------------------------------
+
+function mekanAdi(mekan) {
+  return mekan.sube ? `${mekan.isim} (${mekan.sube})` : mekan.isim;
+}
+
+function mekanKonumu(mekan) {
+  const parcalar = [mekan.mahalle, mekan.ilce].filter(Boolean);
+  return parcalar.length ? parcalar.join(", ") : "Konum bilgisi yok";
+}
+
+function mekanninTumUrunleri(mekan) {
+  // fiyatlar: { "Bira": [...], "Shot": [...] } -> tek düz liste, kategori etiketiyle
+  const liste = [];
+  for (const [kategori, urunler] of Object.entries(mekan.fiyatlar || {})) {
+    for (const urun of urunler) {
+      liste.push({ ...urun, kategori });
+    }
+  }
+  return liste;
+}
+
+function fiyatVerisiVarMi(mekan) {
+  return mekanninTumUrunleri(mekan).length > 0;
+}
+
+function formatFiyat(sayi) {
+  return `₺${sayi}`;
+}
+
+function formatTarih(isoTarih) {
+  if (!isoTarih) return null;
+  const [yil, ay, gun] = isoTarih.split("-");
+  return `${gun}.${ay}.${yil}`;
+}
+
+function googleMapsLinki(mekan) {
+  const sorgu = [mekanAdi(mekan), mekan.adres, mekan.mahalle, mekan.ilce, "Bursa"]
+    .filter(Boolean)
+    .join(" ");
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(sorgu)}`;
+}
+
+function baslangicHarfi(isim) {
+  return isim.trim().charAt(0).toUpperCase();
+}
+
+// Fiyat seviyesini (₺ / ₺₺ / ₺₺₺) veri setindeki gerçek fiyatların
+// ortalamasına göre hesaplar. Veri yoksa null döner (uydurmuyoruz).
+function fiyatSeviyesiHesapla(mekan, tumMekanlarinOrtalamasi) {
+  const urunler = mekanninTumUrunleri(mekan);
+  if (urunler.length === 0) return null;
+  const ort = urunler.reduce((t, u) => t + u.fiyat, 0) / urunler.length;
+  if (ort <= tumMekanlarinOrtalamasi * 0.9) return "₺";
+  if (ort <= tumMekanlarinOrtalamasi * 1.1) return "₺₺";
+  return "₺₺₺";
+}
+
+function genelOrtalamaFiyatiHesapla() {
+  let toplam = 0;
+  let adet = 0;
+  TUM_MEKANLAR.forEach((m) => {
+    mekanninTumUrunleri(m).forEach((u) => {
+      toplam += u.fiyat;
+      adet++;
+    });
+  });
+  return adet ? toplam / adet : 0;
+}
+
+// Ortak SVG ikon seti — emoji yerine tüm sitede aynı stil kullanılır.
+const ikon = {
+  konum: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  telefon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>`,
+  instagram: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>`,
+  uyari: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+};
+
+// ------------------------------------------------------------
+// Veri çekme
+// ------------------------------------------------------------
+function verileriGetir() {
+  TUM_MEKANLAR = MEKANLAR_VERISI;
+  filtreSecenekleriniDoldur();
+  tumUygulamayiCiz();
+}
+
+function filtreSecenekleriniDoldur() {
+  const ilceler = [...new Set(TUM_MEKANLAR.map((m) => m.ilce).filter(Boolean))].sort();
+  const turler = [...new Set(TUM_MEKANLAR.map((m) => m.tur).filter(Boolean))].sort();
+
+  ilceler.forEach((ilce) => {
+    const secenek = document.createElement("option");
+    secenek.value = ilce;
+    secenek.textContent = ilce;
+    ilceFiltre.appendChild(secenek);
+  });
+  turler.forEach((tur) => {
+    const secenek = document.createElement("option");
+    secenek.value = tur;
+    secenek.textContent = tur;
+    turFiltre.appendChild(secenek);
+  });
+}
+
+// ------------------------------------------------------------
+// DASHBOARD — istatistik şeridi
+// ------------------------------------------------------------
+function dashboardIstatistikleriniHesapla() {
+  const toplamMekan = TUM_MEKANLAR.length;
+
+  let toplamFiyatKaydi = 0;
+  let biraToplam = 0;
+  let biraAdet = 0;
+  let enUcuzEfes = null;
+  let enUcuzRaki = null;
+  let sonGuncelleme = null;
+
+  TUM_MEKANLAR.forEach((mekan) => {
+    if (mekan.son_guncelleme) {
+      if (!sonGuncelleme || mekan.son_guncelleme > sonGuncelleme) {
+        sonGuncelleme = mekan.son_guncelleme;
       }
     }
-    return [];
-  }
-
-  function entriesToUserMap(entries){
-    const map = new Map(); // username -> href
-    for(const entry of entries){
-      let list = entry.string_list_data;
-      if(!list && entry.value){ list = [entry]; } // fallback shape
-      if(!Array.isArray(list)) continue;
-      for(const item of list){
-        const username = item.value;
-        if(username && !map.has(username)){
-          map.set(username, item.href || ('https://www.instagram.com/' + username));
+    mekanninTumUrunleri(mekan).forEach((urun) => {
+      toplamFiyatKaydi++;
+      if (urun.kategori === "Bira") {
+        biraToplam += urun.fiyat;
+        biraAdet++;
+      }
+      if (urun.urun.toLowerCase().includes("efes")) {
+        if (!enUcuzEfes || urun.fiyat < enUcuzEfes.fiyat) {
+          enUcuzEfes = { fiyat: urun.fiyat, mekan: mekanAdi(mekan) };
         }
       }
-    }
-    return map;
-  }
-
-  function readFileAsText(file){
-    return new Promise((resolve, reject)=>{
-      const reader = new FileReader();
-      reader.onload = ()=> resolve(reader.result);
-      reader.onerror = ()=> reject(new Error(file.name + ' okunamadı.'));
-      reader.readAsText(file);
-    });
-  }
-
-  function parseJsonSafe(text, label){
-    try{ return JSON.parse(text); }
-    catch(err){ throw new Error(label + ' geçerli bir JSON değil.'); }
-  }
-
-  // ---------- shared compute + render ----------
-
-  function computeAndRender(followersCombined, followingMap){
-    if(followersCombined.size === 0){
-      throw new Error('Takipçi verisinden kullanıcı okunamadı. Doğru followers_*.json dosyalarını kullandığınızdan emin olun.');
-    }
-    if(followingMap.size === 0){
-      throw new Error('Takip edilenler verisinden kullanıcı okunamadı. Doğru following.json dosyasını kullandığınızdan emin olun.');
-    }
-
-    notFollowingBack = [];
-    followingMap.forEach((href, user)=>{
-      if(!followersCombined.has(user)){
-        notFollowingBack.push({username:user, href});
-      }
-    });
-    notFollowingBack.sort((a,b)=> a.username.localeCompare(b.username));
-
-    document.getElementById('sumFollowers').textContent = followersCombined.size;
-    document.getElementById('sumFollowing').textContent = followingMap.size;
-    document.getElementById('sumNotBack').textContent = notFollowingBack.length;
-
-    renderLedger(notFollowingBack);
-    results.classList.add('show');
-    results.scrollIntoView({behavior:'smooth', block:'start'});
-  }
-
-  function renderLedger(list){
-    ledgerBody.innerHTML = '';
-    if(list.length === 0){
-      emptyState.style.display = 'block';
-      emptyState.textContent = 'Listenizdeki herkes sizi geri takip ediyor.';
-      return;
-    }
-    emptyState.style.display = 'none';
-    list.forEach((entry, i)=>{
-      const tr = document.createElement('tr');
-      tr.dataset.username = entry.username.toLowerCase();
-      tr.innerHTML = `
-        <td class="idx-col">${i+1}</td>
-        <td class="user-col"><a href="${entry.href}" target="_blank" rel="noopener noreferrer">@${entry.username}</a></td>
-        <td><span class="stamp">Geri Takip Yok</span></td>
-        <td class="action-col"><a class="profile-btn" href="${entry.href}" target="_blank" rel="noopener noreferrer">Profili Aç ↗</a></td>
-      `;
-      ledgerBody.appendChild(tr);
-    });
-  }
-
-  // ---------- primary path: drag & drop the ZIP ----------
-
-  function setDzStatus(text, kind){
-    dzStatus.textContent = text;
-    dzStatus.className = 'dz-status' + (kind ? ' ' + kind : '');
-  }
-
-  dropzone.addEventListener('click', ()=> zipInput.click());
-  dropzone.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); zipInput.click(); }
-  });
-  ['dragenter','dragover'].forEach(evt=>{
-    dropzone.addEventListener(evt, (e)=>{ e.preventDefault(); dropzone.classList.add('dragover'); });
-  });
-  ['dragleave','drop'].forEach(evt=>{
-    dropzone.addEventListener(evt, (e)=>{ e.preventDefault(); dropzone.classList.remove('dragover'); });
-  });
-  dropzone.addEventListener('drop', (e)=>{
-    const file = e.dataTransfer.files && e.dataTransfer.files[0];
-    if(file) handleZipFile(file);
-  });
-  zipInput.addEventListener('change', (e)=>{
-    const file = e.target.files[0];
-    if(file) handleZipFile(file);
-  });
-
-  async function handleZipFile(file){
-    if(!/\.zip$/i.test(file.name)){
-      setDzStatus("Bu dosya bir ZIP değil. Instagram'ın sağladığı veri paketini olduğu gibi yükleyin.", 'error');
-      return;
-    }
-    dropzone.classList.remove('done');
-    setDzStatus('ZIP dosyası açılıyor ve içerik taranıyor...');
-    try{
-      const zip = await JSZip.loadAsync(file);
-      const followerTasks = [];
-      let followingTask = null;
-
-      zip.forEach((relPath, zipEntry)=>{
-        if(zipEntry.dir) return;
-        const base = relPath.split('/').pop().toLowerCase();
-        if(/^followers(_\d+)?\.json$/.test(base)){
-          followerTasks.push(zipEntry.async('string'));
-        } else if(base === 'following.json'){
-          followingTask = zipEntry.async('string');
+      if (urun.kategori === "Rakı") {
+        if (!enUcuzRaki || urun.fiyat < enUcuzRaki.fiyat) {
+          enUcuzRaki = { fiyat: urun.fiyat, mekan: mekanAdi(mekan) };
         }
-      });
-
-      if(followerTasks.length === 0 || !followingTask){
-        throw new Error('ZIP içinde followers_*.json ve following.json bulunamadı. "Takipçiler ve takip edilenler" seçeneğini işaretleyerek indirdiğinizden emin olun.');
       }
-
-      const followerTexts = await Promise.all(followerTasks);
-      const followingText = await followingTask;
-
-      const followersCombined = new Map();
-      followerTexts.forEach((text, i)=>{
-        const json = parseJsonSafe(text, 'followers dosyası');
-        const map = entriesToUserMap(extractEntries(json));
-        map.forEach((href, user)=> followersCombined.set(user, href));
-      });
-
-      const followingJson = parseJsonSafe(followingText, 'following.json');
-      const followingMap = entriesToUserMap(extractEntries(followingJson));
-
-      computeAndRender(followersCombined, followingMap);
-
-      dropzone.classList.add('done');
-      setDzStatus(`Rapor hazırlandı — ${followerTasks.length} takipçi dosyası okundu.`, 'ok');
-    }catch(err){
-      setDzStatus(err.message || 'ZIP dosyası okunamadı.', 'error');
-    }
-  }
-
-  // ---------- fallback path: pick already-extracted JSON files ----------
-
-  function updateRunState(){
-    runBtn.disabled = !(followersFiles.length > 0 && followingFile);
-  }
-
-  inputFollowers.addEventListener('change', (e)=>{
-    followersFiles = Array.from(e.target.files);
-    if(followersFiles.length){
-      fieldFollowers.classList.add('filled');
-      countFollowers.textContent = followersFiles.length + ' dosya seçildi: ' + followersFiles.map(f=>f.name).join(', ');
-    } else {
-      fieldFollowers.classList.remove('filled');
-      countFollowers.textContent = '';
-    }
-    updateRunState();
-  });
-
-  inputFollowing.addEventListener('change', (e)=>{
-    followingFile = e.target.files[0] || null;
-    if(followingFile){
-      fieldFollowing.classList.add('filled');
-      countFollowing.textContent = followingFile.name;
-    } else {
-      fieldFollowing.classList.remove('filled');
-      countFollowing.textContent = '';
-    }
-    updateRunState();
-  });
-
-  function setError(msg){
-    statusMsg.textContent = msg;
-    statusMsg.classList.add('error');
-  }
-  function clearError(){
-    statusMsg.textContent = '';
-    statusMsg.classList.remove('error');
-  }
-
-  runBtn.addEventListener('click', async ()=>{
-    clearError();
-    runBtn.disabled = true;
-    statusMsg.textContent = 'Dosyalar işleniyor...';
-    try{
-      const followerMaps = await Promise.all(followersFiles.map(async f=>{
-        const text = await readFileAsText(f);
-        const json = parseJsonSafe(text, f.name);
-        return entriesToUserMap(extractEntries(json));
-      }));
-      const followersCombined = new Map();
-      followerMaps.forEach(m => m.forEach((href, user) => followersCombined.set(user, href)));
-
-      const followingText = await readFileAsText(followingFile);
-      const followingJson = parseJsonSafe(followingText, followingFile.name);
-      const followingMap = entriesToUserMap(extractEntries(followingJson));
-
-      computeAndRender(followersCombined, followingMap);
-      statusMsg.textContent = 'Rapor hazırlandı.';
-    }catch(err){
-      setError(err.message || 'Bir hata oluştu.');
-    }finally{
-      runBtn.disabled = false;
-    }
-  });
-
-  // ---------- results toolbar ----------
-
-  searchBox.addEventListener('input', ()=>{
-    const q = searchBox.value.trim().toLowerCase();
-    let visibleCount = 0;
-    Array.from(ledgerBody.children).forEach(tr=>{
-      const match = tr.dataset.username.includes(q);
-      tr.style.display = match ? '' : 'none';
-      if(match) visibleCount++;
     });
-    emptyState.style.display = (visibleCount === 0) ? 'block' : 'none';
-    emptyState.textContent = (visibleCount === 0 && q) ? 'Aramanızla eşleşen kullanıcı bulunamadı.' : 'Listenizdeki herkes sizi geri takip ediyor.';
   });
 
-  function downloadBlob(content, filename, type){
-    const blob = new Blob([content], {type});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  return {
+    toplamMekan,
+    toplamFiyatKaydi,
+    ortalamaBira: biraAdet ? Math.round(biraToplam / biraAdet) : null,
+    enUcuzEfes,
+    enUcuzRaki,
+    sonGuncelleme,
+  };
+}
+
+function renderDashboard() {
+  const ist = dashboardIstatistikleriniHesapla();
+
+  const kartlar = [
+    { etiket: "Toplam Mekan", deger: ist.toplamMekan, kucuk: false },
+    { etiket: "Toplam Fiyat Kaydı", deger: ist.toplamFiyatKaydi, kucuk: false },
+    {
+      etiket: "En Ucuz Efes",
+      deger: ist.enUcuzEfes ? `${formatFiyat(ist.enUcuzEfes.fiyat)} · ${ist.enUcuzEfes.mekan}` : "Bulunamadı",
+      kucuk: true,
+    },
+    {
+      etiket: "Ortalama Bira Fiyatı",
+      deger: ist.ortalamaBira ? formatFiyat(ist.ortalamaBira) : "Bulunamadı",
+      kucuk: !ist.ortalamaBira,
+    },
+  ];
+
+  istatistikSeridi.innerHTML = kartlar
+    .map(
+      (k) => `
+      <div class="istatistik-kart">
+        <div class="istatistik-etiket">${k.etiket}</div>
+        <div class="istatistik-deger ${k.kucuk ? "kucuk" : ""}">${k.deger}</div>
+      </div>`
+    )
+    .join("");
+}
+
+// ------------------------------------------------------------
+// FİLTRELEME
+// ------------------------------------------------------------
+function filtrelenmisMekanlar() {
+  const aramaMetni = filtreler.arama.trim().toLowerCase();
+
+  return TUM_MEKANLAR.filter((mekan) => {
+    if (filtreler.ilce !== "hepsi" && mekan.ilce !== filtreler.ilce) return false;
+    if (filtreler.tur !== "hepsi" && mekan.tur !== filtreler.tur) return false;
+    if (filtreler.fiyatDurum === "var" && !fiyatVerisiVarMi(mekan)) return false;
+
+    if (aramaMetni) {
+      const alanlar = [mekan.isim, mekan.sube, mekan.ilce, mekan.mahalle, mekan.tur];
+      const metinEslesme = alanlar
+        .filter(Boolean)
+        .some((alan) => alan.toLowerCase().includes(aramaMetni));
+
+      const urunEslesme = mekanninTumUrunleri(mekan).some((u) =>
+        u.urun.toLowerCase().includes(aramaMetni)
+      );
+
+      if (!metinEslesme && !urunEslesme) return false;
+    }
+    return true;
+  });
+}
+
+// ------------------------------------------------------------
+// MEKAN KARTI
+// ------------------------------------------------------------
+function enUcuzIkiUrun(mekan) {
+  const urunler = mekanninTumUrunleri(mekan);
+  return [...urunler].sort((a, b) => a.fiyat - b.fiyat).slice(0, 2);
+}
+
+function renderMekanKarti(mekan) {
+  const urunler = enUcuzIkiUrun(mekan);
+  const fiyatSatirlari = urunler.length
+    ? urunler
+        .map(
+          (u) => `
+        <div class="mini-fiyat-satiri">
+          <span class="urun">${u.urun}${u.hacim ? " · " + u.hacim : ""}</span>
+          <span class="tutar">${formatFiyat(u.fiyat)}</span>
+        </div>`
+        )
+        .join("")
+    : `<div class="veri-yok-notu">Doğrulanmış fiyat verisi bulunamadı</div>`;
+
+  const guncelleme = formatTarih(mekan.son_guncelleme);
+  const seciliMi = KARSILASTIRMA_SECIMI.has(mekan.id);
+
+  const instagramButonu = mekan.instagram
+    ? `<a class="mini-buton" href="https://instagram.com/${mekan.instagram}" target="_blank" rel="noopener" title="Instagram" onclick="event.stopPropagation()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+      </a>`
+    : "";
+
+  const mapsButonu = `<a class="mini-buton" href="${googleMapsLinki(mekan)}" target="_blank" rel="noopener" title="Google Maps" onclick="event.stopPropagation()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      </a>`;
+
+  const seviye = fiyatSeviyesiHesapla(mekan, genelOrtalamaFiyatiHesapla());
+  const etiketHtml = seviye
+    ? `<div class="karti-fiyat-etiketi fiyat-etiketi-sekli">${seviye}</div>`
+    : "";
+
+  const div = document.createElement("div");
+  div.className = "mekan-kart";
+  div.innerHTML = `
+    ${etiketHtml}
+    <div class="mekan-kart-ust">
+      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <div class="mekan-logo">${baslangicHarfi(mekan.isim)}</div>
+        <div>
+          <p class="mekan-isim">${mekanAdi(mekan)}</p>
+          <p class="mekan-konum">${mekanKonumu(mekan)}</p>
+        </div>
+      </div>
+      <span class="mekan-tur-rozeti">${mekan.tur}</span>
+    </div>
+
+    <div class="mekan-fiyat-onizleme">${fiyatSatirlari}</div>
+
+    <div class="mekan-kart-alt">
+      <span class="guncelleme-notu">${guncelleme ? "Güncelleme: " + guncelleme : "Fiyat: yok"}</span>
+      <div class="aksiyon-butonlari">${instagramButonu}${mapsButonu}</div>
+    </div>
+
+    <label class="karsilastir-checkbox-satiri" onclick="event.stopPropagation()">
+      <input type="checkbox" data-karsilastir-id="${mekan.id}" ${seciliMi ? "checked" : ""}>
+      Karşılaştırmaya ekle
+    </label>
+  `;
+
+  div.addEventListener("click", () => gorunumeGec("detay", mekan.id));
+  div
+    .querySelector("input[data-karsilastir-id]")
+    .addEventListener("change", (e) => {
+      toggleKarsilastirmaSecimi(mekan.id, e.target.checked);
+    });
+
+  return div;
+}
+
+function renderMekanGrid() {
+  const liste = filtrelenmisMekanlar();
+  mekanSayac.textContent = `${liste.length} mekan`;
+
+  if (liste.length === 0) {
+    mekanGrid.innerHTML = `<div class="bos-durum" style="grid-column: 1/-1;">
+      <h3>Eşleşen mekan yok</h3>
+      <p>Filtreleri değiştirmeyi veya farklı bir kelime aramayı dene.</p>
+    </div>`;
+    return;
   }
 
-  document.getElementById('exportTxt').addEventListener('click', ()=>{
-    if(!notFollowingBack.length) return;
-    const content = notFollowingBack.map(e => '@' + e.username).join('\n');
-    downloadBlob(content, 'geri-takip-etmeyenler.txt', 'text/plain');
+  mekanGrid.innerHTML = "";
+  liste.forEach((mekan) => mekanGrid.appendChild(renderMekanKarti(mekan)));
+}
+
+// ------------------------------------------------------------
+// KARŞILAŞTIRMA SEÇİMİ + YÜZEN ÇUBUK
+// ------------------------------------------------------------
+function toggleKarsilastirmaSecimi(id, secildiMi) {
+  if (secildiMi) KARSILASTIRMA_SECIMI.add(id);
+  else KARSILASTIRMA_SECIMI.delete(id);
+  renderKarsilastirCubugu();
+}
+
+function renderKarsilastirCubugu() {
+  const sayi = KARSILASTIRMA_SECIMI.size;
+  karsilastirSayac.textContent = `${sayi} mekan seçildi`;
+  karsilastirCubugu.classList.toggle("gorunur", sayi > 0);
+}
+
+// ------------------------------------------------------------
+// GÖRÜNÜM YÖNETİMİ (liste / detay / karşılaştırma)
+// ------------------------------------------------------------
+function gorunumeGec(hedef, mekanId = null) {
+  listeGorunumu.classList.add("gizli");
+  detayGorunumu.classList.remove("acik");
+  karsilastirmaGorunumu.classList.remove("acik");
+
+  if (hedef === "liste") {
+    listeGorunumu.classList.remove("gizli");
+  } else if (hedef === "detay") {
+    renderDetay(mekanId);
+    detayGorunumu.classList.add("acik");
+  } else if (hedef === "karsilastirma") {
+    renderKarsilastirma();
+    karsilastirmaGorunumu.classList.add("acik");
+  }
+  window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+}
+
+// ------------------------------------------------------------
+// MEKAN DETAY GÖRÜNÜMÜ
+// ------------------------------------------------------------
+function renderDetay(mekanId) {
+  const mekan = TUM_MEKANLAR.find((m) => m.id === mekanId);
+  if (!mekan) return;
+
+  const metaSatirlari = [];
+  if (mekan.adres) metaSatirlari.push(`${ikon.konum} ${mekan.adres}`);
+  if (mekan.telefon) metaSatirlari.push(`${ikon.telefon} ${mekan.telefon}`);
+  if (mekan.instagram) metaSatirlari.push(`${ikon.instagram} @${mekan.instagram}`);
+
+  const notuHtml = mekan.durum_notu
+    ? `<div class="detay-notu">${ikon.uyari} ${mekan.durum_notu}</div>`
+    : "";
+
+  const kategoriler = Object.entries(mekan.fiyatlar || {});
+
+  let govdeHtml;
+  if (kategoriler.length === 0) {
+    govdeHtml = `<div class="bos-durum">
+      <h3>Doğrulanmış fiyat verisi bulunamadı</h3>
+      <p>Bu mekan için internette güncel ve doğrulanabilir bir alkol fiyat listesi bulunamadı. Fiyat uydurulmamıştır.</p>
+    </div>`;
+  } else {
+    govdeHtml = kategoriler
+      .map(([kategoriAdi, urunler], index) => {
+        const siraliUrunler = [...urunler].sort((a, b) => a.fiyat - b.fiyat);
+        const enUcuzFiyat = siraliUrunler[0].fiyat;
+        const enPahaliFiyat = siraliUrunler[siraliUrunler.length - 1].fiyat;
+
+        const satirlar = siraliUrunler
+          .map((u) => {
+            let rozetSinifi = "";
+            if (u.fiyat === enUcuzFiyat && enUcuzFiyat !== enPahaliFiyat) rozetSinifi = "en-ucuz";
+            if (u.fiyat === enPahaliFiyat && enUcuzFiyat !== enPahaliFiyat) rozetSinifi = "en-pahali";
+
+            return `
+            <div class="urun-satiri">
+              <div class="urun-bilgi">
+                <div class="urun-adi">${u.urun}${u.hacim ? " · " + u.hacim : ""}</div>
+                <div class="urun-detay">${u.kosul || ""}</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:14px;">
+                <span class="urun-kaynak">${u.kaynak || ""} · ${formatTarih(u.tarih) || ""}</span>
+                <span class="fiyat-rozeti ${rozetSinifi}">${formatFiyat(u.fiyat)}</span>
+              </div>
+            </div>`;
+          })
+          .join("");
+
+        return `
+        <div class="kategori-akordeon ${index === 0 ? "acik" : ""}">
+          <div class="kategori-baslik" data-akordeon-baslik>
+            <span>${kategoriAdi} <span class="sayi">${urunler.length} ürün</span></span>
+            <svg class="kategori-ok" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="kategori-icerik">${satirlar}</div>
+        </div>`;
+      })
+      .join("");
+  }
+
+  detayIcerik.innerHTML = `
+    <div class="detay-header">
+      <div>
+        <h1>${mekanAdi(mekan)}</h1>
+        <div class="detay-meta">
+          <span>${mekan.tur}</span>
+          <span>${mekanKonumu(mekan)}</span>
+        </div>
+        <div class="detay-meta">${metaSatirlari.map((s) => `<span>${s}</span>`).join("")}</div>
+        ${notuHtml}
+      </div>
+    </div>
+    ${govdeHtml}
+  `;
+
+  detayIcerik.querySelectorAll("[data-akordeon-baslik]").forEach((baslik) => {
+    baslik.addEventListener("click", () => {
+      baslik.parentElement.classList.toggle("acik");
+    });
+  });
+}
+
+// ------------------------------------------------------------
+// KARŞILAŞTIRMA GÖRÜNÜMÜ
+// ------------------------------------------------------------
+function renderKarsilastirma() {
+  const secilenler = TUM_MEKANLAR.filter((m) => KARSILASTIRMA_SECIMI.has(m.id));
+
+  if (secilenler.length === 0) {
+    karsilastirmaIcerik.innerHTML = `<div class="bos-durum">
+      <h3>Henüz mekan seçilmedi</h3>
+      <p>Mekan kartlarındaki "Karşılaştırmaya ekle" kutusunu işaretleyip tekrar dene.</p>
+    </div>`;
+    return;
+  }
+
+  // Tüm seçili mekanlardaki ürünleri kategori + ürün adı + hacime göre
+  // benzersiz satırlar haline getir.
+  const satirMap = new Map(); // key -> { kategori, urun, hacim, fiyatlar: {mekanId: fiyat} }
+
+  secilenler.forEach((mekan) => {
+    mekanninTumUrunleri(mekan).forEach((u) => {
+      const anahtar = `${u.kategori}|${u.urun}|${u.hacim || ""}`;
+      if (!satirMap.has(anahtar)) {
+        satirMap.set(anahtar, {
+          kategori: u.kategori,
+          urun: u.urun,
+          hacim: u.hacim,
+          fiyatlar: {},
+        });
+      }
+      satirMap.get(anahtar).fiyatlar[mekan.id] = u.fiyat;
+    });
   });
 
-  document.getElementById('exportCsv').addEventListener('click', ()=>{
-    if(!notFollowingBack.length) return;
-    const content = 'username,profile_url\n' + notFollowingBack.map(e => `${e.username},${e.href}`).join('\n');
-    downloadBlob(content, 'geri-takip-etmeyenler.csv', 'text/csv');
-  });
-})();
+  const satirlar = [...satirMap.values()].sort((a, b) =>
+    (a.kategori + a.urun).localeCompare(b.kategori + b.urun)
+  );
+
+  const basliklar = secilenler.map((m) => `<th>${mekanAdi(m)}</th>`).join("");
+
+  let govdeHtml;
+  if (satirlar.length === 0) {
+    govdeHtml = `<div class="bos-durum">
+      <h3>Karşılaştırılacak ortak fiyat verisi yok</h3>
+      <p>Seçtiğin mekanların hiçbirinde doğrulanmış fiyat verisi bulunamadı.</p>
+    </div>`;
+  } else {
+    const satirlarHtml = satirlar
+      .map((satir) => {
+        const degerler = secilenler.map((m) => satir.fiyatlar[m.id]).filter((v) => v !== undefined);
+        const min = degerler.length ? Math.min(...degerler) : null;
+        const maks = degerler.length ? Math.max(...degerler) : null;
+
+        const hucreler = secilenler
+          .map((m) => {
+            const fiyat = satir.fiyatlar[m.id];
+            if (fiyat === undefined) {
+              return `<td class="veri-yok-hucre">Bulunamadı</td>`;
+            }
+            let sinif = "fiyat-hucre";
+            if (fiyat === min && min !== maks) sinif += " min";
+            if (fiyat === maks && min !== maks) sinif += " maks";
+            return `<td class="${sinif}">${formatFiyat(fiyat)}</td>`;
+          })
+          .join("");
+
+        return `
+        <tr>
+          <td class="urun-adi-hucre">${satir.kategori} — ${satir.urun}${satir.hacim ? " · " + satir.hacim : ""}</td>
+          ${hucreler}
+        </tr>`;
+      })
+      .join("");
+
+    govdeHtml = `
+      <div class="karsilastirma-tablosu-sarici">
+        <table class="karsilastirma-tablosu">
+          <thead><tr><th>Ürün</th>${basliklar}</tr></thead>
+          <tbody>${satirlarHtml}</tbody>
+        </table>
+      </div>`;
+  }
+
+  karsilastirmaIcerik.innerHTML = govdeHtml;
+}
+
+// ------------------------------------------------------------
+// GENEL YENİDEN ÇİZİM
+// ------------------------------------------------------------
+function tumUygulamayiCiz() {
+  renderDashboard();
+  renderMekanGrid();
+  renderKarsilastirCubugu();
+}
+
+// ------------------------------------------------------------
+// OLAY DİNLEYİCİLERİ
+// ------------------------------------------------------------
+aramaKutusu.addEventListener("input", (e) => {
+  filtreler.arama = e.target.value;
+  renderMekanGrid();
+});
+ilceFiltre.addEventListener("change", (e) => {
+  filtreler.ilce = e.target.value;
+  renderMekanGrid();
+});
+turFiltre.addEventListener("change", (e) => {
+  filtreler.tur = e.target.value;
+  renderMekanGrid();
+});
+fiyatDurumFiltre.addEventListener("change", (e) => {
+  filtreler.fiyatDurum = e.target.value;
+  renderMekanGrid();
+});
+filtreSifirlaBtn.addEventListener("click", () => {
+  filtreler.arama = "";
+  filtreler.ilce = "hepsi";
+  filtreler.tur = "hepsi";
+  filtreler.fiyatDurum = "hepsi";
+  aramaKutusu.value = "";
+  ilceFiltre.value = "hepsi";
+  turFiltre.value = "hepsi";
+  fiyatDurumFiltre.value = "hepsi";
+  renderMekanGrid();
+});
+
+detayGeriBtn.addEventListener("click", () => gorunumeGec("liste"));
+karsilastirmaGeriBtn.addEventListener("click", () => gorunumeGec("liste"));
+
+karsilastirAcBtn.addEventListener("click", () => gorunumeGec("karsilastirma"));
+karsilastirTemizleBtn.addEventListener("click", () => {
+  KARSILASTIRMA_SECIMI.clear();
+  renderKarsilastirCubugu();
+  renderMekanGrid();
+});
+
+// ------------------------------------------------------------
+// BAŞLAT
+// ------------------------------------------------------------
+verileriGetir();
+
 </script>
 </body>
 </html>
