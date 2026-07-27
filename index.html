@@ -3,2163 +3,817 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bursa İçki Rehberi — Fiyat Karşılaştırma</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<title>NightCompare — Prototip</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ==========================================================
-   BURSA İÇKİ REHBERİ — Design Tokens
-   ========================================================== */
-:root {
-  /* Renk — antrasit/grafit/sıcak gri zemin, altın+zümrüt+mavi vurgu */
-  --bg-base: #16171b;
-  --bg-elevated: #1e1f24;
-  --bg-elevated-2: #27282e;
-  --border-hairline: #34353b;
-  --text-primary: #f3f1ea;
-  --text-secondary: #a6a29b;
-  --text-muted: #726d65;
-
-  --gold: #c9a052;
-  --gold-soft: #e3c583;
-  --emerald: #3ab48c;
-  --emerald-bg: rgba(58, 180, 140, 0.12);
-  --red-warm: #d15c4b;
-  --red-bg: rgba(209, 92, 75, 0.12);
-  --sapphire: #6089d6;
-
-  /* Tipografi — karakterli serif başlık + sade gövde + mono veri */
-  --font-display: 'Fraunces', serif;
-  --font-body: 'Inter', sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
-
-  /* Diğer */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-card-hover: 0 16px 40px -12px rgba(0, 0, 0, 0.55);
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
+  :root{
+    --bg-primary:#0A0A0F;
+    --bg-secondary:#13131C;
+    --bg-elevated:#1C1C28;
+    --purple:#8B5CF6;
+    --purple-dark:#6D28D9;
+    --blue:#3B82F6;
+    --blue-light:#60A5FA;
+    --text-primary:#F5F5F7;
+    --text-secondary:#A1A1AA;
+    --text-tertiary:#6B6B76;
+    --success:#22C55E;
+    --error:#EF4444;
+    --verified:#3B82F6;
+    --gold:#FBBF24;
+    --glass-fill:rgba(255,255,255,.08);
+    --glass-border:rgba(255,255,255,.15);
+    --divider:rgba(255,255,255,.06);
+    --radius-sm:12px; --radius-md:16px; --radius-lg:24px; --radius-full:999px;
   }
-}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; background:#000; font-family:'Inter',sans-serif; color:var(--text-primary);
+    display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;
+  }
+  .phone{
+    width:390px; height:844px; background:var(--bg-primary); border-radius:44px;
+    border:10px solid #050505; position:relative; overflow:hidden;
+    box-shadow:0 40px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05);
+  }
+  .notch{
+    position:absolute; top:10px; left:50%; transform:translateX(-50%);
+    width:120px; height:26px; background:#050505; border-radius:0 0 18px 18px; z-index:50;
+  }
+  .screen{
+    position:absolute; inset:0; overflow-y:auto; padding-top:38px;
+    opacity:0; pointer-events:none; transform:translateX(12px);
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .screen.active{ opacity:1; pointer-events:auto; transform:translateX(0); }
+  .screen::-webkit-scrollbar{display:none;}
 
-html {
-  scroll-behavior: smooth;
-}
+  /* --- Glass component --- */
+  .glass{
+    background:var(--glass-fill); border:1px solid var(--glass-border);
+    border-radius:var(--radius-lg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    box-shadow:0 8px 20px rgba(0,0,0,.25);
+  }
 
-body {
-  margin: 0;
-  font-family: var(--font-body);
-  background: var(--bg-base);
-  color: var(--text-primary);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
+  h1,h2,h3{font-family:'Sora',sans-serif; margin:0;}
+  .display-md{font-size:24px; font-weight:700; letter-spacing:-.3px;}
+  .headline{font-size:18px; font-weight:600; font-family:'Sora',sans-serif;}
+  .body-lg{font-size:16px; color:var(--text-primary);}
+  .body-md{font-size:14px; color:var(--text-secondary);}
+  .body-sm{font-size:12px; color:var(--text-tertiary);}
+  .caption{font-size:11px; color:var(--text-tertiary); letter-spacing:.3px;}
+  .price{font-family:'Sora',sans-serif; font-weight:700; font-size:16px;}
 
-a { color: inherit; }
+  .px{padding-left:16px; padding-right:16px;}
+  .row{display:flex; align-items:center;}
+  .row-between{display:flex; align-items:center; justify-content:space-between;}
+  .gap-8{gap:8px;} .gap-4{gap:4px;} .gap-12{gap:12px;}
 
-:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--purple),var(--blue));
+    color:#fff; border:none; border-radius:var(--radius-md); padding:15px;
+    font-weight:600; font-size:15px; width:100%; cursor:pointer; font-family:'Inter';
+  }
+  .btn-outline{
+    background:transparent; border:1px solid var(--glass-border); color:var(--blue-light);
+    border-radius:var(--radius-md); padding:13px; width:100%; font-weight:600; cursor:pointer; font-family:'Inter';
+  }
+  .chip{
+    padding:9px 16px; border-radius:var(--radius-full); border:1px solid var(--glass-border);
+    background:var(--glass-fill); font-size:14px; font-weight:600; color:var(--text-secondary);
+    cursor:pointer; white-space:nowrap; transition:all .15s;
+  }
+  .chip.selected{ background:var(--purple); border-color:var(--purple); color:#fff; }
 
-/* ==========================================================
-   İMZA ÖĞE — Asılı fiyat etiketi
-   Fiziksel bir mağaza etiketi gibi: sivri uçlu, delikli, hafif
-   eğik. Logo ve mekan kartlarında tekrar ederek "fiyat
-   karşılaştırma" işlevini doğrudan simgeler.
-   ========================================================== */
-.fiyat-etiketi-sekli {
-  position: relative;
-  clip-path: polygon(0 0, 78% 0, 100% 50%, 78% 100%, 0 100%);
-  background: linear-gradient(135deg, var(--gold-soft), var(--gold) 60%, #9a7638);
-  color: #191a1d;
-}
-.fiyat-etiketi-sekli::after {
-  content: "";
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--bg-base);
-}
+  /* --- Top bar --- */
+  .topbar{ padding:8px 16px 16px; }
+  .icon-btn{
+    display:flex; align-items:center; gap:4px; padding:8px 10px; border-radius:var(--radius-full);
+    background:var(--glass-fill); border:1px solid var(--glass-border); font-size:12px; cursor:pointer;
+  }
 
-/* ==========================================================
-   Layout kapsayıcılar
-   ========================================================== */
-.sayfa {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+  /* --- Search bar --- */
+  .search-bar{
+    display:flex; align-items:center; gap:8px; padding:10px 16px; margin:0 16px 16px;
+    border-radius:var(--radius-full);
+  }
+  .search-bar input{
+    background:none; border:none; outline:none; color:var(--text-primary); font-size:14px; width:100%; font-family:'Inter';
+  }
+  .search-bar input::placeholder{color:var(--text-tertiary);}
 
-/* ==========================================================
-   Üst bar
-   ========================================================== */
-.ust-bar {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: rgba(18, 21, 26, 0.85);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-hairline);
-}
-.ust-bar-ic {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-}
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 17px;
-  letter-spacing: -0.01em;
-}
-.logo-simge {
-  width: 34px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 4px;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 13px;
-}
+  /* --- Quick actions --- */
+  .quick-row{ display:flex; gap:8px; padding:0 16px 20px; }
+  .quick-card{
+    flex:1; padding:16px 8px; text-align:center; cursor:pointer;
+  }
+  .quick-card .emoji{font-size:22px;}
+  .quick-card .label{font-size:12px; font-weight:600; margin-top:4px;}
 
-/* ==========================================================
-   Hero — fonksiyonel arama merkezli
-   ========================================================== */
-.hero {
-  padding: 64px 0 40px;
-  background:
-    radial-gradient(ellipse 900px 400px at 50% -10%, rgba(212, 166, 87, 0.10), transparent 60%),
-    var(--bg-base);
-  border-bottom: 1px solid var(--border-hairline);
-}
-.hero-ust {
-  text-align: center;
-  max-width: 640px;
-  margin: 0 auto 36px;
-}
-.hero-etiket {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  color: var(--gold-soft);
-  text-transform: uppercase;
-  margin-bottom: 18px;
-}
-.canli-gosterge {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--emerald);
-  box-shadow: 0 0 0 3px var(--emerald-bg);
-}
-.hero h1 {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 4.2vw, 44px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0 0 14px;
-  line-height: 1.15;
-}
-.hero p {
-  color: var(--text-secondary);
-  font-size: 16px;
-  margin: 0;
-}
+  /* --- Section --- */
+  .section-header{ display:flex; justify-content:space-between; align-items:center; padding:20px 16px 10px; }
+  .venue-scroll{ display:flex; gap:10px; overflow-x:auto; padding:0 16px 4px; scrollbar-width:none; }
+  .venue-scroll::-webkit-scrollbar{display:none;}
+  .venue-card{ width:150px; flex:0 0 auto; cursor:pointer; }
+  .venue-card img{ width:150px; height:105px; object-fit:cover; border-radius:var(--radius-md); }
+  .venue-card .imgwrap{position:relative;}
+  .badge-verified{
+    position:absolute; top:6px; right:6px; width:20px; height:20px; border-radius:50%;
+    background:var(--verified); display:flex; align-items:center; justify-content:center; font-size:11px;
+  }
+  .badge-price{
+    position:absolute; bottom:6px; left:6px; background:rgba(0,0,0,.55); padding:2px 8px;
+    border-radius:var(--radius-full); font-size:10px; color:#fff;
+  }
+  .venue-card .name{ font-size:14px; font-weight:600; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .venue-card .meta{ font-size:12px; color:var(--text-tertiary); margin-top:2px; display:flex; align-items:center; gap:4px;}
 
-/* Arama kutusu */
-.arama-kapsul {
-  max-width: 720px;
-  margin: 0 auto;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-hairline);
-  border-radius: var(--radius-lg);
-  padding: 8px;
-  box-shadow: var(--shadow-card);
-  transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
-}
-.arama-kapsul:focus-within {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 4px rgba(212, 166, 87, 0.12);
-}
-.arama-satir {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-}
-.arama-satir svg { flex-shrink: 0; color: var(--text-muted); }
-.arama-satir input {
-  flex: 1;
-  background: none;
-  border: none;
-  outline: none;
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 16px;
-}
-.arama-satir input::placeholder { color: var(--text-muted); }
+  /* --- Price row (compare) --- */
+  .price-row{
+    display:flex; align-items:center; gap:10px; padding:12px 16px; margin:0 16px 8px;
+    cursor:pointer;
+  }
+  .price-row img{ width:44px; height:44px; border-radius:10px; object-fit:cover; }
+  .price-row .cheapest{ border:1.5px solid var(--purple); }
 
-/* Filtre çubuğu */
-.filtre-cubugu {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-hairline);
-}
-.filtre-cubugu select,
-.filtre-cubugu button.sifirla {
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  background: var(--bg-elevated-2);
-  border: 1px solid var(--border-hairline);
-  color: var(--text-primary);
-  padding: 9px 14px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: border-color 150ms var(--ease), background 150ms var(--ease);
-}
-.filtre-cubugu select {
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: 32px;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a6a29b' stroke-width='2'><path d='m6 9 6 6 6-6'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-}
-.filtre-cubugu select:focus-visible {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(201, 160, 82, 0.15);
-}
-.filtre-cubugu select:hover,
-.filtre-cubugu button.sifirla:hover {
-  border-color: var(--gold);
-}
+  /* --- Bottom nav --- */
+  .bottomnav{
+    position:absolute; bottom:0; left:0; right:0; height:78px; background:var(--bg-secondary);
+    display:flex; align-items:flex-start; justify-content:space-around; padding-top:10px;
+    border-top:1px solid var(--divider); z-index:40;
+  }
+  .navitem{ display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; width:56px;}
+  .navitem svg{ width:22px; height:22px; }
+  .navitem span{ font-size:10px; color:var(--text-tertiary); }
+  .navitem.active span{ color:var(--purple); }
+  .fab{
+    position:absolute; bottom:44px; left:50%; transform:translateX(-50%);
+    width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--blue));
+    display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(139,92,246,.5);
+    cursor:pointer; z-index:41; border:4px solid var(--bg-primary);
+  }
 
-/* ==========================================================
-   Dashboard istatistik şeridi
-   ========================================================== */
-.istatistik-seridi {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--border-hairline);
-  border: 1px solid var(--border-hairline);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  margin-top: 32px;
-}
-.istatistik-kart {
-  background: var(--bg-elevated);
-  padding: 20px 22px;
-}
-.istatistik-etiket {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 8px;
-}
-.istatistik-deger {
-  font-family: var(--font-mono);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--gold-soft);
-}
-.istatistik-deger.kucuk { font-size: 15px; color: var(--text-primary); }
+  /* --- overlay screens (venue detail, contribute etc) slide from bottom --- */
+  .overlay{
+    position:absolute; inset:0; background:var(--bg-primary); z-index:60;
+    transform:translateY(100%); transition:transform .3s ease; overflow-y:auto; padding-top:38px;
+  }
+  .overlay.active{ transform:translateY(0); }
+  .close-btn, .back-btn{
+    width:34px; height:34px; border-radius:50%; background:rgba(0,0,0,.4); display:flex;
+    align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:16px;
+  }
 
-/* ==========================================================
-   Mekan grid + kart
-   ========================================================== */
-.icerik-bolumu {
-  padding: 40px 0 80px;
-}
-.bolum-baslik {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.bolum-baslik h2 {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  margin: 0 0 6px;
-}
-.bolum-baslik .sayac {
-  color: var(--text-muted);
-  font-size: 13px;
-  font-family: var(--font-mono);
-}
+  .hero-img{ width:100%; height:260px; object-fit:cover; }
+  .hero-gradient{
+    position:absolute; top:0; left:0; right:0; height:260px;
+    background:linear-gradient(to bottom, transparent 40%, var(--bg-primary) 100%);
+  }
+  .verified-pill{
+    display:inline-flex; align-items:center; gap:4px; background:rgba(59,130,246,.15);
+    color:var(--verified); font-size:12px; font-weight:600; padding:4px 10px; border-radius:var(--radius-full);
+  }
+  .tab-row{ display:flex; gap:8px; padding:16px; }
+  .tab-chip{ padding:8px 16px; border-radius:var(--radius-full); font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--glass-border); color:var(--text-secondary);}
+  .tab-chip.selected{ background:var(--purple); border-color:var(--purple); color:#fff;}
 
-.mekan-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 18px;
-}
+  .price-list-item{ display:flex; justify-content:space-between; padding:10px 0; }
+  .divider-line{ height:1px; background:var(--divider); margin:0 16px; }
 
-.mekan-kart {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-hairline);
-  border-radius: var(--radius-md);
-  padding: 22px 20px 20px;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), border-color 200ms var(--ease);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  position: relative;
-  overflow: visible;
-}
-.mekan-kart:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-card-hover);
-  border-color: rgba(201, 160, 82, 0.35);
-}
-.mekan-kart:hover .karti-fiyat-etiketi {
-  transform: rotate(-2deg) translateY(-2px);
-}
+  /* Step indicator (contribute) */
+  .step-track{ display:flex; gap:6px; padding:0 16px; }
+  .step-bar{ flex:1; height:4px; border-radius:99px; background:var(--divider); }
+  .step-bar.active{ background:var(--purple); }
 
-.karti-fiyat-etiketi {
-  position: absolute;
-  top: -11px;
-  right: 20px;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  padding: 5px 12px 5px 14px;
-  transform: rotate(4deg);
-  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.5);
-  transition: transform 200ms var(--ease);
-}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:99px;
+    background:linear-gradient(to right, var(--purple) 0%, var(--purple) var(--pct,50%), var(--divider) var(--pct,50%), var(--divider) 100%);
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--purple); cursor:pointer; margin-top:-7px;
+  }
 
-.mekan-kart-ust {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
-.mekan-logo {
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
-  background: var(--bg-elevated-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--gold-soft);
-  font-size: 16px;
-  flex-shrink: 0;
-}
-.mekan-isim {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
-  margin: 0 0 2px;
-  line-height: 1.3;
-}
-.mekan-konum {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-.mekan-tur-rozeti {
-  font-size: 11px;
-  font-family: var(--font-mono);
-  color: var(--text-muted);
-  background: var(--bg-elevated-2);
-  padding: 3px 9px;
-  border-radius: 100px;
-  white-space: nowrap;
-}
+  .stepper-btn{
+    width:32px; height:32px; border-radius:50%; background:var(--glass-fill); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:16px;
+  }
 
-.mekan-fiyat-onizleme {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px 0;
-  border-top: 1px solid var(--border-hairline);
-  border-bottom: 1px solid var(--border-hairline);
-}
-.mini-fiyat-satiri {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-}
-.mini-fiyat-satiri .urun { color: var(--text-secondary); }
-.mini-fiyat-satiri .tutar {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  color: var(--emerald);
-}
-.veri-yok-notu {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-style: italic;
-  padding: 6px 0;
-}
+  .badge-circle{
+    width:56px; height:56px; border-radius:50%; background:var(--glass-fill); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+  }
+  .progress-bar{ height:8px; border-radius:99px; background:var(--divider); overflow:hidden; }
+  .progress-bar .fill{ height:100%; background:var(--blue); }
 
-.mekan-kart-alt {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.guncelleme-notu {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-.aksiyon-butonlari {
-  display: flex;
-  gap: 6px;
-}
-.mini-buton {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: var(--bg-elevated-2);
-  border: 1px solid var(--border-hairline);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: border-color 150ms var(--ease), color 150ms var(--ease);
-}
-.mini-buton:hover {
-  border-color: var(--sapphire);
-  color: var(--sapphire);
-}
+  .toast{
+    position:absolute; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--bg-elevated); border:1px solid var(--glass-border); padding:10px 18px;
+    border-radius:var(--radius-full); font-size:13px; opacity:0; transition:all .25s; z-index:100; white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-.karsilastir-checkbox-satiri {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12.5px;
-  color: var(--text-secondary);
-}
-.karsilastir-checkbox-satiri input {
-  accent-color: var(--gold);
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-}
+  .route-dot{ width:28px; height:28px; border-radius:50%; background:var(--glass-fill); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0;}
+  .route-dot.first{ background:var(--purple); border-color:var(--purple); }
+  .route-line{ width:2px; flex:1; background:var(--divider); margin:2px 0; min-height:34px;}
 
-/* ==========================================================
-   Fiyat rozeti — imza öğe (bilet çentiği)
-   ========================================================== */
-.fiyat-rozeti {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 14px;
-  padding: 5px 14px 5px 16px;
-  border-radius: 6px;
-  background: var(--bg-elevated-2);
-  color: var(--text-primary);
-  border: 1px solid var(--border-hairline);
-}
-.fiyat-rozeti::before {
-  content: "";
-  position: absolute;
-  left: -1px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 8px;
-  height: 8px;
-  background: var(--bg-base);
-  border-radius: 50%;
-  border: 1px solid var(--border-hairline);
-}
-.fiyat-rozeti.en-ucuz {
-  background: var(--emerald-bg);
-  color: var(--emerald);
-  border-color: rgba(52, 199, 149, 0.35);
-}
-.fiyat-rozeti.en-pahali {
-  background: var(--red-bg);
-  color: var(--red-warm);
-  border-color: rgba(226, 87, 76, 0.35);
-}
-
-/* ==========================================================
-   Mekan detay paneli
-   ========================================================== */
-.detay-panel {
-  display: none;
-}
-.detay-panel.acik {
-  display: block;
-}
-.geri-buton {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  cursor: pointer;
-  padding: 8px 0;
-  margin-bottom: 20px;
-}
-.geri-buton:hover { color: var(--gold); }
-
-.detay-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border-hairline);
-  margin-bottom: 28px;
-  flex-wrap: wrap;
-}
-.detay-header h1 {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0 0 8px;
-}
-.detay-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  font-size: 13.5px;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-.detay-meta span { display: inline-flex; align-items: center; gap: 6px; }
-.detay-notu {
-  margin-top: 10px;
-  font-size: 13px;
-  color: var(--red-warm);
-  background: var(--red-bg);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.detay-notu svg { flex-shrink: 0; }
-.detay-meta span svg { flex-shrink: 0; color: var(--text-muted); }
-
-.kategori-akordeon {
-  border: 1px solid var(--border-hairline);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  margin-bottom: 14px;
-}
-.kategori-baslik {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background: var(--bg-elevated);
-  cursor: pointer;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 15px;
-  user-select: none;
-}
-.kategori-baslik .sayi {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  color: var(--text-muted);
-  font-size: 12px;
-  margin-left: 8px;
-}
-.kategori-ok {
-  transition: transform 200ms var(--ease);
-  color: var(--text-muted);
-}
-.kategori-akordeon.acik .kategori-ok { transform: rotate(180deg); }
-.kategori-icerik {
-  display: none;
-  background: var(--bg-base);
-}
-.kategori-akordeon.acik .kategori-icerik { display: block; }
-
-.urun-satiri {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-top: 1px solid var(--border-hairline);
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.urun-bilgi .urun-adi { font-weight: 600; font-size: 14.5px; }
-.urun-bilgi .urun-detay {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 3px;
-}
-.urun-kaynak {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-
-/* ==========================================================
-   Karşılaştırma
-   ========================================================== */
-.karsilastir-cubugu {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(140%);
-  z-index: 50;
-  background: var(--bg-elevated);
-  border: 1px solid var(--gold);
-  border-radius: 100px;
-  padding: 10px 10px 10px 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: var(--shadow-card-hover);
-  transition: transform 260ms var(--ease);
-}
-.karsilastir-cubugu.gorunur {
-  transform: translateX(-50%) translateY(0);
-}
-.karsilastir-cubugu span {
-  font-size: 14px;
-  font-family: var(--font-mono);
-  color: var(--text-secondary);
-}
-.karsilastir-cubugu button.karsilastir-btn {
-  background: var(--gold);
-  color: #14171c;
-  border: none;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 13.5px;
-  padding: 10px 20px;
-  border-radius: 100px;
-  cursor: pointer;
-}
-.karsilastir-cubugu button.temizle-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: 13px;
-  padding: 6px;
-}
-
-.karsilastirma-tablosu-sarici { overflow-x: auto; }
-.karsilastirma-tablosu {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 560px;
-}
-.karsilastirma-tablosu th,
-.karsilastirma-tablosu td {
-  padding: 13px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--border-hairline);
-  font-size: 13.5px;
-}
-.karsilastirma-tablosu thead th {
-  font-family: var(--font-display);
-  font-weight: 700;
-  background: var(--bg-elevated);
-  position: sticky;
-  top: 0;
-}
-.karsilastirma-tablosu td.urun-adi-hucre { color: var(--text-secondary); }
-.karsilastirma-tablosu td.fiyat-hucre { font-family: var(--font-mono); font-weight: 600; }
-.karsilastirma-tablosu td.fiyat-hucre.min { color: var(--emerald); }
-.karsilastirma-tablosu td.fiyat-hucre.maks { color: var(--red-warm); }
-.karsilastirma-tablosu td.veri-yok-hucre { color: var(--text-muted); font-style: italic; }
-
-.gizli { display: none !important; }
-
-/* ==========================================================
-   Boş durum
-   ========================================================== */
-.bos-durum {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-muted);
-}
-.bos-durum h3 {
-  font-family: var(--font-display);
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-}
-
-/* ==========================================================
-   Sayfa altbilgi
-   ========================================================== */
-footer.altbilgi {
-  border-top: 1px solid var(--border-hairline);
-  padding: 28px 0;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 12.5px;
-}
-
-/* ==========================================================
-   Responsive
-   ========================================================== */
-@media (max-width: 860px) {
-  .istatistik-seridi { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 640px) {
-  .sayfa { padding: 0 16px; }
-  .hero { padding: 40px 0 28px; }
-  .ust-bar-ic { padding: 14px 16px; }
-  .filtre-cubugu { flex-direction: column; }
-  .filtre-cubugu select, .filtre-cubugu button.sifirla { width: 100%; }
-  .istatistik-seridi { grid-template-columns: 1fr 1fr; }
-  .mekan-grid { grid-template-columns: 1fr; }
-  .detay-header { flex-direction: column; }
-}
-
+  ::selection{ background:var(--purple); color:#fff; }
+  .credit{ text-align:center; color:#555; font-size:12px; margin-top:20px; font-family:'Inter'; }
 </style>
 </head>
 <body>
 
-  <!-- ÜST BAR -->
-  <header class="ust-bar">
-    <div class="sayfa ust-bar-ic">
-      <div class="logo">
-        <div class="logo-simge fiyat-etiketi-sekli">B</div>
-        Bursa İçki Rehberi
+<div class="phone" id="phone">
+  <div class="notch"></div>
+
+  <!-- ============ HOME ============ -->
+  <div class="screen active" id="screen-home">
+    <div class="topbar row-between">
+      <div class="row gap-4" style="cursor:pointer">
+        <h1 class="display-md">Keşfet</h1>
+        <span style="color:var(--text-secondary)">▾</span>
+      </div>
+      <div class="row gap-8">
+        <div class="icon-btn">📍 Bursa</div>
+        <div class="icon-btn">🔔</div>
       </div>
     </div>
-  </header>
 
-  <!-- HERO + ARAMA + FİLTRE + DASHBOARD -->
-  <section class="hero">
-    <div class="sayfa">
-      <div class="hero-ust">
-        <div class="hero-etiket">
-          <span class="canli-gosterge"></span> Doğrulanmış fiyat verisi
-        </div>
-        <h1>Bursa'da içkinin gerçek fiyatı</h1>
-        <p>Mekan veya içecek adı yaz, saniyeler içinde karşılaştır.</p>
-      </div>
-
-      <div class="arama-kapsul">
-        <div class="arama-satir">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" id="arama-kutusu" placeholder="Efes, rakı, The North Shield, Nilüfer...">
-        </div>
-        <div class="filtre-cubugu">
-          <select id="ilce-filtre">
-            <option value="hepsi">Tüm İlçeler</option>
-          </select>
-          <select id="tur-filtre">
-            <option value="hepsi">Tüm Mekan Türleri</option>
-          </select>
-          <select id="fiyat-durum-filtre">
-            <option value="hepsi">Fiyat Durumu: Hepsi</option>
-            <option value="var">Yalnızca Fiyatı Olanlar</option>
-          </select>
-          <button class="sifirla" id="filtre-sifirla">Filtreleri Sıfırla</button>
-        </div>
-      </div>
-
-      <!-- DASHBOARD -->
-      <div class="istatistik-seridi" id="istatistik-seridi"></div>
+    <div class="search-bar glass">
+      <span>🔍</span>
+      <input placeholder="Mekan, içki veya semt ara..." onclick="goCompare()" readonly>
     </div>
-  </section>
 
-  <!-- MEKAN LİSTESİ GÖRÜNÜMÜ -->
-  <main class="sayfa icerik-bolumu" id="liste-gorunumu">
-    <div class="bolum-baslik">
-      <div>
-        <h2>Mekanlar</h2>
+    <div class="quick-row">
+      <div class="quick-card glass" onclick="openOverlay('budget')">
+        <div class="emoji">💰</div>
+        <div class="label">Bütçe Planlayıcı</div>
       </div>
-      <span class="sayac" id="mekan-sayac"></span>
+      <div class="quick-card glass" onclick="openOverlay('route')">
+        <div class="emoji">🗺️</div>
+        <div class="label">Gece Rotası</div>
+      </div>
     </div>
-    <div class="mekan-grid" id="mekan-grid"></div>
-  </main>
 
-  <!-- MEKAN DETAY GÖRÜNÜMÜ -->
-  <main class="sayfa icerik-bolumu detay-panel" id="detay-gorunumu">
-    <button class="geri-buton" id="detay-geri">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-      Tüm mekanlara dön
-    </button>
-    <div id="detay-icerik"></div>
-  </main>
-
-  <!-- KARŞILAŞTIRMA GÖRÜNÜMÜ -->
-  <main class="sayfa icerik-bolumu detay-panel" id="karsilastirma-gorunumu">
-    <button class="geri-buton" id="karsilastirma-geri">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-      Tüm mekanlara dön
-    </button>
-    <div class="bolum-baslik">
-      <div><h2>Fiyat Karşılaştırma</h2></div>
+    <div class="section-header">
+      <h3 class="headline">🔥 Trend Mekanlar</h3>
+      <span class="body-sm" style="color:var(--purple)">Tümünü Gör</span>
     </div>
-    <div id="karsilastirma-icerik"></div>
-  </main>
+    <div class="venue-scroll" id="trend-scroll"></div>
 
-  <footer class="altbilgi">
-    Fiyatlar mekanların kendi dijital menülerinden alınmıştır. KDV dahildir. Güncelliği için "son güncelleme" tarihine bakınız.
-  </footer>
+    <div class="section-header">
+      <h3 class="headline">🆕 Yeni Eklenenler</h3>
+      <span class="body-sm" style="color:var(--purple)">Tümünü Gör</span>
+    </div>
+    <div class="venue-scroll" id="new-scroll"></div>
 
-  <!-- KARŞILAŞTIRMA YÜZEN ÇUBUĞU -->
-  <div class="karsilastir-cubugu" id="karsilastir-cubugu">
-    <span id="karsilastir-sayac">0 mekan seçildi</span>
-    <button class="temizle-btn" id="karsilastir-temizle">Temizle</button>
-    <button class="karsilastir-btn" id="karsilastir-ac">Karşılaştır</button>
+    <div class="section-header">
+      <h3 class="headline">💸 En Uygun Fiyatlılar</h3>
+      <span class="body-sm" style="color:var(--purple)">Tümünü Gör</span>
+    </div>
+    <div class="venue-scroll" id="cheap-scroll"></div>
+    <div style="height:110px"></div>
   </div>
 
-  <script>
-const MEKANLAR_VERISI = [
-  {
-    "id": "north-shield",
-    "isim": "The North Shield",
-    "tur": "Pub",
-    "ilce": "Nilüfer",
-    "mahalle": "Cumhuriyet Mah.",
-    "adres": "Nilüfer Hatun Cad. Podyum Park AVM G Blok No:14-15",
-    "telefon": "(0224) 453 00 55",
-    "instagram": "thenorthshieldbursa",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "offline-the-bar",
-    "isim": "Offline The Bar",
-    "tur": "Bar",
-    "ilce": "Nilüfer",
-    "mahalle": "Podyumpark",
-    "adres": null,
-    "telefon": "0224 450 00 81",
-    "instagram": "offlinethebar",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "kule-pub",
-    "isim": "Kule Pub",
-    "tur": "Pub",
-    "ilce": "Nilüfer",
-    "mahalle": "Özlüce",
-    "adres": null,
-    "telefon": "0532 730 43 16",
-    "instagram": "kule.pub",
-    "son_guncelleme": "2026-07-26",
-    "fiyatlar": {
-      "Bira": [
-        {
-          "urun": "Efes Fıçı",
-          "hacim": "50 cl",
-          "fiyat": 165,
-          "kosul": "Happy Hour, 19:00'a kadar",
-          "kaynak": "menucebimde.com",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Belfast Şişe",
-          "hacim": "50 cl",
-          "fiyat": 185,
-          "kosul": "Happy Hour, 19:00'a kadar",
-          "kaynak": "menucebimde.com",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "+1 Şişe",
-          "hacim": "50 cl",
-          "fiyat": 180,
-          "kosul": "Happy Hour, 19:00'a kadar",
-          "kaynak": "menucebimde.com",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Malt Şişe",
-          "hacim": "50 cl",
-          "fiyat": 180,
-          "kosul": "Happy Hour, 19:00'a kadar",
-          "kaynak": "menucebimde.com",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Becks Fıçı",
-          "hacim": "50 cl",
-          "fiyat": 180,
-          "kosul": "Happy Hour, 19:00'a kadar",
-          "kaynak": "menucebimde.com",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Becks Şişe",
-          "hacim": "50 cl",
-          "fiyat": 225,
-          "kosul": "Happy Hour, 19:00'a kadar",
-          "kaynak": "menucebimde.com",
-          "tarih": "2026-07-26"
-        }
-      ]
-    }
-  },
-  {
-    "id": "sey-pub",
-    "isim": "Şey Pub",
-    "tur": "Pub",
-    "ilce": "Nilüfer",
-    "mahalle": "Parkora AVM",
-    "adres": "Parkora 1. Kat",
-    "telefon": "0(543) 573 97 82",
-    "instagram": "seypub",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "ajo",
-    "isim": "AJO Cocktail Bar & Art Space",
-    "tur": "Cocktail Bar",
-    "ilce": "Nilüfer",
-    "mahalle": "Podyumpark",
-    "adres": null,
-    "telefon": null,
-    "instagram": "ajobursa",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "coffee-shot-irish-pub",
-    "isim": "Coffee Shot Irish Pub",
-    "tur": "Irish Pub",
-    "ilce": "Mudanya / Gemlik",
-    "mahalle": null,
-    "adres": null,
-    "telefon": null,
-    "instagram": "coffeeshotbursa",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "pub-locale",
-    "isim": "Pub Locale Bursa",
-    "tur": "Pub",
-    "ilce": null,
-    "mahalle": null,
-    "adres": null,
-    "telefon": null,
-    "instagram": "bursapublocale",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "sosyo-pub",
-    "isim": "Sosyo Pub Bursa",
-    "tur": "Pub",
-    "ilce": null,
-    "mahalle": null,
-    "adres": null,
-    "telefon": null,
-    "instagram": "sosyopubbursa",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "hanci-meyhane",
-    "isim": "Hancı Meyhane",
-    "tur": "Meyhane",
-    "ilce": "Osmangazi",
-    "mahalle": "Mudanya Yolu Üzeri",
-    "adres": "Sanayi Cad No:347/A",
-    "telefon": "0537 669 72 89",
-    "instagram": "hancimeyhanebursa",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "afife-ocakbasi-meyhane",
-    "isim": "Afife Ocakbaşı Meyhane",
-    "tur": "Meyhane",
-    "ilce": "Nilüfer",
-    "mahalle": "Ataevler",
-    "adres": "Barış Mah. Ali Rıza Bey Cad. No:49, Havuzlu Konak",
-    "telefon": "0553 196 30 16",
-    "instagram": "afifeocakbasimeyhane",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "cetuni-meyhane",
-    "isim": "Çetuni \"Eski Nesil Meyhane\"",
-    "tur": "Meyhane",
-    "ilce": "Nilüfer",
-    "mahalle": "Parkora AVM",
-    "adres": "Parkora Kat 1",
-    "telefon": "0532 494 72 27",
-    "instagram": "cetunimeyhane",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "sarap-evi-bursa",
-    "isim": "Şarap Evi Bursa",
-    "tur": "Şarap Evi",
-    "ilce": null,
-    "mahalle": null,
-    "adres": null,
-    "telefon": null,
-    "instagram": "sarapevibursa",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "jung-bursa",
-    "isim": "JUNG BURSA",
-    "tur": "Gece Kulübü",
-    "ilce": null,
-    "mahalle": null,
-    "adres": null,
-    "telefon": "0531 034 07 07",
-    "instagram": "jung.bursa",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "turistik-koskum",
-    "isim": "Turistik Köşküm Night Club",
-    "tur": "Gece Kulübü",
-    "ilce": null,
-    "mahalle": null,
-    "adres": null,
-    "telefon": "0224 220 73 10",
-    "instagram": "turistikkoskumgazinosu",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "swan-irish-pub",
-    "isim": "The Swan Irish Pub",
-    "tur": "Irish Pub",
-    "ilce": "Nilüfer",
-    "mahalle": "Odunluk",
-    "adres": "Liman Cd. No: 7 D:42",
-    "telefon": null,
-    "instagram": "theswanirishpub",
-    "durum_notu": "Bazı kaynaklar kalıcı olarak kapandığını belirtiyor, durumu doğrulanmalı",
-    "son_guncelleme": null,
-    "fiyatlar": {}
-  },
-  {
-    "id": "raft-pub-ozluce",
-    "isim": "The Raft Pub",
-    "sube": "Özlüce",
-    "tur": "Pub",
-    "ilce": "Nilüfer",
-    "mahalle": "Özlüce",
-    "adres": null,
-    "telefon": null,
-    "instagram": null,
-    "son_guncelleme": "2026-07-26",
-    "fiyatlar": {
-      "Bira": [
-        {
-          "urun": "Efes Pilsen Fıçı",
-          "hacim": "40 cl",
-          "fiyat": 110,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Efes Serçe",
-          "hacim": "30 cl",
-          "fiyat": 120,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Stella Artois Fıçı",
-          "hacim": "30 cl",
-          "fiyat": 140,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Efes Malt",
-          "hacim": "50 cl",
-          "fiyat": 155,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "+1 Efes Pilsen",
-          "hacim": "50 cl",
-          "fiyat": 155,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Bomonti Filtresiz",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Stella Artois Fıçı",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Belfast",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Becks",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Efes Özel Seri",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Bud",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Ottakringer",
-          "hacim": "33 cl",
-          "fiyat": 180,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Stella Artois",
-          "hacim": "44 cl",
-          "fiyat": 210,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        }
-      ]
-    }
-  },
-  {
-    "id": "raft-pub-gorukle",
-    "isim": "The Raft Pub",
-    "sube": "Görükle",
-    "tur": "Pub",
-    "ilce": "Nilüfer",
-    "mahalle": "Görükle",
-    "adres": null,
-    "telefon": null,
-    "instagram": null,
-    "son_guncelleme": "2026-07-26",
-    "fiyatlar": {
-      "Bira": [
-        {
-          "urun": "Efes Pilsen Fıçı",
-          "hacim": "40 cl",
-          "fiyat": 110,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Efes Serçe",
-          "hacim": "30 cl",
-          "fiyat": 120,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Stella Artois Fıçı",
-          "hacim": "30 cl",
-          "fiyat": 140,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Efes Malt",
-          "hacim": "50 cl",
-          "fiyat": 155,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "+1 Efes Pilsen",
-          "hacim": "50 cl",
-          "fiyat": 155,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Bomonti Filtresiz",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Stella Artois Fıçı",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Belfast",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Becks",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Efes Özel Seri",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Bud",
-          "hacim": "50 cl",
-          "fiyat": 170,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Ottakringer",
-          "hacim": "33 cl",
-          "fiyat": 180,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Stella Artois",
-          "hacim": "44 cl",
-          "fiyat": 210,
-          "kosul": "Happy Hour, 19:23'e kadar",
-          "kaynak": "canlimenu.com/theraftozluce",
-          "tarih": "2026-07-26"
-        }
-      ]
-    }
-  },
-  {
-    "id": "barinaq-ozluce",
-    "isim": "Barınaq",
-    "sube": "Özlüce",
-    "tur": "Bar",
-    "ilce": "Nilüfer",
-    "mahalle": "Özlüce",
-    "adres": null,
-    "telefon": null,
-    "instagram": null,
-    "son_guncelleme": "2026-07-26",
-    "fiyatlar": {
-      "Bira": [
-        {
-          "urun": "Happy Tuborg Şişe",
-          "hacim": null,
-          "fiyat": 165,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Happy Carlsberg Şişe",
-          "hacim": null,
-          "fiyat": 175,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Happy Tuborg Ice",
-          "hacim": null,
-          "fiyat": 140,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Happy Tuborg Filtresiz",
-          "hacim": null,
-          "fiyat": 175,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        }
-      ],
-      "Shot": [
-        {
-          "urun": "Jägermeister Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Jack Daniel's Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Jack Daniel's Apple Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Jack Daniel's Fire Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Jack Daniel's Honey Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        }
-      ]
-    }
-  },
-  {
-    "id": "barinaq-kukurtlu",
-    "isim": "Barınaq",
-    "sube": "Kükürtlü",
-    "tur": "Bar",
-    "ilce": "Osmangazi",
-    "mahalle": "Kükürtlü",
-    "adres": null,
-    "telefon": null,
-    "instagram": null,
-    "son_guncelleme": "2026-07-26",
-    "fiyatlar": {
-      "Bira": [
-        {
-          "urun": "Happy Tuborg Şişe",
-          "hacim": null,
-          "fiyat": 165,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Happy Carlsberg Şişe",
-          "hacim": null,
-          "fiyat": 175,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Happy Tuborg Ice",
-          "hacim": null,
-          "fiyat": 140,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Happy Tuborg Filtresiz",
-          "hacim": null,
-          "fiyat": 175,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        }
-      ],
-      "Shot": [
-        {
-          "urun": "Jägermeister Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Jack Daniel's Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Jack Daniel's Apple Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Jack Daniel's Fire Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Jack Daniel's Honey Shot",
-          "hacim": null,
-          "fiyat": 130,
-          "kosul": "Happy Hour, 20:00'a kadar",
-          "kaynak": "canlimenu.com/barinaq",
-          "tarih": "2026-07-26"
-        }
-      ]
-    }
-  },
-  {
-    "id": "radyo-pub",
-    "isim": "Radyo Pub",
-    "tur": "Pub",
-    "ilce": null,
-    "mahalle": null,
-    "adres": null,
-    "telefon": null,
-    "instagram": null,
-    "son_guncelleme": "2026-07-26",
-    "fiyatlar": {
-      "Bira": [
-        {
-          "urun": "Efes Pilsen Fıçı",
-          "hacim": "40 cl",
-          "fiyat": 115,
-          "kosul": "Kampanya, 19:00'a kadar",
-          "kaynak": "mygoodvibe.co/menu/Kampanyalar",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Beck's Fıçı",
-          "hacim": "40 cl",
-          "fiyat": 120,
-          "kosul": "Kampanya, 19:00'a kadar",
-          "kaynak": "mygoodvibe.co/menu/Kampanyalar",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Efes Pilsen +1",
-          "hacim": "50 cl",
-          "fiyat": 150,
-          "kosul": "Kampanya, 19:00'a kadar",
-          "kaynak": "mygoodvibe.co/menu/Kampanyalar",
-          "tarih": "2026-07-26"
-        },
-        {
-          "urun": "Efes Malt",
-          "hacim": "50 cl",
-          "fiyat": 150,
-          "kosul": "Kampanya, 19:00'a kadar",
-          "kaynak": "mygoodvibe.co/menu/Kampanyalar",
-          "tarih": "2026-07-26"
-        }
-      ]
-    }
-  }
+  <!-- ============ COMPARE ============ -->
+  <div class="screen" id="screen-compare">
+    <div class="topbar row-between">
+      <h1 class="display-md">Fiyat Karşılaştır</h1>
+      <span style="font-size:20px; color:var(--text-secondary)">⚙︎</span>
+    </div>
+    <div class="search-bar glass">
+      <span>🔍</span>
+      <input id="compare-search" placeholder="Mekan, içki veya semt ara..." value="Efes" oninput="renderCompare()">
+    </div>
+    <div class="quick-row" style="padding-bottom:0; overflow-x:auto; flex-wrap:nowrap;" id="cat-chips"></div>
+    <div class="quick-row" style="padding-top:10px; overflow-x:auto; flex-wrap:nowrap;" id="sort-chips"></div>
+    <div id="compare-list" style="padding:16px 0 100px;"></div>
+  </div>
+
+  <!-- ============ FAVORITES ============ -->
+  <div class="screen" id="screen-favorites">
+    <div class="topbar"><h1 class="display-md">Favoriler</h1></div>
+    <div class="quick-row" style="padding-bottom:16px;">
+      <div class="chip selected">Mekanlar</div>
+      <div class="chip">İçkiler</div>
+      <div class="chip">Şehirler</div>
+    </div>
+    <div class="px" id="fav-list" style="padding-bottom:100px;"></div>
+  </div>
+
+  <!-- ============ PROFILE ============ -->
+  <div class="screen" id="screen-profile">
+    <div class="px" style="padding-top:8px;">
+      <div class="row gap-12">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;">🧑</div>
+        <div style="flex:1">
+          <div class="headline">Barmender</div>
+          <div class="body-md" style="margin:2px 0 6px;">Seviye 12</div>
+          <div class="progress-bar"><div class="fill" style="width:62%"></div></div>
+        </div>
+        <span style="color:var(--text-secondary)">⚙︎</span>
+      </div>
+
+      <div class="row gap-8" style="margin-top:20px;">
+        <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">128</div><div class="body-sm">Katkılarım</div></div>
+        <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">32</div><div class="body-sm">Favoriler</div></div>
+        <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">89</div><div class="body-sm">Yorumlar</div></div>
+      </div>
+
+      <div class="row-between" style="margin-top:20px;">
+        <h3 class="headline">Rozetlerim</h3>
+        <span class="body-sm" style="color:var(--purple)">Tümü ›</span>
+      </div>
+      <div class="row gap-12" style="margin-top:10px; overflow-x:auto;">
+        <div style="text-align:center;"><div class="badge-circle">🍺</div><div class="caption" style="margin-top:4px;">Explorer</div></div>
+        <div style="text-align:center;"><div class="badge-circle">🏅</div><div class="caption" style="margin-top:4px;">100 Katkı</div></div>
+        <div style="text-align:center;"><div class="badge-circle">⭐</div><div class="caption" style="margin-top:4px;">Güvenilir</div></div>
+        <div style="text-align:center; opacity:.35;"><div class="badge-circle">👑</div><div class="caption" style="margin-top:4px;">VIP</div></div>
+      </div>
+
+      <div class="glass" style="margin-top:20px; padding:4px 0;">
+        <div class="row-between" style="padding:14px 16px;">✏️ Katkılarım <span style="color:var(--text-tertiary)">›</span></div>
+        <div class="divider-line"></div>
+        <div class="row-between" style="padding:14px 16px;">🏆 Liderlik Tablosu <span style="color:var(--text-tertiary)">›</span></div>
+      </div>
+    </div>
+    <div style="height:100px"></div>
+  </div>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <div class="bottomnav">
+    <div class="navitem active" data-tab="home" onclick="switchTab('home')">
+      <div style="font-size:20px;">🧭</div><span>Keşfet</span>
+    </div>
+    <div class="navitem" data-tab="compare" onclick="switchTab('compare')">
+      <div style="font-size:20px;">⇄</div><span>Karşılaştır</span>
+    </div>
+    <div style="width:56px;"></div>
+    <div class="navitem" data-tab="favorites" onclick="switchTab('favorites')">
+      <div style="font-size:20px;">♡</div><span>Favoriler</span>
+    </div>
+    <div class="navitem" data-tab="profile" onclick="switchTab('profile')">
+      <div style="font-size:20px;">◍</div><span>Profil</span>
+    </div>
+  </div>
+  <div class="fab" onclick="openOverlay('contribute'); resetContribute();">
+    <span style="font-size:26px; color:#fff;">+</span>
+  </div>
+
+  <!-- ============ OVERLAY: VENUE DETAIL ============ -->
+  <div class="overlay" id="overlay-detail">
+    <div style="position:relative;">
+      <img class="hero-img" id="detail-img" src="">
+      <div class="hero-gradient"></div>
+      <div class="row-between" style="position:absolute; top:16px; left:16px; right:16px;">
+        <div class="close-btn" onclick="closeOverlay('detail')">←</div>
+        <div class="row gap-8">
+          <div class="close-btn">♡</div>
+          <div class="close-btn">⤴</div>
+        </div>
+      </div>
+    </div>
+    <div class="px" style="margin-top:-8px;">
+      <div id="detail-verified" class="verified-pill" style="margin-bottom:8px;">✓ Doğrulanmış Mekan</div>
+      <h1 class="display-md" id="detail-name"></h1>
+      <div class="body-md" style="margin-top:4px;" id="detail-meta"></div>
+    </div>
+    <div class="tab-row">
+      <div class="tab-chip selected">Fiyatlar</div>
+      <div class="tab-chip">Yorumlar</div>
+      <div class="tab-chip">Hakkında</div>
+    </div>
+    <div class="px" id="detail-prices"></div>
+    <div style="height:90px"></div>
+    <div style="position:absolute; bottom:0; left:0; right:0; padding:16px; background:var(--bg-primary);">
+      <button class="btn-primary" onclick="openOverlay('contribute'); resetContribute();">Fiyat Bildir</button>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: COMPARE (from search - reuses same as tab, so use contribute/budget/route below) ============ -->
+
+  <!-- ============ OVERLAY: CONTRIBUTE ============ -->
+  <div class="overlay" id="overlay-contribute">
+    <div class="row-between px" style="padding-top:0;">
+      <h3 class="headline">Fiyat Bildir</h3>
+      <div class="close-btn" onclick="closeOverlay('contribute')">✕</div>
+    </div>
+    <div class="step-track" style="margin:16px 0;">
+      <div class="step-bar active" id="step-bar-1"></div>
+      <div class="step-bar" id="step-bar-2"></div>
+      <div class="step-bar" id="step-bar-3"></div>
+    </div>
+
+    <!-- step 1: venue -->
+    <div class="px" id="contribute-step-venue">
+      <h1 class="display-md">Hangi mekandasın?</h1>
+      <div class="body-md" style="margin:4px 0 16px;">GPS konumuna göre öneriler listelendi</div>
+      <div id="contribute-venue-list"></div>
+    </div>
+
+    <!-- step 2: drink -->
+    <div class="px" id="contribute-step-drink" style="display:none;">
+      <div class="body-md" id="c-venue-name"></div>
+      <h1 class="display-md" style="margin-top:4px;">Hangi içki?</h1>
+      <div class="quick-row" style="flex-wrap:wrap; padding:16px 0;" id="c-category-chips"></div>
+      <input id="c-drink-name" class="glass" placeholder="Örn. Efes, Chivas Regal, Mojito..." style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box;">
+      <div style="height:24px"></div>
+      <button class="btn-primary" onclick="contributeNext('price')">Devam Et</button>
+    </div>
+
+    <!-- step 3: price -->
+    <div class="px" id="contribute-step-price" style="display:none;">
+      <div class="body-md" id="c-summary"></div>
+      <h1 class="display-md" style="margin-top:4px;">Fiyat ne kadar?</h1>
+      <div class="glass row" style="padding:14px 16px; margin:16px 0;">
+        <span class="display-md">₺</span>
+        <input id="c-price-input" type="number" placeholder="0" style="background:none;border:none;outline:none;color:#fff;font-family:'Sora';font-size:24px;font-weight:700;width:100%;margin-left:8px;">
+      </div>
+      <button class="btn-outline" style="margin-bottom:24px;">📷 Menü fotoğrafı çekerek otomatik doldur</button>
+      <button class="btn-primary" onclick="contributeNext('done')">Gönder</button>
+    </div>
+
+    <!-- step 4: done -->
+    <div class="px" id="contribute-step-done" style="display:none; text-align:center; padding-top:60px;">
+      <div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto;">✓</div>
+      <h1 class="display-md" style="margin-top:20px;">Teşekkürler! 🎉</h1>
+      <div class="body-lg" style="margin-top:8px;">Katkın için +20 XP kazandın</div>
+      <div class="glass" style="padding:16px; margin-top:20px; text-align:left;">
+        <div class="row-between"><span class="body-md">Explorer rozeti</span><span class="body-sm">7/10 katkı</span></div>
+        <div class="progress-bar" style="margin-top:8px;"><div class="fill" style="width:70%; background:var(--blue);"></div></div>
+      </div>
+      <div style="height:24px"></div>
+      <button class="btn-primary" onclick="closeOverlay('contribute')">Harika!</button>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: BUDGET PLANNER ============ -->
+  <div class="overlay" id="overlay-budget">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Bütçe Planlayıcı</h1>
+      <div class="close-btn" onclick="closeOverlay('budget')">✕</div>
+    </div>
+    <div class="body-md px" style="margin:4px 0 16px;">Bütçene uygun en iyi mekanları bul</div>
+
+    <div class="px">
+      <div class="glass" style="padding:16px;">
+        <div class="row-between"><span class="body-md">Toplam Bütçe</span><span class="headline" id="budget-value">₺1000</span></div>
+        <input type="range" id="budget-slider" min="100" max="5000" step="50" value="1000" style="margin-top:10px;" oninput="onBudgetChange()">
+        <div class="row-between"><span class="body-sm">₺100</span><span class="body-sm">₺5000</span></div>
+      </div>
+
+      <div class="glass row-between" style="padding:14px 16px; margin-top:12px;">
+        <span class="body-md">Kişi Sayısı</span>
+        <div class="row gap-8">
+          <div class="stepper-btn" onclick="changePeople(-1)">−</div>
+          <span id="people-value" style="width:44px; text-align:center;">4 Kişi</span>
+          <div class="stepper-btn" onclick="changePeople(1)">+</div>
+        </div>
+      </div>
+
+      <div class="body-md" style="margin:16px 0 8px;">İçki Tercihi</div>
+      <div class="quick-row" style="padding:0; flex-wrap:wrap;" id="budget-pref-chips"></div>
+
+      <div style="height:20px"></div>
+      <button class="btn-primary" onclick="renderBudgetResults()">Mekan Öner</button>
+      <div id="budget-results" style="margin-top:20px; padding-bottom:40px;"></div>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: NIGHT ROUTE ============ -->
+  <div class="overlay" id="overlay-route">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Gece Rotası</h1>
+      <div class="close-btn" onclick="closeOverlay('route')">✕</div>
+    </div>
+    <div class="body-md px" style="margin:4px 0 16px;">Gideceğin mekanları seç, rota otomatik oluşsun</div>
+
+    <div class="px">
+      <div class="glass" style="height:120px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+        <span class="body-sm" id="route-map-placeholder">Mekan seçtikçe rota burada görünecek</span>
+      </div>
+      <div id="route-venue-list"></div>
+    </div>
+
+    <div class="px" id="route-summary" style="display:none; padding-bottom:24px;">
+      <div class="glass" style="padding:16px;">
+        <div class="row" style="justify-content:space-around; text-align:center;">
+          <div><div class="headline" id="route-distance">0 km</div><div class="body-sm">Mesafe</div></div>
+          <div><div class="headline" id="route-duration">0 sa</div><div class="body-sm">Süre</div></div>
+          <div><div class="headline" id="route-spend">₺0</div><div class="body-sm">Harcama</div></div>
+        </div>
+        <div style="height:14px"></div>
+        <button class="btn-primary">Rotayı Başlat</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="credit">NightCompare — HTML Prototip (tarayıcıda gezinebilirsiniz)</div>
+
+<script>
+/* ============ MOCK DATA ============ */
+const venues = [
+  { id:'v1', name:'Hayal Kahvesi', district:'Nilüfer', city:'Bursa', img:'https://picsum.photos/seed/hayalkahvesi/400/300',
+    rating:4.6, reviews:1280, verified:true, distance:1.2,
+    prices:[{cat:'Bira', name:'Efes', price:190, prev:180},{cat:'Bira', name:'Bomonti', price:170}] },
+  { id:'v2', name:"Paddy's Pub", district:'Osmangazi', city:'Bursa', img:'https://picsum.photos/seed/paddys/400/300',
+    rating:4.4, reviews:860, verified:true, distance:2.5,
+    prices:[{cat:'Bira', name:'Efes', price:170, prev:175}] },
+  { id:'v3', name:'Roof Lounge', district:'Nilüfer', city:'Bursa', img:'https://picsum.photos/seed/rooflounge/400/300',
+    rating:4.7, reviews:2130, verified:true, distance:3.1,
+    prices:[{cat:'Bira', name:'Efes', price:220}] },
+  { id:'v4', name:'The Wall', district:'Nilüfer', city:'Bursa', img:'https://picsum.photos/seed/thewall/400/300',
+    rating:4.5, reviews:640, verified:false, distance:0.8,
+    prices:[{cat:'Bira', name:'Efes', price:185}] },
 ];
 
-// ============================================================
-// BURSA İÇKİ REHBERİ — Uygulama Mantığı
-// ============================================================
-// Bu dosya component mantığıyla (fonksiyon = component) yazıldı.
-// Her render fonksiyonu kendi HTML parçasını üretir, tekrar
-// eden kod olmaması için ortak yardımcı fonksiyonlar (helpers)
-// en üstte toplandı.
-// ============================================================
+const categories = ['Bira','Viski','Vodka','Şarap','Kokteyl'];
+const sortOptions = [
+  {k:'cheapest', label:'En Ucuz'}, {k:'nearest', label:'En Yakın'},
+  {k:'popular', label:'En Popüler'}, {k:'topRated', label:'En Yüksek Puan'},
+];
 
-let TUM_MEKANLAR = [];
-let KARSILASTIRMA_SECIMI = new Set();
+let compareState = { category:'Bira', sort:'cheapest' };
+let contributeState = { venue:null, category:null };
+let routeState = { selected:[] };
+let budgetState = { people:4, pref:'Bira' };
 
-const filtreler = {
-  arama: "",
-  ilce: "hepsi",
-  tur: "hepsi",
-  fiyatDurum: "hepsi",
-};
-
-// ------------------------------------------------------------
-// DOM referansları
-// ------------------------------------------------------------
-const $ = (sel) => document.querySelector(sel);
-const aramaKutusu = $("#arama-kutusu");
-const ilceFiltre = $("#ilce-filtre");
-const turFiltre = $("#tur-filtre");
-const fiyatDurumFiltre = $("#fiyat-durum-filtre");
-const filtreSifirlaBtn = $("#filtre-sifirla");
-const istatistikSeridi = $("#istatistik-seridi");
-const mekanGrid = $("#mekan-grid");
-const mekanSayac = $("#mekan-sayac");
-
-const listeGorunumu = $("#liste-gorunumu");
-const detayGorunumu = $("#detay-gorunumu");
-const detayIcerik = $("#detay-icerik");
-const detayGeriBtn = $("#detay-geri");
-
-const karsilastirmaGorunumu = $("#karsilastirma-gorunumu");
-const karsilastirmaIcerik = $("#karsilastirma-icerik");
-const karsilastirmaGeriBtn = $("#karsilastirma-geri");
-
-const karsilastirCubugu = $("#karsilastir-cubugu");
-const karsilastirSayac = $("#karsilastir-sayac");
-const karsilastirTemizleBtn = $("#karsilastir-temizle");
-const karsilastirAcBtn = $("#karsilastir-ac");
-
-// ------------------------------------------------------------
-// Yardımcı fonksiyonlar (helpers)
-// ------------------------------------------------------------
-
-function mekanAdi(mekan) {
-  return mekan.sube ? `${mekan.isim} (${mekan.sube})` : mekan.isim;
-}
-
-function mekanKonumu(mekan) {
-  const parcalar = [mekan.mahalle, mekan.ilce].filter(Boolean);
-  return parcalar.length ? parcalar.join(", ") : "Konum bilgisi yok";
-}
-
-function mekanninTumUrunleri(mekan) {
-  // fiyatlar: { "Bira": [...], "Shot": [...] } -> tek düz liste, kategori etiketiyle
-  const liste = [];
-  for (const [kategori, urunler] of Object.entries(mekan.fiyatlar || {})) {
-    for (const urun of urunler) {
-      liste.push({ ...urun, kategori });
-    }
-  }
-  return liste;
-}
-
-function fiyatVerisiVarMi(mekan) {
-  return mekanninTumUrunleri(mekan).length > 0;
-}
-
-function formatFiyat(sayi) {
-  return `₺${sayi}`;
-}
-
-function formatTarih(isoTarih) {
-  if (!isoTarih) return null;
-  const [yil, ay, gun] = isoTarih.split("-");
-  return `${gun}.${ay}.${yil}`;
-}
-
-function googleMapsLinki(mekan) {
-  const sorgu = [mekanAdi(mekan), mekan.adres, mekan.mahalle, mekan.ilce, "Bursa"]
-    .filter(Boolean)
-    .join(" ");
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(sorgu)}`;
-}
-
-function baslangicHarfi(isim) {
-  return isim.trim().charAt(0).toUpperCase();
-}
-
-// Fiyat seviyesini (₺ / ₺₺ / ₺₺₺) veri setindeki gerçek fiyatların
-// ortalamasına göre hesaplar. Veri yoksa null döner (uydurmuyoruz).
-function fiyatSeviyesiHesapla(mekan, tumMekanlarinOrtalamasi) {
-  const urunler = mekanninTumUrunleri(mekan);
-  if (urunler.length === 0) return null;
-  const ort = urunler.reduce((t, u) => t + u.fiyat, 0) / urunler.length;
-  if (ort <= tumMekanlarinOrtalamasi * 0.9) return "₺";
-  if (ort <= tumMekanlarinOrtalamasi * 1.1) return "₺₺";
-  return "₺₺₺";
-}
-
-function genelOrtalamaFiyatiHesapla() {
-  let toplam = 0;
-  let adet = 0;
-  TUM_MEKANLAR.forEach((m) => {
-    mekanninTumUrunleri(m).forEach((u) => {
-      toplam += u.fiyat;
-      adet++;
-    });
-  });
-  return adet ? toplam / adet : 0;
-}
-
-// Ortak SVG ikon seti — emoji yerine tüm sitede aynı stil kullanılır.
-const ikon = {
-  konum: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
-  telefon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>`,
-  instagram: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>`,
-  uyari: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-};
-
-// ------------------------------------------------------------
-// Veri çekme
-// ------------------------------------------------------------
-function verileriGetir() {
-  TUM_MEKANLAR = MEKANLAR_VERISI;
-  filtreSecenekleriniDoldur();
-  tumUygulamayiCiz();
-}
-
-function filtreSecenekleriniDoldur() {
-  const ilceler = [...new Set(TUM_MEKANLAR.map((m) => m.ilce).filter(Boolean))].sort();
-  const turler = [...new Set(TUM_MEKANLAR.map((m) => m.tur).filter(Boolean))].sort();
-
-  ilceler.forEach((ilce) => {
-    const secenek = document.createElement("option");
-    secenek.value = ilce;
-    secenek.textContent = ilce;
-    ilceFiltre.appendChild(secenek);
-  });
-  turler.forEach((tur) => {
-    const secenek = document.createElement("option");
-    secenek.value = tur;
-    secenek.textContent = tur;
-    turFiltre.appendChild(secenek);
-  });
-}
-
-// ------------------------------------------------------------
-// DASHBOARD — istatistik şeridi
-// ------------------------------------------------------------
-function dashboardIstatistikleriniHesapla() {
-  const toplamMekan = TUM_MEKANLAR.length;
-
-  let toplamFiyatKaydi = 0;
-  let biraToplam = 0;
-  let biraAdet = 0;
-  let enUcuzEfes = null;
-  let enUcuzRaki = null;
-  let sonGuncelleme = null;
-
-  TUM_MEKANLAR.forEach((mekan) => {
-    if (mekan.son_guncelleme) {
-      if (!sonGuncelleme || mekan.son_guncelleme > sonGuncelleme) {
-        sonGuncelleme = mekan.son_guncelleme;
-      }
-    }
-    mekanninTumUrunleri(mekan).forEach((urun) => {
-      toplamFiyatKaydi++;
-      if (urun.kategori === "Bira") {
-        biraToplam += urun.fiyat;
-        biraAdet++;
-      }
-      if (urun.urun.toLowerCase().includes("efes")) {
-        if (!enUcuzEfes || urun.fiyat < enUcuzEfes.fiyat) {
-          enUcuzEfes = { fiyat: urun.fiyat, mekan: mekanAdi(mekan) };
-        }
-      }
-      if (urun.kategori === "Rakı") {
-        if (!enUcuzRaki || urun.fiyat < enUcuzRaki.fiyat) {
-          enUcuzRaki = { fiyat: urun.fiyat, mekan: mekanAdi(mekan) };
-        }
-      }
-    });
-  });
-
-  return {
-    toplamMekan,
-    toplamFiyatKaydi,
-    ortalamaBira: biraAdet ? Math.round(biraToplam / biraAdet) : null,
-    enUcuzEfes,
-    enUcuzRaki,
-    sonGuncelleme,
-  };
-}
-
-function renderDashboard() {
-  const ist = dashboardIstatistikleriniHesapla();
-
-  const kartlar = [
-    { etiket: "Toplam Mekan", deger: ist.toplamMekan, kucuk: false },
-    { etiket: "Toplam Fiyat Kaydı", deger: ist.toplamFiyatKaydi, kucuk: false },
-    {
-      etiket: "En Ucuz Efes",
-      deger: ist.enUcuzEfes ? `${formatFiyat(ist.enUcuzEfes.fiyat)} · ${ist.enUcuzEfes.mekan}` : "Bulunamadı",
-      kucuk: true,
-    },
-    {
-      etiket: "Ortalama Bira Fiyatı",
-      deger: ist.ortalamaBira ? formatFiyat(ist.ortalamaBira) : "Bulunamadı",
-      kucuk: !ist.ortalamaBira,
-    },
-  ];
-
-  istatistikSeridi.innerHTML = kartlar
-    .map(
-      (k) => `
-      <div class="istatistik-kart">
-        <div class="istatistik-etiket">${k.etiket}</div>
-        <div class="istatistik-deger ${k.kucuk ? "kucuk" : ""}">${k.deger}</div>
-      </div>`
-    )
-    .join("");
-}
-
-// ------------------------------------------------------------
-// FİLTRELEME
-// ------------------------------------------------------------
-function filtrelenmisMekanlar() {
-  const aramaMetni = filtreler.arama.trim().toLowerCase();
-
-  return TUM_MEKANLAR.filter((mekan) => {
-    if (filtreler.ilce !== "hepsi" && mekan.ilce !== filtreler.ilce) return false;
-    if (filtreler.tur !== "hepsi" && mekan.tur !== filtreler.tur) return false;
-    if (filtreler.fiyatDurum === "var" && !fiyatVerisiVarMi(mekan)) return false;
-
-    if (aramaMetni) {
-      const alanlar = [mekan.isim, mekan.sube, mekan.ilce, mekan.mahalle, mekan.tur];
-      const metinEslesme = alanlar
-        .filter(Boolean)
-        .some((alan) => alan.toLowerCase().includes(aramaMetni));
-
-      const urunEslesme = mekanninTumUrunleri(mekan).some((u) =>
-        u.urun.toLowerCase().includes(aramaMetni)
-      );
-
-      if (!metinEslesme && !urunEslesme) return false;
-    }
-    return true;
-  });
-}
-
-// ------------------------------------------------------------
-// MEKAN KARTI
-// ------------------------------------------------------------
-function enUcuzIkiUrun(mekan) {
-  const urunler = mekanninTumUrunleri(mekan);
-  return [...urunler].sort((a, b) => a.fiyat - b.fiyat).slice(0, 2);
-}
-
-function renderMekanKarti(mekan) {
-  const urunler = enUcuzIkiUrun(mekan);
-  const fiyatSatirlari = urunler.length
-    ? urunler
-        .map(
-          (u) => `
-        <div class="mini-fiyat-satiri">
-          <span class="urun">${u.urun}${u.hacim ? " · " + u.hacim : ""}</span>
-          <span class="tutar">${formatFiyat(u.fiyat)}</span>
-        </div>`
-        )
-        .join("")
-    : `<div class="veri-yok-notu">Doğrulanmış fiyat verisi bulunamadı</div>`;
-
-  const guncelleme = formatTarih(mekan.son_guncelleme);
-  const seciliMi = KARSILASTIRMA_SECIMI.has(mekan.id);
-
-  const instagramButonu = mekan.instagram
-    ? `<a class="mini-buton" href="https://instagram.com/${mekan.instagram}" target="_blank" rel="noopener" title="Instagram" onclick="event.stopPropagation()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
-      </a>`
-    : "";
-
-  const mapsButonu = `<a class="mini-buton" href="${googleMapsLinki(mekan)}" target="_blank" rel="noopener" title="Google Maps" onclick="event.stopPropagation()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-      </a>`;
-
-  const seviye = fiyatSeviyesiHesapla(mekan, genelOrtalamaFiyatiHesapla());
-  const etiketHtml = seviye
-    ? `<div class="karti-fiyat-etiketi fiyat-etiketi-sekli">${seviye}</div>`
-    : "";
-
-  const div = document.createElement("div");
-  div.className = "mekan-kart";
-  div.innerHTML = `
-    ${etiketHtml}
-    <div class="mekan-kart-ust">
-      <div style="display:flex; gap:12px; align-items:flex-start;">
-        <div class="mekan-logo">${baslangicHarfi(mekan.isim)}</div>
-        <div>
-          <p class="mekan-isim">${mekanAdi(mekan)}</p>
-          <p class="mekan-konum">${mekanKonumu(mekan)}</p>
-        </div>
-      </div>
-      <span class="mekan-tur-rozeti">${mekan.tur}</span>
+/* ============ RENDER: VENUE CARD ============ */
+function venueCardHTML(v){
+  return `
+  <div class="venue-card" onclick="openDetail('${v.id}')">
+    <div class="imgwrap">
+      <img src="${v.img}">
+      ${v.verified ? '<div class="badge-verified">✓</div>' : ''}
+      <div class="badge-price">₺₺</div>
     </div>
-
-    <div class="mekan-fiyat-onizleme">${fiyatSatirlari}</div>
-
-    <div class="mekan-kart-alt">
-      <span class="guncelleme-notu">${guncelleme ? "Güncelleme: " + guncelleme : "Fiyat: yok"}</span>
-      <div class="aksiyon-butonlari">${instagramButonu}${mapsButonu}</div>
-    </div>
-
-    <label class="karsilastir-checkbox-satiri" onclick="event.stopPropagation()">
-      <input type="checkbox" data-karsilastir-id="${mekan.id}" ${seciliMi ? "checked" : ""}>
-      Karşılaştırmaya ekle
-    </label>
-  `;
-
-  div.addEventListener("click", () => gorunumeGec("detay", mekan.id));
-  div
-    .querySelector("input[data-karsilastir-id]")
-    .addEventListener("change", (e) => {
-      toggleKarsilastirmaSecimi(mekan.id, e.target.checked);
-    });
-
-  return div;
+    <div class="name">${v.name}</div>
+    <div class="meta">★ ${v.rating} · ${v.district}</div>
+  </div>`;
 }
 
-function renderMekanGrid() {
-  const liste = filtrelenmisMekanlar();
-  mekanSayac.textContent = `${liste.length} mekan`;
-
-  if (liste.length === 0) {
-    mekanGrid.innerHTML = `<div class="bos-durum" style="grid-column: 1/-1;">
-      <h3>Eşleşen mekan yok</h3>
-      <p>Filtreleri değiştirmeyi veya farklı bir kelime aramayı dene.</p>
-    </div>`;
-    return;
-  }
-
-  mekanGrid.innerHTML = "";
-  liste.forEach((mekan) => mekanGrid.appendChild(renderMekanKarti(mekan)));
+function renderHome(){
+  document.getElementById('trend-scroll').innerHTML = venues.map(venueCardHTML).join('');
+  document.getElementById('new-scroll').innerHTML = [...venues].reverse().map(venueCardHTML).join('');
+  const cheap = [...venues].sort((a,b)=> (a.prices[0]?.price||999)-(b.prices[0]?.price||999));
+  document.getElementById('cheap-scroll').innerHTML = cheap.map(venueCardHTML).join('');
 }
 
-// ------------------------------------------------------------
-// KARŞILAŞTIRMA SEÇİMİ + YÜZEN ÇUBUK
-// ------------------------------------------------------------
-function toggleKarsilastirmaSecimi(id, secildiMi) {
-  if (secildiMi) KARSILASTIRMA_SECIMI.add(id);
-  else KARSILASTIRMA_SECIMI.delete(id);
-  renderKarsilastirCubugu();
+/* ============ RENDER: COMPARE ============ */
+function renderCatChips(){
+  document.getElementById('cat-chips').innerHTML = categories.map(c=>
+    `<div class="chip ${c===compareState.category?'selected':''}" onclick="setCategory('${c}')">${c}</div>`
+  ).join('');
 }
-
-function renderKarsilastirCubugu() {
-  const sayi = KARSILASTIRMA_SECIMI.size;
-  karsilastirSayac.textContent = `${sayi} mekan seçildi`;
-  karsilastirCubugu.classList.toggle("gorunur", sayi > 0);
+function renderSortChips(){
+  document.getElementById('sort-chips').innerHTML = sortOptions.map(s=>
+    `<div class="chip" style="font-size:12px; padding:6px 12px; ${s.k===compareState.sort?'background:rgba(59,130,246,.15); border-color:var(--blue); color:var(--blue-light);':''}" onclick="setSort('${s.k}')">${s.label}</div>`
+  ).join('');
 }
+function setCategory(c){ compareState.category=c; renderCatChips(); renderCompare(); }
+function setSort(s){ compareState.sort=s; renderSortChips(); renderCompare(); }
 
-// ------------------------------------------------------------
-// GÖRÜNÜM YÖNETİMİ (liste / detay / karşılaştırma)
-// ------------------------------------------------------------
-function gorunumeGec(hedef, mekanId = null) {
-  listeGorunumu.classList.add("gizli");
-  detayGorunumu.classList.remove("acik");
-  karsilastirmaGorunumu.classList.remove("acik");
-
-  if (hedef === "liste") {
-    listeGorunumu.classList.remove("gizli");
-  } else if (hedef === "detay") {
-    renderDetay(mekanId);
-    detayGorunumu.classList.add("acik");
-  } else if (hedef === "karsilastirma") {
-    renderKarsilastirma();
-    karsilastirmaGorunumu.classList.add("acik");
-  }
-  window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
-}
-
-// ------------------------------------------------------------
-// MEKAN DETAY GÖRÜNÜMÜ
-// ------------------------------------------------------------
-function renderDetay(mekanId) {
-  const mekan = TUM_MEKANLAR.find((m) => m.id === mekanId);
-  if (!mekan) return;
-
-  const metaSatirlari = [];
-  if (mekan.adres) metaSatirlari.push(`${ikon.konum} ${mekan.adres}`);
-  if (mekan.telefon) metaSatirlari.push(`${ikon.telefon} ${mekan.telefon}`);
-  if (mekan.instagram) metaSatirlari.push(`${ikon.instagram} @${mekan.instagram}`);
-
-  const notuHtml = mekan.durum_notu
-    ? `<div class="detay-notu">${ikon.uyari} ${mekan.durum_notu}</div>`
-    : "";
-
-  const kategoriler = Object.entries(mekan.fiyatlar || {});
-
-  let govdeHtml;
-  if (kategoriler.length === 0) {
-    govdeHtml = `<div class="bos-durum">
-      <h3>Doğrulanmış fiyat verisi bulunamadı</h3>
-      <p>Bu mekan için internette güncel ve doğrulanabilir bir alkol fiyat listesi bulunamadı. Fiyat uydurulmamıştır.</p>
-    </div>`;
-  } else {
-    govdeHtml = kategoriler
-      .map(([kategoriAdi, urunler], index) => {
-        const siraliUrunler = [...urunler].sort((a, b) => a.fiyat - b.fiyat);
-        const enUcuzFiyat = siraliUrunler[0].fiyat;
-        const enPahaliFiyat = siraliUrunler[siraliUrunler.length - 1].fiyat;
-
-        const satirlar = siraliUrunler
-          .map((u) => {
-            let rozetSinifi = "";
-            if (u.fiyat === enUcuzFiyat && enUcuzFiyat !== enPahaliFiyat) rozetSinifi = "en-ucuz";
-            if (u.fiyat === enPahaliFiyat && enUcuzFiyat !== enPahaliFiyat) rozetSinifi = "en-pahali";
-
-            return `
-            <div class="urun-satiri">
-              <div class="urun-bilgi">
-                <div class="urun-adi">${u.urun}${u.hacim ? " · " + u.hacim : ""}</div>
-                <div class="urun-detay">${u.kosul || ""}</div>
-              </div>
-              <div style="display:flex; align-items:center; gap:14px;">
-                <span class="urun-kaynak">${u.kaynak || ""} · ${formatTarih(u.tarih) || ""}</span>
-                <span class="fiyat-rozeti ${rozetSinifi}">${formatFiyat(u.fiyat)}</span>
-              </div>
-            </div>`;
-          })
-          .join("");
-
-        return `
-        <div class="kategori-akordeon ${index === 0 ? "acik" : ""}">
-          <div class="kategori-baslik" data-akordeon-baslik>
-            <span>${kategoriAdi} <span class="sayi">${urunler.length} ürün</span></span>
-            <svg class="kategori-ok" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-          </div>
-          <div class="kategori-icerik">${satirlar}</div>
-        </div>`;
-      })
-      .join("");
-  }
-
-  detayIcerik.innerHTML = `
-    <div class="detay-header">
-      <div>
-        <h1>${mekanAdi(mekan)}</h1>
-        <div class="detay-meta">
-          <span>${mekan.tur}</span>
-          <span>${mekanKonumu(mekan)}</span>
-        </div>
-        <div class="detay-meta">${metaSatirlari.map((s) => `<span>${s}</span>`).join("")}</div>
-        ${notuHtml}
-      </div>
-    </div>
-    ${govdeHtml}
-  `;
-
-  detayIcerik.querySelectorAll("[data-akordeon-baslik]").forEach((baslik) => {
-    baslik.addEventListener("click", () => {
-      baslik.parentElement.classList.toggle("acik");
-    });
-  });
-}
-
-// ------------------------------------------------------------
-// KARŞILAŞTIRMA GÖRÜNÜMÜ
-// ------------------------------------------------------------
-function renderKarsilastirma() {
-  const secilenler = TUM_MEKANLAR.filter((m) => KARSILASTIRMA_SECIMI.has(m.id));
-
-  if (secilenler.length === 0) {
-    karsilastirmaIcerik.innerHTML = `<div class="bos-durum">
-      <h3>Henüz mekan seçilmedi</h3>
-      <p>Mekan kartlarındaki "Karşılaştırmaya ekle" kutusunu işaretleyip tekrar dene.</p>
-    </div>`;
-    return;
-  }
-
-  // Tüm seçili mekanlardaki ürünleri kategori + ürün adı + hacime göre
-  // benzersiz satırlar haline getir.
-  const satirMap = new Map(); // key -> { kategori, urun, hacim, fiyatlar: {mekanId: fiyat} }
-
-  secilenler.forEach((mekan) => {
-    mekanninTumUrunleri(mekan).forEach((u) => {
-      const anahtar = `${u.kategori}|${u.urun}|${u.hacim || ""}`;
-      if (!satirMap.has(anahtar)) {
-        satirMap.set(anahtar, {
-          kategori: u.kategori,
-          urun: u.urun,
-          hacim: u.hacim,
-          fiyatlar: {},
-        });
+function renderCompare(){
+  const q = document.getElementById('compare-search').value.trim().toLowerCase();
+  let results = [];
+  venues.forEach(v=>{
+    v.prices.forEach(p=>{
+      if(p.cat===compareState.category && (q==='' || p.name.toLowerCase().includes(q))){
+        results.push({venue:v, price:p});
       }
-      satirMap.get(anahtar).fiyatlar[mekan.id] = u.fiyat;
     });
   });
-
-  const satirlar = [...satirMap.values()].sort((a, b) =>
-    (a.kategori + a.urun).localeCompare(b.kategori + b.urun)
-  );
-
-  const basliklar = secilenler.map((m) => `<th>${mekanAdi(m)}</th>`).join("");
-
-  let govdeHtml;
-  if (satirlar.length === 0) {
-    govdeHtml = `<div class="bos-durum">
-      <h3>Karşılaştırılacak ortak fiyat verisi yok</h3>
-      <p>Seçtiğin mekanların hiçbirinde doğrulanmış fiyat verisi bulunamadı.</p>
-    </div>`;
-  } else {
-    const satirlarHtml = satirlar
-      .map((satir) => {
-        const degerler = secilenler.map((m) => satir.fiyatlar[m.id]).filter((v) => v !== undefined);
-        const min = degerler.length ? Math.min(...degerler) : null;
-        const maks = degerler.length ? Math.max(...degerler) : null;
-
-        const hucreler = secilenler
-          .map((m) => {
-            const fiyat = satir.fiyatlar[m.id];
-            if (fiyat === undefined) {
-              return `<td class="veri-yok-hucre">Bulunamadı</td>`;
-            }
-            let sinif = "fiyat-hucre";
-            if (fiyat === min && min !== maks) sinif += " min";
-            if (fiyat === maks && min !== maks) sinif += " maks";
-            return `<td class="${sinif}">${formatFiyat(fiyat)}</td>`;
-          })
-          .join("");
-
-        return `
-        <tr>
-          <td class="urun-adi-hucre">${satir.kategori} — ${satir.urun}${satir.hacim ? " · " + satir.hacim : ""}</td>
-          ${hucreler}
-        </tr>`;
-      })
-      .join("");
-
-    govdeHtml = `
-      <div class="karsilastirma-tablosu-sarici">
-        <table class="karsilastirma-tablosu">
-          <thead><tr><th>Ürün</th>${basliklar}</tr></thead>
-          <tbody>${satirlarHtml}</tbody>
-        </table>
+  switch(compareState.sort){
+    case 'cheapest': results.sort((a,b)=>a.price.price-b.price.price); break;
+    case 'nearest': results.sort((a,b)=>a.venue.distance-b.venue.distance); break;
+    case 'popular': results.sort((a,b)=>b.venue.reviews-a.venue.reviews); break;
+    case 'topRated': results.sort((a,b)=>b.venue.rating-a.venue.rating); break;
+  }
+  const listEl = document.getElementById('compare-list');
+  if(results.length===0){
+    listEl.innerHTML = `
+      <div style="text-align:center; padding:60px 32px;">
+        <div style="font-size:40px;">🍸</div>
+        <div class="body-lg" style="margin-top:12px;">${q ? `"${q}" için Bursa'da henüz fiyat girilmemiş 🎉` : 'Aramaya başlamak için bir içki yazın'}</div>
+        ${q ? `<div class="body-md" style="margin-top:8px;">İlk katkıyı sen yap ve rozet kazan</div>
+        <button class="btn-primary" style="margin-top:20px;" onclick="openOverlay('contribute'); resetContribute();">Fiyat Bildir</button>` : ''}
       </div>`;
+    return;
   }
-
-  karsilastirmaIcerik.innerHTML = govdeHtml;
+  listEl.innerHTML = results.map((r,i)=>{
+    const isCheapest = compareState.sort==='cheapest' && i===0;
+    const diff = r.price.prev ? r.price.price - r.price.prev : null;
+    return `
+    <div class="price-row glass ${isCheapest?'cheapest':''}" onclick="openDetail('${r.venue.id}')">
+      <img src="${r.venue.img}">
+      <div style="flex:1;">
+        <div class="row gap-4">
+          <span class="body-lg" style="font-weight:600;">${r.venue.name}</span>
+          ${r.venue.verified ? '<span style="color:var(--verified); font-size:12px;">✓</span>' : ''}
+        </div>
+        <div class="body-sm">${r.venue.district}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="price" style="color:${isCheapest?'var(--success)':'var(--text-primary)'}">₺${r.price.price}</div>
+        ${diff ? `<div class="caption" style="color:${diff>0?'var(--error)':'var(--success)'}">${diff>0?'↑':'↓'} ₺${Math.abs(diff)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-// ------------------------------------------------------------
-// GENEL YENİDEN ÇİZİM
-// ------------------------------------------------------------
-function tumUygulamayiCiz() {
-  renderDashboard();
-  renderMekanGrid();
-  renderKarsilastirCubugu();
+/* ============ RENDER: FAVORITES ============ */
+function renderFavorites(){
+  const favs = venues.slice(0,2);
+  document.getElementById('fav-list').innerHTML = favs.map(v=>`
+    <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${v.id}')">
+      <div><div class="body-lg" style="font-weight:600;">${v.name}</div><div class="body-sm">${v.district}</div></div>
+      <span style="color:var(--purple); font-size:18px;">♥</span>
+    </div>`).join('');
 }
 
-// ------------------------------------------------------------
-// OLAY DİNLEYİCİLERİ
-// ------------------------------------------------------------
-aramaKutusu.addEventListener("input", (e) => {
-  filtreler.arama = e.target.value;
-  renderMekanGrid();
-});
-ilceFiltre.addEventListener("change", (e) => {
-  filtreler.ilce = e.target.value;
-  renderMekanGrid();
-});
-turFiltre.addEventListener("change", (e) => {
-  filtreler.tur = e.target.value;
-  renderMekanGrid();
-});
-fiyatDurumFiltre.addEventListener("change", (e) => {
-  filtreler.fiyatDurum = e.target.value;
-  renderMekanGrid();
-});
-filtreSifirlaBtn.addEventListener("click", () => {
-  filtreler.arama = "";
-  filtreler.ilce = "hepsi";
-  filtreler.tur = "hepsi";
-  filtreler.fiyatDurum = "hepsi";
-  aramaKutusu.value = "";
-  ilceFiltre.value = "hepsi";
-  turFiltre.value = "hepsi";
-  fiyatDurumFiltre.value = "hepsi";
-  renderMekanGrid();
-});
+/* ============ VENUE DETAIL ============ */
+function openDetail(id){
+  const v = venues.find(x=>x.id===id);
+  document.getElementById('detail-img').src = v.img;
+  document.getElementById('detail-name').innerText = v.name;
+  document.getElementById('detail-meta').innerText = `★ ${v.rating} (${v.reviews}) · ${v.district}, ${v.city}`;
+  document.getElementById('detail-verified').style.display = v.verified ? 'inline-flex' : 'none';
+  const byCategory = {};
+  v.prices.forEach(p=>{ (byCategory[p.cat] ||= []).push(p); });
+  let html = '';
+  for(const cat in byCategory){
+    html += `<div class="body-md" style="margin:12px 0 6px; color:var(--text-primary); font-weight:600;">${cat}</div><div class="glass" style="padding:0 16px;">`;
+    byCategory[cat].forEach(p=>{
+      html += `<div class="price-list-item"><span class="body-lg">${p.name}</span><span class="price">₺${p.price}</span></div>`;
+    });
+    html += `</div>`;
+  }
+  document.getElementById('detail-prices').innerHTML = html;
+  contributeState.venue = v;
+  openOverlay('detail');
+}
 
-detayGeriBtn.addEventListener("click", () => gorunumeGec("liste"));
-karsilastirmaGeriBtn.addEventListener("click", () => gorunumeGec("liste"));
+/* ============ CONTRIBUTE FLOW ============ */
+function resetContribute(){
+  contributeState = { venue: contributeState.venue, category:null };
+  document.getElementById('c-drink-name').value='';
+  document.getElementById('c-price-input').value='';
+  const preselected = !!contributeState.venue;
+  goContributeStep(preselected ? 'drink' : 'venue');
+  document.getElementById('contribute-venue-list').innerHTML = venues.map(v=>`
+    <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="selectContributeVenue('${v.id}')">
+      <div><div class="body-lg">${v.name}</div><div class="body-sm">${v.district} · ${v.distance} km</div></div>
+      <span style="color:var(--text-tertiary);">›</span>
+    </div>`).join('');
+  document.getElementById('c-category-chips').innerHTML = categories.map(c=>
+    `<div class="chip" id="c-cat-${c}" onclick="selectContributeCategory('${c}')">${c}</div>`
+  ).join('');
+}
+function selectContributeVenue(id){
+  contributeState.venue = venues.find(v=>v.id===id);
+  goContributeStep('drink');
+}
+function selectContributeCategory(c){
+  contributeState.category = c;
+  categories.forEach(cat=>document.getElementById('c-cat-'+cat).classList.toggle('selected', cat===c));
+}
+function goContributeStep(step){
+  ['venue','drink','price','done'].forEach(s=>{
+    document.getElementById('contribute-step-'+s).style.display = s===step ? 'block' : 'none';
+  });
+  const stepIndex = {venue:1, drink:1, price:2, done:3}[step];
+  [1,2,3].forEach(n=>document.getElementById('step-bar-'+n).classList.toggle('active', n<=stepIndex));
+  if(step==='drink' && contributeState.venue){
+    document.getElementById('c-venue-name').innerText = contributeState.venue.name;
+  }
+  if(step==='price'){
+    document.getElementById('c-summary').innerText = `${contributeState.venue.name} · ${document.getElementById('c-drink-name').value}`;
+  }
+}
+function contributeNext(step){
+  if(step==='price' && (!contributeState.category || !document.getElementById('c-drink-name').value.trim())){
+    showToast('Lütfen kategori seç ve içki adı yaz'); return;
+  }
+  if(step==='done' && !document.getElementById('c-price-input').value){
+    showToast('Lütfen fiyat gir'); return;
+  }
+  goContributeStep(step);
+}
 
-karsilastirAcBtn.addEventListener("click", () => gorunumeGec("karsilastirma"));
-karsilastirTemizleBtn.addEventListener("click", () => {
-  KARSILASTIRMA_SECIMI.clear();
-  renderKarsilastirCubugu();
-  renderMekanGrid();
-});
+/* ============ BUDGET PLANNER ============ */
+function onBudgetChange(){
+  const val = document.getElementById('budget-slider').value;
+  document.getElementById('budget-value').innerText = '₺'+val;
+  const pct = ((val-100)/(5000-100))*100;
+  document.getElementById('budget-slider').style.setProperty('--pct', pct+'%');
+}
+function changePeople(delta){
+  budgetState.people = Math.max(1, budgetState.people+delta);
+  document.getElementById('people-value').innerText = budgetState.people+' Kişi';
+}
+function renderBudgetPrefChips(){
+  document.getElementById('budget-pref-chips').innerHTML = categories.map(c=>
+    `<div class="chip ${c===budgetState.pref?'selected':''}" style="margin:4px;" onclick="setBudgetPref('${c}')">${c}</div>`
+  ).join('');
+}
+function setBudgetPref(c){ budgetState.pref=c; renderBudgetPrefChips(); }
+function renderBudgetResults(){
+  const budget = Number(document.getElementById('budget-slider').value);
+  const results = [];
+  venues.forEach(v=>{
+    const match = v.prices.find(p=>p.cat===budgetState.pref);
+    if(!match) return;
+    const perPerson = Math.floor(budget/budgetState.people/match.price);
+    if(perPerson<1) return;
+    results.push({venue:v, drink:match.name, perPerson, total:perPerson*match.price*budgetState.people});
+  });
+  results.sort((a,b)=>b.perPerson-a.perPerson);
+  const el = document.getElementById('budget-results');
+  if(results.length===0){
+    el.innerHTML = `<div class="glass" style="padding:20px; text-align:center;"><div class="body-md">Bu bütçeyle bölgede uygun seçenek bulunamadı. Bütçeni artırmayı dene.</div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="headline" style="margin-bottom:10px;">Önerilen Mekanlar</div>` + results.map(r=>`
+    <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${r.venue.id}')">
+      <div>
+        <div class="body-lg">${r.venue.name}</div>
+        <div class="body-sm">${r.venue.district}</div>
+        <div class="body-sm" style="color:var(--blue-light); margin-top:4px;">Kişi başı ${r.perPerson} ${r.drink} içebilirsin</div>
+      </div>
+      <div class="price">₺${r.total}</div>
+    </div>`).join('');
+}
 
-// ------------------------------------------------------------
-// BAŞLAT
-// ------------------------------------------------------------
-verileriGetir();
+/* ============ NIGHT ROUTE ============ */
+function renderRouteVenueList(){
+  document.getElementById('route-venue-list').innerHTML = venues.map(v=>{
+    const idx = routeState.selected.findIndex(x=>x.id===v.id);
+    const selected = idx>-1;
+    return `
+    <div class="glass row" style="padding:16px; margin-bottom:10px; cursor:pointer; gap:12px; ${selected?'border:1.5px solid var(--purple);':''}" onclick="toggleRouteVenue('${v.id}')">
+      ${selected
+        ? `<div class="route-dot first">${idx+1}</div>`
+        : `<div style="width:24px;height:24px;border-radius:50%;border:1px solid var(--glass-border);"></div>`}
+      <div><div class="body-lg">${v.name}</div><div class="body-sm">${v.district}</div></div>
+    </div>`;
+  }).join('');
+  updateRouteSummary();
+}
+function toggleRouteVenue(id){
+  const idx = routeState.selected.findIndex(x=>x.id===id);
+  if(idx>-1) routeState.selected.splice(idx,1);
+  else if(routeState.selected.length<6) routeState.selected.push(venues.find(v=>v.id===id));
+  renderRouteVenueList();
+}
+function updateRouteSummary(){
+  const n = routeState.selected.length;
+  document.getElementById('route-summary').style.display = n>0 ? 'block' : 'none';
+  document.getElementById('route-map-placeholder').innerText = n>0 ? `🗺  ${n} mekanlık rota hazır` : 'Mekan seçtikçe rota burada görünecek';
+  const distance = n<2 ? 0 : (n-1)*0.6;
+  const minutes = n===0 ? 0 : (n-1)*12 + n*45;
+  const spend = routeState.selected.reduce((s,v)=> s + (v.prices[0]?.price||0)*2, 0);
+  document.getElementById('route-distance').innerText = distance.toFixed(1)+' km';
+  document.getElementById('route-duration').innerText = (minutes/60).toFixed(1)+' sa';
+  document.getElementById('route-spend').innerText = '₺'+spend;
+}
 
+/* ============ NAV / OVERLAY HELPERS ============ */
+function switchTab(tab){
+  ['home','compare','favorites','profile'].forEach(t=>{
+    document.getElementById('screen-'+t).classList.toggle('active', t===tab);
+  });
+  document.querySelectorAll('.navitem').forEach(el=>{
+    el.classList.toggle('active', el.dataset.tab===tab);
+  });
+  if(tab==='compare') renderCompare();
+  if(tab==='favorites') renderFavorites();
+}
+function goCompare(){ switchTab('compare'); }
+
+function openOverlay(name){
+  document.getElementById('overlay-'+name).classList.add('active');
+  if(name==='budget'){ renderBudgetPrefChips(); onBudgetChange(); }
+  if(name==='route'){ renderRouteVenueList(); }
+}
+function closeOverlay(name){
+  document.getElementById('overlay-'+name).classList.remove('active');
+  if(name==='contribute'){ contributeState.venue=null; }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.innerText = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ============ INIT ============ */
+renderHome();
+renderCatChips();
+renderSortChips();
+renderCompare();
 </script>
 </body>
 </html>
