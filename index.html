@@ -1,310 +1,821 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NightCompare - Alkollü Mekan Fiyat Karşılaştırma Uygulaması</title>
-    <style>
-        :root {
-            --bg-color: #0d0e15;
-            --card-bg: #141724;
-            --accent-purple: #7c3aed;
-            --accent-light-purple: #a78bfa;
-            --accent-cyan: #38bdf8;
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-            --border-color: #232738;
-            --code-bg: #161927;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0A0A0F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NightCompare">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>NightCompare</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-primary:#0A0A0F;
+    --bg-secondary:#13131C;
+    --bg-elevated:#1C1C28;
+    --purple:#8B5CF6;
+    --purple-dark:#6D28D9;
+    --blue:#3B82F6;
+    --blue-light:#60A5FA;
+    --text-primary:#F5F5F7;
+    --text-secondary:#A1A1AA;
+    --text-tertiary:#6B6B76;
+    --success:#22C55E;
+    --error:#EF4444;
+    --verified:#3B82F6;
+    --gold:#FBBF24;
+    --glass-fill:rgba(255,255,255,.08);
+    --glass-border:rgba(255,255,255,.15);
+    --divider:rgba(255,255,255,.06);
+    --radius-sm:12px; --radius-md:16px; --radius-lg:24px; --radius-full:999px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action:manipulation;}
+  html, body{
+    margin:0; padding:0; background:#000; font-family:'Inter',sans-serif; color:var(--text-primary);
+    height:100dvh; width:100vw; overflow:hidden; position:fixed; overscroll-behavior-y:none;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  }
+  body{ display:flex; flex-direction:column; }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
+  #app-shell{ position:relative; width:100%; height:100dvh; background:var(--bg-primary); overflow:hidden; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
+  .screen{
+    position:absolute; inset:0; overflow-y:auto; overflow-x:hidden;
+    padding-top: calc(8px + var(--safe-top));
+    padding-left: var(--safe-left); padding-right: var(--safe-right);
+    padding-bottom: calc(90px + var(--safe-bottom));
+    opacity:0; pointer-events:none; transform:translateX(12px);
+    transition:opacity .25s ease, transform .25s ease;
+    -webkit-overflow-scrolling: touch; scrollbar-width:none;
+  }
+  .screen.active{ opacity:1; pointer-events:auto; transform:translateX(0); }
+  .screen::-webkit-scrollbar{display:none;}
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+  .glass{
+    background:var(--glass-fill); border:1px solid var(--glass-border);
+    border-radius:var(--radius-lg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    box-shadow:0 8px 20px rgba(0,0,0,.25);
+  }
 
-        header {
-            background: linear-gradient(135deg, #1a103c 0%, #0d0e15 100%);
-            border: 1px solid var(--border-color);
-            border-bottom: 3px solid var(--accent-purple);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 25px;
-        }
+  h1,h2,h3{font-family:'Sora',sans-serif; margin:0;}
+  .display-md{font-size:24px; font-weight:700; letter-spacing:-.3px;}
+  .headline{font-size:18px; font-weight:600; font-family:'Sora',sans-serif;}
+  .body-lg{font-size:16px; color:var(--text-primary);}
+  .body-md{font-size:14px; color:var(--text-secondary);}
+  .body-sm{font-size:12px; color:var(--text-tertiary);}
+  .caption{font-size:11px; color:var(--text-tertiary); letter-spacing:.3px;}
+  .price{font-family:'Sora',sans-serif; font-weight:700; font-size:16px;}
 
-        h1 {
-            font-size: 2.2rem;
-            color: var(--accent-light-purple);
-            margin: 0 0 10px 0;
-        }
+  .px{padding-left:16px; padding-right:16px;}
+  .row{display:flex; align-items:center;}
+  .row-between{display:flex; align-items:center; justify-content:space-between;}
+  .gap-8{gap:8px;} .gap-4{gap:4px;} .gap-12{gap:12px;}
 
-        .subtitle {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            margin: 0;
-        }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--purple),var(--blue));
+    color:#fff; border:none; border-radius:var(--radius-md); padding:15px;
+    font-weight:600; font-size:15px; width:100%; cursor:pointer; font-family:'Inter';
+    -webkit-user-select:none; user-select:none;
+  }
+  .btn-primary:active{ transform:scale(.97); opacity:.9; }
+  .btn-outline{
+    background:transparent; border:1px solid var(--glass-border); color:var(--blue-light);
+    border-radius:var(--radius-md); padding:13px; width:100%; font-weight:600; cursor:pointer; font-family:'Inter';
+    -webkit-user-select:none; user-select:none;
+  }
+  .btn-outline:active{ transform:scale(.97); opacity:.9; }
+  .chip{
+    padding:9px 16px; border-radius:var(--radius-full); border:1px solid var(--glass-border);
+    background:var(--glass-fill); font-size:14px; font-weight:600; color:var(--text-secondary);
+    cursor:pointer; white-space:nowrap; transition:all .15s;
+    -webkit-user-select:none; user-select:none;
+  }
+  .chip:active{ transform:scale(.95); }
+  .chip.selected{ background:var(--purple); border-color:var(--purple); color:#fff; }
 
-        .badge {
-            display: inline-block;
-            background-color: rgba(124, 58, 237, 0.2);
-            color: #c4b5fd;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(124, 58, 237, 0.4);
-            margin-top: 15px;
-        }
+  .topbar{ padding:8px 16px 16px; }
+  .icon-btn{
+    display:flex; align-items:center; gap:4px; padding:8px 10px; border-radius:var(--radius-full);
+    background:var(--glass-fill); border:1px solid var(--glass-border); font-size:12px; cursor:pointer;
+    -webkit-user-select:none; user-select:none;
+  }
+  .icon-btn:active{ transform:scale(.95); opacity:.8; }
 
-        h2 {
-            font-size: 1.4rem;
-            color: var(--accent-cyan);
-            margin: 30px 0 15px 0;
-            padding-left: 10px;
-            border-left: 4px solid var(--accent-cyan);
-        }
+  .search-bar{
+    display:flex; align-items:center; gap:8px; padding:10px 16px; margin:0 16px 16px;
+    border-radius:var(--radius-full);
+  }
+  .search-bar input{
+    background:none; border:none; outline:none; color:var(--text-primary); font-size:14px; width:100%; font-family:'Inter';
+  }
+  .search-bar input::placeholder{color:var(--text-tertiary);}
 
-        p {
-            color: var(--text-main);
-            margin-bottom: 15px;
-        }
+  .quick-row{ display:flex; gap:8px; padding:0 16px 20px; }
+  .quick-card{ flex:1; padding:16px 8px; text-align:center; cursor:pointer; -webkit-user-select:none; user-select:none; }
+  .quick-card:active{ transform:scale(.97); }
+  .quick-card .emoji{font-size:22px;}
+  .quick-card .label{font-size:12px; font-weight:600; margin-top:4px;}
 
-        pre {
-            background-color: var(--code-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            overflow-x: auto;
-            color: #a5b4fc;
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-            font-size: 0.9rem;
-        }
+  .section-header{ display:flex; justify-content:space-between; align-items:center; padding:20px 16px 10px; }
+  .venue-scroll{ display:flex; gap:10px; overflow-x:auto; padding:0 16px 4px; scrollbar-width:none; }
+  .venue-scroll::-webkit-scrollbar{display:none;}
+  .venue-card{ width:150px; flex:0 0 auto; cursor:pointer; -webkit-user-select:none; user-select:none; }
+  .venue-card:active{ transform:scale(.97); }
+  .venue-card img{ width:150px; height:105px; object-fit:cover; border-radius:var(--radius-md); pointer-events:none; }
+  .venue-card .imgwrap{position:relative;}
+  .badge-verified{
+    position:absolute; top:6px; right:6px; width:20px; height:20px; border-radius:50%;
+    background:var(--verified); display:flex; align-items:center; justify-content:center; font-size:11px;
+  }
+  .badge-price{
+    position:absolute; bottom:6px; left:6px; background:rgba(0,0,0,.55); padding:2px 8px;
+    border-radius:var(--radius-full); font-size:10px; color:#fff;
+  }
+  .venue-card .name{ font-size:14px; font-weight:600; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .venue-card .meta{ font-size:12px; color:var(--text-tertiary); margin-top:2px; display:flex; align-items:center; gap:4px;}
 
-        code {
-            background-color: #1e2235;
-            color: var(--accent-cyan);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-        }
+  .price-row{
+    display:flex; align-items:center; gap:10px; padding:12px 16px; margin:0 16px 8px;
+    cursor:pointer; -webkit-user-select:none; user-select:none;
+  }
+  .price-row:active{ transform:scale(.99); }
+  .price-row img{ width:44px; height:44px; border-radius:10px; object-fit:cover; pointer-events:none; }
+  .price-row .cheapest{ border:1.5px solid var(--purple); }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
+  .bottomnav{
+    position:fixed; bottom:0; left:0; right:0;
+    padding-bottom: var(--safe-bottom);
+    height: calc(78px + var(--safe-bottom));
+    background:var(--bg-secondary);
+    display:flex; align-items:flex-start; justify-content:space-around; padding-top:10px;
+    border-top:1px solid var(--divider); z-index:40;
+    padding-left: var(--safe-left); padding-right: var(--safe-right);
+  }
+  .navitem{ display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; width:56px; -webkit-user-select:none; user-select:none;}
+  .navitem:active{ opacity:.7; }
+  .navitem svg{ width:22px; height:22px; }
+  .navitem span{ font-size:10px; color:var(--text-tertiary); }
+  .navitem.active span{ color:var(--purple); }
+  .fab{
+    position:fixed; bottom: calc(44px + var(--safe-bottom)); left:50%; transform:translateX(-50%);
+    width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--blue));
+    display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(139,92,246,.5);
+    cursor:pointer; z-index:41; border:4px solid var(--bg-primary);
+    -webkit-user-select:none; user-select:none;
+  }
+  .fab:active{ transform:translateX(-50%) scale(.92); }
 
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-        }
+  .overlay{
+    position:fixed; inset:0; background:var(--bg-primary); z-index:60;
+    transform:translateY(100%); transition:transform .3s ease; overflow-y:auto; overflow-x:hidden;
+    padding-top: var(--safe-top); padding-left: var(--safe-left); padding-right: var(--safe-right);
+    padding-bottom: var(--safe-bottom); -webkit-overflow-scrolling: touch;
+  }
+  .overlay.active{ transform:translateY(0); }
+  .close-btn, .back-btn{
+    width:34px; height:34px; border-radius:50%; background:rgba(0,0,0,.4); display:flex;
+    align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:16px;
+    -webkit-user-select:none; user-select:none;
+  }
+  .close-btn:active, .back-btn:active{ transform:scale(.9); }
 
-        th {
-            background-color: #1e2235;
-            color: var(--accent-light-purple);
-            font-size: 0.95rem;
-            border-bottom: 1px solid var(--border-color);
-        }
+  .hero-img{ width:100%; height:260px; object-fit:cover; pointer-events:none; }
+  .hero-gradient{
+    position:absolute; top:0; left:0; right:0; height:260px;
+    background:linear-gradient(to bottom, transparent 40%, var(--bg-primary) 100%); pointer-events:none;
+  }
+  .verified-pill{
+    display:inline-flex; align-items:center; gap:4px; background:rgba(59,130,246,.15);
+    color:var(--verified); font-size:12px; font-weight:600; padding:4px 10px; border-radius:var(--radius-full);
+  }
+  .tab-row{ display:flex; gap:8px; padding:16px; }
+  .tab-chip{ padding:8px 16px; border-radius:var(--radius-full); font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--glass-border); color:var(--text-secondary); -webkit-user-select:none; user-select:none;}
+  .tab-chip:active{ transform:scale(.95); }
+  .tab-chip.selected{ background:var(--purple); border-color:var(--purple); color:#fff;}
 
-        td {
-            font-size: 0.9rem;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
+  .price-list-item{ display:flex; justify-content:space-between; padding:10px 0; }
+  .divider-line{ height:1px; background:var(--divider); margin:0 16px; }
 
-        tr:last-child td {
-            border-bottom: none;
-        }
+  .step-track{ display:flex; gap:6px; padding:0 16px; }
+  .step-bar{ flex:1; height:4px; border-radius:99px; background:var(--divider); }
+  .step-bar.active{ background:var(--purple); }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 15px 0;
-        }
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:99px;
+    background:linear-gradient(to right, var(--purple) 0%, var(--purple) var(--pct,50%), var(--divider) var(--pct,50%), var(--divider) 100%);
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--purple); cursor:pointer; margin-top:-7px;
+  }
 
-        @media (max-width: 600px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
+  .stepper-btn{
+    width:32px; height:32px; border-radius:50%; background:var(--glass-fill); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:16px;
+    -webkit-user-select:none; user-select:none;
+  }
+  .stepper-btn:active{ transform:scale(.9); }
 
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-        }
+  .badge-circle{
+    width:56px; height:56px; border-radius:50%; background:var(--glass-fill); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+  }
+  .progress-bar{ height:8px; border-radius:99px; background:var(--divider); overflow:hidden; }
+  .progress-bar .fill{ height:100%; background:var(--blue); }
 
-        .card-title {
-            font-weight: bold;
-            color: var(--accent-light-purple);
-            margin-bottom: 10px;
-        }
+  .toast{
+    position:fixed; bottom: calc(100px + var(--safe-bottom)); left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--bg-elevated); border:1px solid var(--glass-border); padding:10px 18px;
+    border-radius:var(--radius-full); font-size:13px; opacity:0; transition:all .25s; z-index:100; white-space:nowrap; pointer-events:none;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-        ul {
-            margin: 0;
-            padding-left: 20px;
-        }
+  .route-dot{ width:28px; height:28px; border-radius:50%; background:var(--glass-fill); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0;}
+  .route-dot.first{ background:var(--purple); border-color:var(--purple); }
+  .route-line{ width:2px; flex:1; background:var(--divider); margin:2px 0; min-height:34px;}
 
-        li {
-            margin-bottom: 6px;
-        }
+  ::selection{ background:var(--purple); color:#fff; }
+  img{ -webkit-user-drag:none; }
 
-        footer {
-            margin-top: 40px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-    </style>
+  @media (orientation: landscape) and (max-height: 500px) {
+    .bottomnav{ display:none; } .fab{ display:none; } .screen{ padding-bottom: 16px; }
+  }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>NightCompare</h1>
-            <p class="subtitle">Alkollü Mekan Fiyat Karşılaştırma Uygulaması — Proje Dokümantasyonu</p>
-            <span class="badge">Sürüm 0.1.0 (Flutter)</span>
-        </header>
+<div id="app-shell">
 
-        <section>
-            <h2>1. Proje Genel Bakışı</h2>
-            <p>
-                <strong>NightCompare</strong>, kullanıcıların alkollü mekanlardaki güncel içki fiyatlarını karşılaştırmasına, 
-                gece rotaları oluşturmasına ve bütçe planlaması yapmasına olanak tanıyan Flutter tabanlı bir mobil uygulamadır. 
-                Koyu tema, mor/elektrik mavisi renk paleti ve cam efekti (glassmorphism) ile modernize edilmiş görsel bir tasarıma sahiptir.
-            </p>
-        </section>
-
-        <section>
-            <h2>2. Proje Dosya ve Klasör Yapısı</h2>
-            <pre>lib/
-├── main.dart                       # Uygulama giriş noktası
-├── theme/
-│   ├── app_colors.dart             # Renk paleti (mor, elektrik mavisi, dark bg)
-│   ├── app_typography.dart         # Tipografi + 8pt spacing sistemi
-│   └── app_theme.dart              # ThemeData (Material 3, dark)
-├── widgets/
-│   ├── glass_container.dart        # Cam efekti (blur+saydamlık) temel bileşeni
-│   └── venue_card.dart             # Mekan kartı + fiyat karşılaştırma satırı
-├── models/
-│   └── venue.dart                  # Venue, DrinkPrice, PriceLevel modelleri
-├── data/
-│   └── mock_venues.dart            # Test verisi (Efes örneği dokümandan)
-└── screens/
-    ├── root_shell.dart             # Bottom nav + FAB (5 sekme)
-    ├── home_screen.dart            # Keşfet (Ana Sayfa)
-    ├── venue_detail_screen.dart    # Mekan Detay (Fiyatlar/Yorumlar/Hakkında)
-    ├── compare_screen.dart         # Karşılaştır (arama+kategori+sıralama, Akış 1)
-    ├── contribute_screen.dart      # Katkı formu: Mekan→İçki→Fiyat (Akış 4)
-    ├── favorites_screen.dart       # Favoriler (Mekan/İçki/Şehir sekmeleri)
-    ├── profile_screen.dart         # Profil, istatistikler, rozetler
-    ├── budget_planner_screen.dart  # Bütçe Planlayıcı (Akış 2)
-    └── night_route_screen.dart     # Gece Rotası + canlı rota görünümü (Akış 3)</pre>
-        </section>
-
-        <section>
-            <h2>3. Bağımlılıklar (pubspec.yaml)</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Kategori</th>
-                        <th>Paket</th>
-                        <th>Sürüm</th>
-                        <th>Açıklama</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>State Management</strong></td>
-                        <td><code>flutter_riverpod</code></td>
-                        <td>^2.5.1</td>
-                        <td>Uygulama durum yönetimi</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Backend</strong></td>
-                        <td><code>supabase_flutter</code></td>
-                        <td>^2.5.6</td>
-                        <td>Veritabanı ve kimlik doğrulama</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Harita & Konum</strong></td>
-                        <td><code>google_maps_flutter</code>, <code>geolocator</code></td>
-                        <td>^2.6.1 / ^12.0.0</td>
-                        <td>Mekan konumları ve cihaz konumu</td>
-                    </tr>
-                    <tr>
-                        <td><strong>UI & Tasarım</strong></td>
-                        <td><code>google_fonts</code>, <code>glassmorphism</code>, <code>fl_chart</code>, <code>shimmer</code>, <code>flutter_animate</code></td>
-                        <td>Çeşitli</td>
-                        <td>Tipografi, grafikler, yükleme efektleri ve cam tasarımı</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Yardımcılar</strong></td>
-                        <td><code>go_router</code>, <code>intl</code></td>
-                        <td>^14.2.0 / ^0.19.0</td>
-                        <td>Sayfa yönlendirmeleri ve tarih/para formatlama</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section>
-            <h2>4. Kurulum ve Çalıştırma</h2>
-            <p>Projeyi kendi yerel geliştirme ortamınızda çalıştırmak için aşağıdaki komutları kullanabilirsiniz:</p>
-            <pre><code># Bağımlılıkları indirin
-flutter pub get
-
-# Uygulamayı başlatın
-flutter run</code></pre>
-        </section>
-
-        <section>
-            <h2>5. Geliştirme Durumu</h2>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-title">✔ Tamamlanan Modüller</div>
-                    <ul>
-                        <li>Temel tema ve renk sistemi (Dark/Glass)</li>
-                        <li>Navigasyon ve alt menü yapısı</li>
-                        <li>Keşfet, Detay, Karşılaştırma ekranları</li>
-                        <li>Katkı sağlama, Bütçe planlayıcı, Gece rotası</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <div class="card-title">⏳ Gelecek Sürümler (Geliştirilecek)</div>
-                    <ul>
-                        <li>Onboarding / Splash ekranı</li>
-                        <li>Ortak Gece Planı & Split Bill (Hesap bölüşümü)</li>
-                        <li>İşletme ve Admin yönetim paneli</li>
-                        <li>Supabase canlı veritabanı entegrasyonu</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <footer>
-            NightCompare Project Documentation — GitHub Ready
-        </footer>
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="topbar row-between">
+      <div class="row gap-4" style="cursor:pointer">
+        <h1 class="display-md">Keşfet</h1>
+        <span style="color:var(--text-secondary)">▾</span>
+      </div>
+      <div class="row gap-8">
+        <div class="icon-btn">📍 Bursa</div>
+        <div class="icon-btn">🔔</div>
+      </div>
     </div>
 
+    <div class="search-bar glass">
+      <span>🔍</span>
+      <input placeholder="Mekan, içki veya semt ara..." onclick="goCompare()" readonly>
+    </div>
+
+    <div class="quick-row">
+      <div class="quick-card glass" onclick="openOverlay('budget')">
+        <div class="emoji">💰</div><div class="label">Bütçe Planlayıcı</div>
+      </div>
+      <div class="quick-card glass" onclick="openOverlay('route')">
+        <div class="emoji">🗺️</div><div class="label">Gece Rotası</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h3 class="headline">🔥 Trend Mekanlar</h3>
+      <span class="body-sm" style="color:var(--purple)">Tümünü Gör</span>
+    </div>
+    <div class="venue-scroll" id="trend-scroll"></div>
+
+    <div class="section-header">
+      <h3 class="headline">🆕 Yeni Eklenenler</h3>
+      <span class="body-sm" style="color:var(--purple)">Tümünü Gör</span>
+    </div>
+    <div class="venue-scroll" id="new-scroll"></div>
+
+    <div class="section-header">
+      <h3 class="headline">💸 En Uygun Fiyatlılar</h3>
+      <span class="body-sm" style="color:var(--purple)">Tümünü Gör</span>
+    </div>
+    <div class="venue-scroll" id="cheap-scroll"></div>
+    <div style="height:110px"></div>
+  </div>
+
+  <!-- COMPARE -->
+  <div class="screen" id="screen-compare">
+    <div class="topbar row-between">
+      <h1 class="display-md">Fiyat Karşılaştır</h1>
+      <span style="font-size:20px; color:var(--text-secondary)">⚙︎</span>
+    </div>
+    <div class="search-bar glass">
+      <span>🔍</span>
+      <input id="compare-search" placeholder="Mekan, içki veya semt ara..." value="Efes" oninput="renderCompare()">
+    </div>
+    <div class="quick-row" style="padding-bottom:0; overflow-x:auto; flex-wrap:nowrap;" id="cat-chips"></div>
+    <div class="quick-row" style="padding-top:10px; overflow-x:auto; flex-wrap:nowrap;" id="sort-chips"></div>
+    <div id="compare-list" style="padding:16px 0 100px;"></div>
+  </div>
+
+  <!-- FAVORITES -->
+  <div class="screen" id="screen-favorites">
+    <div class="topbar"><h1 class="display-md">Favoriler</h1></div>
+    <div class="quick-row" style="padding-bottom:16px;">
+      <div class="chip selected">Mekanlar</div>
+      <div class="chip">İçkiler</div>
+      <div class="chip">Şehirler</div>
+    </div>
+    <div class="px" id="fav-list" style="padding-bottom:100px;"></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="screen" id="screen-profile">
+    <div class="px" style="padding-top:8px;">
+      <div class="row gap-12">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;">🧑</div>
+        <div style="flex:1">
+          <div class="headline">Barmender</div>
+          <div class="body-md" style="margin:2px 0 6px;">Seviye 12</div>
+          <div class="progress-bar"><div class="fill" style="width:62%"></div></div>
+        </div>
+        <span style="color:var(--text-secondary)">⚙︎</span>
+      </div>
+
+      <div class="row gap-8" style="margin-top:20px;">
+        <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">128</div><div class="body-sm">Katkılarım</div></div>
+        <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">32</div><div class="body-sm">Favoriler</div></div>
+        <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">89</div><div class="body-sm">Yorumlar</div></div>
+      </div>
+
+      <div class="row-between" style="margin-top:20px;">
+        <h3 class="headline">Rozetlerim</h3>
+        <span class="body-sm" style="color:var(--purple)">Tümü ›</span>
+      </div>
+      <div class="row gap-12" style="margin-top:10px; overflow-x:auto;">
+        <div style="text-align:center;"><div class="badge-circle">🍺</div><div class="caption" style="margin-top:4px;">Explorer</div></div>
+        <div style="text-align:center;"><div class="badge-circle">🏅</div><div class="caption" style="margin-top:4px;">100 Katkı</div></div>
+        <div style="text-align:center;"><div class="badge-circle">⭐</div><div class="caption" style="margin-top:4px;">Güvenilir</div></div>
+        <div style="text-align:center; opacity:.35;"><div class="badge-circle">👑</div><div class="caption" style="margin-top:4px;">VIP</div></div>
+      </div>
+
+      <div class="glass" style="margin-top:20px; padding:4px 0;">
+        <div class="row-between" style="padding:14px 16px;">✏️ Katkılarım <span style="color:var(--text-tertiary);">›</span></div>
+        <div class="divider-line"></div>
+        <div class="row-between" style="padding:14px 16px;">🏆 Liderlik Tablosu <span style="color:var(--text-tertiary);">›</span></div>
+      </div>
+    </div>
+    <div style="height:100px"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottomnav">
+    <div class="navitem active" data-tab="home" onclick="switchTab('home')"><div style="font-size:20px;">🧭</div><span>Keşfet</span></div>
+    <div class="navitem" data-tab="compare" onclick="switchTab('compare')"><div style="font-size:20px;">⇄</div><span>Karşılaştır</span></div>
+    <div style="width:56px;"></div>
+    <div class="navitem" data-tab="favorites" onclick="switchTab('favorites')"><div style="font-size:20px;">♡</div><span>Favoriler</span></div>
+    <div class="navitem" data-tab="profile" onclick="switchTab('profile')"><div style="font-size:20px;">◍</div><span>Profil</span></div>
+  </div>
+  <div class="fab" onclick="openOverlay('contribute'); resetContribute();"><span style="font-size:26px; color:#fff;">+</span></div>
+
+  <!-- OVERLAY: VENUE DETAIL -->
+  <div class="overlay" id="overlay-detail">
+    <div style="position:relative;">
+      <img class="hero-img" id="detail-img" src="" alt="">
+      <div class="hero-gradient"></div>
+      <div class="row-between" style="position:absolute; top:16px; left:16px; right:16px;">
+        <div class="close-btn" onclick="closeOverlay('detail')">←</div>
+        <div class="row gap-8"><div class="close-btn">♡</div><div class="close-btn">⤴</div></div>
+      </div>
+    </div>
+    <div class="px" style="margin-top:-8px;">
+      <div id="detail-verified" class="verified-pill" style="margin-bottom:8px;">✓ Doğrulanmış Mekan</div>
+      <h1 class="display-md" id="detail-name"></h1>
+      <div class="body-md" style="margin-top:4px;" id="detail-meta"></div>
+    </div>
+    <div class="tab-row">
+      <div class="tab-chip selected">Fiyatlar</div>
+      <div class="tab-chip">Yorumlar</div>
+      <div class="tab-chip">Hakkında</div>
+    </div>
+    <div class="px" id="detail-prices"></div>
+    <div style="height:90px"></div>
+    <div style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
+      <button class="btn-primary" onclick="openOverlay('contribute'); resetContribute();">Fiyat Bildir</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY: CONTRIBUTE -->
+  <div class="overlay" id="overlay-contribute">
+    <div class="row-between px" style="padding-top:0;">
+      <h3 class="headline">Fiyat Bildir</h3>
+      <div class="close-btn" onclick="closeOverlay('contribute')">✕</div>
+    </div>
+    <div class="step-track" style="margin:16px 0;">
+      <div class="step-bar active" id="step-bar-1"></div>
+      <div class="step-bar" id="step-bar-2"></div>
+      <div class="step-bar" id="step-bar-3"></div>
+    </div>
+
+    <div class="px" id="contribute-step-venue">
+      <h1 class="display-md">Hangi mekandasın?</h1>
+      <div class="body-md" style="margin:4px 0 16px;">GPS konumuna göre öneriler listelendi</div>
+      <div id="contribute-venue-list"></div>
+    </div>
+
+    <div class="px" id="contribute-step-drink" style="display:none;">
+      <div class="body-md" id="c-venue-name"></div>
+      <h1 class="display-md" style="margin-top:4px;">Hangi içki?</h1>
+      <div class="quick-row" style="flex-wrap:wrap; padding:16px 0;" id="c-category-chips"></div>
+      <input id="c-drink-name" class="glass" placeholder="Örn. Efes, Chivas Regal, Mojito..." style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box;">
+      <div style="height:24px"></div>
+      <button class="btn-primary" onclick="contributeNext('price')">Devam Et</button>
+    </div>
+
+    <div class="px" id="contribute-step-price" style="display:none;">
+      <div class="body-md" id="c-summary"></div>
+      <h1 class="display-md" style="margin-top:4px;">Fiyat ne kadar?</h1>
+      <div class="glass row" style="padding:14px 16px; margin:16px 0;">
+        <span class="display-md">₺</span>
+        <input id="c-price-input" type="number" placeholder="0" style="background:none;border:none;outline:none;color:#fff;font-family:'Sora';font-size:24px;font-weight:700;width:100%;margin-left:8px;">
+      </div>
+      <button class="btn-outline" style="margin-bottom:24px;">📷 Menü fotoğrafı çekerek otomatik doldur</button>
+      <button class="btn-primary" onclick="contributeNext('done')">Gönder</button>
+    </div>
+
+    <div class="px" id="contribute-step-done" style="display:none; text-align:center; padding-top:60px;">
+      <div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto;">✓</div>
+      <h1 class="display-md" style="margin-top:20px;">Teşekkürler! 🎉</h1>
+      <div class="body-lg" style="margin-top:8px;">Katkın için +20 XP kazandın</div>
+      <div class="glass" style="padding:16px; margin-top:20px; text-align:left;">
+        <div class="row-between"><span class="body-md">Explorer rozeti</span><span class="body-sm">7/10 katkı</span></div>
+        <div class="progress-bar" style="margin-top:8px;"><div class="fill" style="width:70%; background:var(--blue);"></div></div>
+      </div>
+      <div style="height:24px"></div>
+      <button class="btn-primary" onclick="closeOverlay('contribute')">Harika!</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY: BUDGET -->
+  <div class="overlay" id="overlay-budget">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Bütçe Planlayıcı</h1>
+      <div class="close-btn" onclick="closeOverlay('budget')">✕</div>
+    </div>
+    <div class="body-md px" style="margin:4px 0 16px;">Bütçene uygun en iyi mekanları bul</div>
+
+    <div class="px">
+      <div class="glass" style="padding:16px;">
+        <div class="row-between"><span class="body-md">Toplam Bütçe</span><span class="headline" id="budget-value">₺1000</span></div>
+        <input type="range" id="budget-slider" min="100" max="5000" step="50" value="1000" style="margin-top:10px;" oninput="onBudgetChange()">
+        <div class="row-between"><span class="body-sm">₺100</span><span class="body-sm">₺5000</span></div>
+      </div>
+
+      <div class="glass row-between" style="padding:14px 16px; margin-top:12px;">
+        <span class="body-md">Kişi Sayısı</span>
+        <div class="row gap-8">
+          <div class="stepper-btn" onclick="changePeople(-1)">−</div>
+          <span id="people-value" style="width:44px; text-align:center;">4 Kişi</span>
+          <div class="stepper-btn" onclick="changePeople(1)">+</div>
+        </div>
+      </div>
+
+      <div class="body-md" style="margin:16px 0 8px;">İçki Tercihi</div>
+      <div class="quick-row" style="padding:0; flex-wrap:wrap;" id="budget-pref-chips"></div>
+
+      <div style="height:20px"></div>
+      <button class="btn-primary" onclick="renderBudgetResults()">Mekan Öner</button>
+      <div id="budget-results" style="margin-top:20px; padding-bottom:40px;"></div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: ROUTE -->
+  <div class="overlay" id="overlay-route">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Gece Rotası</h1>
+      <div class="close-btn" onclick="closeOverlay('route')">✕</div>
+    </div>
+    <div class="body-md px" style="margin:4px 0 16px;">Gideceğin mekanları seç, rota otomatik oluşsun</div>
+
+    <div class="px">
+      <div class="glass" style="height:120px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+        <span class="body-sm" id="route-map-placeholder">Mekan seçtikçe rota burada görünecek</span>
+      </div>
+      <div id="route-venue-list"></div>
+    </div>
+
+    <div class="px" id="route-summary" style="display:none; padding-bottom:24px;">
+      <div class="glass" style="padding:16px;">
+        <div class="row" style="justify-content:space-around; text-align:center;">
+          <div><div class="headline" id="route-distance">0 km</div><div class="body-sm">Mesafe</div></div>
+          <div><div class="headline" id="route-duration">0 sa</div><div class="body-sm">Süre</div></div>
+          <div><div class="headline" id="route-spend">₺0</div><div class="body-sm">Harcama</div></div>
+        </div>
+        <div style="height:14px"></div>
+        <button class="btn-primary">Rotayı Başlat</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const venues = [
+  { id:'v1', name:'Hayal Kahvesi', district:'Nilüfer', city:'Bursa', img:'https://picsum.photos/seed/hayalkahvesi/400/300',
+    rating:4.6, reviews:1280, verified:true, distance:1.2,
+    prices:[{cat:'Bira', name:'Efes', price:190, prev:180},{cat:'Bira', name:'Bomonti', price:170}] },
+  { id:'v2', name:"Paddy's Pub", district:'Osmangazi', city:'Bursa', img:'https://picsum.photos/seed/paddys/400/300',
+    rating:4.4, reviews:860, verified:true, distance:2.5,
+    prices:[{cat:'Bira', name:'Efes', price:170, prev:175}] },
+  { id:'v3', name:'Roof Lounge', district:'Nilüfer', city:'Bursa', img:'https://picsum.photos/seed/rooflounge/400/300',
+    rating:4.7, reviews:2130, verified:true, distance:3.1,
+    prices:[{cat:'Bira', name:'Efes', price:220}] },
+  { id:'v4', name:'The Wall', district:'Nilüfer', city:'Bursa', img:'https://picsum.photos/seed/thewall/400/300',
+    rating:4.5, reviews:640, verified:false, distance:0.8,
+    prices:[{cat:'Bira', name:'Efes', price:185}] },
+];
+
+const categories = ['Bira','Viski','Vodka','Şarap','Kokteyl'];
+const sortOptions = [
+  {k:'cheapest', label:'En Ucuz'}, {k:'nearest', label:'En Yakın'},
+  {k:'popular', label:'En Popüler'}, {k:'topRated', label:'En Yüksek Puan'},
+];
+
+let compareState = { category:'Bira', sort:'cheapest' };
+let contributeState = { venue:null, category:null };
+let routeState = { selected:[] };
+let budgetState = { people:4, pref:'Bira' };
+
+function venueCardHTML(v){
+  return `
+  <div class="venue-card" onclick="openDetail('${v.id}')">
+    <div class="imgwrap">
+      <img src="${v.img}" alt="${v.name}" loading="lazy">
+      ${v.verified ? '<div class="badge-verified">✓</div>' : ''}
+      <div class="badge-price">₺₺</div>
+    </div>
+    <div class="name">${v.name}</div>
+    <div class="meta">★ ${v.rating} · ${v.district}</div>
+  </div>`;
+}
+
+function renderHome(){
+  document.getElementById('trend-scroll').innerHTML = venues.map(venueCardHTML).join('');
+  document.getElementById('new-scroll').innerHTML = [...venues].reverse().map(venueCardHTML).join('');
+  const cheap = [...venues].sort((a,b)=> (a.prices[0]?.price||999)-(b.prices[0]?.price||999));
+  document.getElementById('cheap-scroll').innerHTML = cheap.map(venueCardHTML).join('');
+}
+
+function renderCatChips(){
+  document.getElementById('cat-chips').innerHTML = categories.map(c=>
+    `<div class="chip ${c===compareState.category?'selected':''}" onclick="setCategory('${c}')">${c}</div>`
+  ).join('');
+}
+function renderSortChips(){
+  document.getElementById('sort-chips').innerHTML = sortOptions.map(s=>
+    `<div class="chip" style="font-size:12px; padding:6px 12px; ${s.k===compareState.sort?'background:rgba(59,130,246,.15); border-color:var(--blue); color:var(--blue-light);':''}" onclick="setSort('${s.k}')">${s.label}</div>`
+  ).join('');
+}
+function setCategory(c){ compareState.category=c; renderCatChips(); renderCompare(); }
+function setSort(s){ compareState.sort=s; renderSortChips(); renderCompare(); }
+
+function renderCompare(){
+  const q = document.getElementById('compare-search').value.trim().toLowerCase();
+  let results = [];
+  venues.forEach(v=>{
+    v.prices.forEach(p=>{
+      if(p.cat===compareState.category && (q==='' || p.name.toLowerCase().includes(q))){
+        results.push({venue:v, price:p});
+      }
+    });
+  });
+  switch(compareState.sort){
+    case 'cheapest': results.sort((a,b)=>a.price.price-b.price.price); break;
+    case 'nearest': results.sort((a,b)=>a.venue.distance-b.venue.distance); break;
+    case 'popular': results.sort((a,b)=>b.venue.reviews-a.venue.reviews); break;
+    case 'topRated': results.sort((a,b)=>b.venue.rating-a.venue.rating); break;
+  }
+  const listEl = document.getElementById('compare-list');
+  if(results.length===0){
+    listEl.innerHTML = `
+      <div style="text-align:center; padding:60px 32px;">
+        <div style="font-size:40px;">🍸</div>
+        <div class="body-lg" style="margin-top:12px;">${q ? `"${q}" için Bursa'da henüz fiyat girilmemiş 🎉` : 'Aramaya başlamak için bir içki yazın'}</div>
+        ${q ? `<div class="body-md" style="margin-top:8px;">İlk katkıyı sen yap ve rozet kazan</div>
+        <button class="btn-primary" style="margin-top:20px;" onclick="openOverlay('contribute'); resetContribute();">Fiyat Bildir</button>` : ''}
+      </div>`;
+    return;
+  }
+  listEl.innerHTML = results.map((r,i)=>{
+    const isCheapest = compareState.sort==='cheapest' && i===0;
+    const diff = r.price.prev ? r.price.price - r.price.prev : null;
+    return `
+    <div class="price-row glass ${isCheapest?'cheapest':''}" onclick="openDetail('${r.venue.id}')">
+      <img src="${r.venue.img}" alt="${r.venue.name}" loading="lazy">
+      <div style="flex:1;">
+        <div class="row gap-4">
+          <span class="body-lg" style="font-weight:600;">${r.venue.name}</span>
+          ${r.venue.verified ? '<span style="color:var(--verified); font-size:12px;">✓</span>' : ''}
+        </div>
+        <div class="body-sm">${r.venue.district}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="price" style="color:${isCheapest?'var(--success)':'var(--text-primary)'}">₺${r.price.price}</div>
+        ${diff ? `<div class="caption" style="color:${diff>0?'var(--error)':'var(--success)'}">${diff>0?'↑':'↓'} ₺${Math.abs(diff)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderFavorites(){
+  const favs = venues.slice(0,2);
+  document.getElementById('fav-list').innerHTML = favs.map(v=>`
+    <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${v.id}')">
+      <div><div class="body-lg" style="font-weight:600;">${v.name}</div><div class="body-sm">${v.district}</div></div>
+      <span style="color:var(--purple); font-size:18px;">♥</span>
+    </div>`).join('');
+}
+
+function openDetail(id){
+  const v = venues.find(x=>x.id===id);
+  document.getElementById('detail-img').src = v.img;
+  document.getElementById('detail-name').innerText = v.name;
+  document.getElementById('detail-meta').innerText = `★ ${v.rating} (${v.reviews}) · ${v.district}, ${v.city}`;
+  document.getElementById('detail-verified').style.display = v.verified ? 'inline-flex' : 'none';
+  const byCategory = {};
+  v.prices.forEach(p=>{ (byCategory[p.cat] ||= []).push(p); });
+  let html = '';
+  for(const cat in byCategory){
+    html += `<div class="body-md" style="margin:12px 0 6px; color:var(--text-primary); font-weight:600;">${cat}</div><div class="glass" style="padding:0 16px;">`;
+    byCategory[cat].forEach(p=>{
+      html += `<div class="price-list-item"><span class="body-lg">${p.name}</span><span class="price">₺${p.price}</span></div>`;
+    });
+    html += `</div>`;
+  }
+  document.getElementById('detail-prices').innerHTML = html;
+  contributeState.venue = v;
+  openOverlay('detail');
+}
+
+function resetContribute(){
+  contributeState = { venue: contributeState.venue, category:null };
+  document.getElementById('c-drink-name').value='';
+  document.getElementById('c-price-input').value='';
+  const preselected = !!contributeState.venue;
+  goContributeStep(preselected ? 'drink' : 'venue');
+  document.getElementById('contribute-venue-list').innerHTML = venues.map(v=>`
+    <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="selectContributeVenue('${v.id}')">
+      <div><div class="body-lg">${v.name}</div><div class="body-sm">${v.district} · ${v.distance} km</div></div>
+      <span style="color:var(--text-tertiary);">›</span>
+    </div>`).join('');
+  document.getElementById('c-category-chips').innerHTML = categories.map(c=>
+    `<div class="chip" id="c-cat-${c}" onclick="selectContributeCategory('${c}')">${c}</div>`
+  ).join('');
+}
+function selectContributeVenue(id){
+  contributeState.venue = venues.find(v=>v.id===id);
+  goContributeStep('drink');
+}
+function selectContributeCategory(c){
+  contributeState.category = c;
+  categories.forEach(cat=>document.getElementById('c-cat-'+cat).classList.toggle('selected', cat===c));
+}
+function goContributeStep(step){
+  ['venue','drink','price','done'].forEach(s=>{
+    document.getElementById('contribute-step-'+s).style.display = s===step ? 'block' : 'none';
+  });
+  const stepIndex = {venue:1, drink:1, price:2, done:3}[step];
+  [1,2,3].forEach(n=>document.getElementById('step-bar-'+n).classList.toggle('active', n<=stepIndex));
+  if(step==='drink' && contributeState.venue){
+    document.getElementById('c-venue-name').innerText = contributeState.venue.name;
+  }
+  if(step==='price'){
+    document.getElementById('c-summary').innerText = `${contributeState.venue.name} · ${document.getElementById('c-drink-name').value}`;
+  }
+}
+function contributeNext(step){
+  if(step==='price' && (!contributeState.category || !document.getElementById('c-drink-name').value.trim())){
+    showToast('Lütfen kategori seç ve içki adı yaz'); return;
+  }
+  if(step==='done' && !document.getElementById('c-price-input').value){
+    showToast('Lütfen fiyat gir'); return;
+  }
+  goContributeStep(step);
+}
+
+function onBudgetChange(){
+  const val = document.getElementById('budget-slider').value;
+  document.getElementById('budget-value').innerText = '₺'+val;
+  const pct = ((val-100)/(5000-100))*100;
+  document.getElementById('budget-slider').style.setProperty('--pct', pct+'%');
+}
+function changePeople(delta){
+  budgetState.people = Math.max(1, budgetState.people+delta);
+  document.getElementById('people-value').innerText = budgetState.people+' Kişi';
+}
+function renderBudgetPrefChips(){
+  document.getElementById('budget-pref-chips').innerHTML = categories.map(c=>
+    `<div class="chip ${c===budgetState.pref?'selected':''}" style="margin:4px;" onclick="setBudgetPref('${c}')">${c}</div>`
+  ).join('');
+}
+function setBudgetPref(c){ budgetState.pref=c; renderBudgetPrefChips(); }
+function renderBudgetResults(){
+  const budget = Number(document.getElementById('budget-slider').value);
+  const results = [];
+  venues.forEach(v=>{
+    const match = v.prices.find(p=>p.cat===budgetState.pref);
+    if(!match) return;
+    const perPerson = Math.floor(budget/budgetState.people/match.price);
+    if(perPerson<1) return;
+    results.push({venue:v, drink:match.name, perPerson, total:perPerson*match.price*budgetState.people});
+  });
+  results.sort((a,b)=>b.perPerson-a.perPerson);
+  const el = document.getElementById('budget-results');
+  if(results.length===0){
+    el.innerHTML = `<div class="glass" style="padding:20px; text-align:center;"><div class="body-md">Bu bütçeyle bölgede uygun seçenek bulunamadı. Bütçeni artırmayı dene.</div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="headline" style="margin-bottom:10px;">Önerilen Mekanlar</div>` + results.map(r=>`
+    <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${r.venue.id}')">
+      <div>
+        <div class="body-lg">${r.venue.name}</div>
+        <div class="body-sm">${r.venue.district}</div>
+        <div class="body-sm" style="color:var(--blue-light); margin-top:4px;">Kişi başı ${r.perPerson} ${r.drink} içebilirsin</div>
+      </div>
+      <div class="price">₺${r.total}</div>
+    </div>`).join('');
+}
+
+function renderRouteVenueList(){
+  document.getElementById('route-venue-list').innerHTML = venues.map(v=>{
+    const idx = routeState.selected.findIndex(x=>x.id===v.id);
+    const selected = idx>-1;
+    return `
+    <div class="glass row" style="padding:16px; margin-bottom:10px; cursor:pointer; gap:12px; ${selected?'border:1.5px solid var(--purple);':''}" onclick="toggleRouteVenue('${v.id}')">
+      ${selected
+        ? `<div class="route-dot first">${idx+1}</div>`
+        : `<div style="width:24px;height:24px;border-radius:50%;border:1px solid var(--glass-border);"></div>`}
+      <div><div class="body-lg">${v.name}</div><div class="body-sm">${v.district}</div></div>
+    </div>`;
+  }).join('');
+  updateRouteSummary();
+}
+function toggleRouteVenue(id){
+  const idx = routeState.selected.findIndex(x=>x.id===id);
+  if(idx>-1) routeState.selected.splice(idx,1);
+  else if(routeState.selected.length<6) routeState.selected.push(venues.find(v=>v.id===id));
+  renderRouteVenueList();
+}
+function updateRouteSummary(){
+  const n = routeState.selected.length;
+  document.getElementById('route-summary').style.display = n>0 ? 'block' : 'none';
+  document.getElementById('route-map-placeholder').innerText = n>0 ? `🗺  ${n} mekanlık rota hazır` : 'Mekan seçtikçe rota burada görünecek';
+  const distance = n<2 ? 0 : (n-1)*0.6;
+  const minutes = n===0 ? 0 : (n-1)*12 + n*45;
+  const spend = routeState.selected.reduce((s,v)=> s + (v.prices[0]?.price||0)*2, 0);
+  document.getElementById('route-distance').innerText = distance.toFixed(1)+' km';
+  document.getElementById('route-duration').innerText = (minutes/60).toFixed(1)+' sa';
+  document.getElementById('route-spend').innerText = '₺'+spend;
+}
+
+function switchTab(tab){
+  ['home','compare','favorites','profile'].forEach(t=>{
+    document.getElementById('screen-'+t).classList.toggle('active', t===tab);
+  });
+  document.querySelectorAll('.navitem').forEach(el=>{
+    el.classList.toggle('active', el.dataset.tab===tab);
+  });
+  if(tab==='compare') renderCompare();
+  if(tab==='favorites') renderFavorites();
+}
+function goCompare(){ switchTab('compare'); }
+
+function openOverlay(name){
+  document.getElementById('overlay-'+name).classList.add('active');
+  if(name==='budget'){ renderBudgetPrefChips(); onBudgetChange(); }
+  if(name==='route'){ renderRouteVenueList(); }
+}
+function closeOverlay(name){
+  document.getElementById('overlay-'+name).classList.remove('active');
+  if(name==='contribute'){ contributeState.venue=null; }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.innerText = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+renderHome();
+renderCatChips();
+renderSortChips();
+renderCompare();
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (event) {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) { event.preventDefault(); }
+  lastTouchEnd = now;
+}, false);
+</script>
 </body>
 </html>
