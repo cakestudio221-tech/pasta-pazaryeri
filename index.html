@@ -1228,7 +1228,7 @@ function setDetailTab(tab){
   document.getElementById('detail-chat-input-row').style.display = tab==='chat' ? 'block' : 'none';
   if(tab==='reviews') renderDetailReviews();
   if(tab==='about') renderDetailAbout();
-  if(tab==='chat'){ loadVenueChatMessages(); subscribeVenueChat(); }
+  if(tab==='chat'){ resetViewportBaseline(); loadVenueChatMessages(); subscribeVenueChat(); }
   else if(venueChatChannel){ sb.removeChannel(venueChatChannel); venueChatChannel=null; }
 }
 
@@ -1590,6 +1590,7 @@ function openOverlay(name){
   if(name==='stats'){ loadAndRenderStats(); }
   if(name==='recommend'){ renderRecommendations(); }
   if(name==='general-chat'){
+    resetViewportBaseline();
     document.getElementById('general-chat-title').innerText = (currentCity?.name || '') + ' Sohbet';
     loadGeneralChatMessages();
     subscribeGeneralChat();
@@ -1792,14 +1793,24 @@ async function addCity(){
   renderAdminCities();
 }
 
+let viewportBaseline = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+function resetViewportBaseline(){
+  if(window.visualViewport) viewportBaseline = window.visualViewport.height;
+  document.documentElement.style.setProperty('--keyboard-offset', '0px');
+}
 function updateKeyboardOffset(){
   if(!window.visualViewport) return;
-  const offset = Math.max(0, Math.round(window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop));
-  document.documentElement.style.setProperty('--keyboard-offset', offset + 'px');
+  const heightDiff = viewportBaseline - window.visualViewport.height;
+  // Küçük farklar (tarayıcı adres çubuğu gizlenmesi/görünmesi gibi) klavye değil — tabanı buna göre kaydır.
+  if(heightDiff < 100){
+    viewportBaseline = window.visualViewport.height;
+    document.documentElement.style.setProperty('--keyboard-offset', '0px');
+    return;
+  }
+  document.documentElement.style.setProperty('--keyboard-offset', Math.round(heightDiff) + 'px');
 }
 if(window.visualViewport){
   window.visualViewport.addEventListener('resize', updateKeyboardOffset);
-  window.visualViewport.addEventListener('scroll', updateKeyboardOffset);
 }
 function setChatFocused(onlineStripId, focused){
   const el = document.getElementById(onlineStripId);
