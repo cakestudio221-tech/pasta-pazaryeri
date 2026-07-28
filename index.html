@@ -140,6 +140,8 @@
   .venue-scroll{ display:flex; gap:10px; overflow-x:auto; padding:0 16px 4px; scrollbar-width:none; }
   .venue-scroll::-webkit-scrollbar{display:none;}
   @keyframes cardIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  @keyframes pulseDot{ 0%{ box-shadow:0 0 0 0 rgba(34,197,94,.6); } 70%{ box-shadow:0 0 0 8px rgba(34,197,94,0); } 100%{ box-shadow:0 0 0 0 rgba(34,197,94,0); } }
+  #community-banner:active{ transform:scale(.98); }
   .chat-bubble{ padding:10px 14px; border-radius:16px; word-break:break-word; display:inline-block; max-width:100%; }
   .chat-bubble.own{ background:linear-gradient(135deg,var(--purple),var(--blue)); color:#fff; border-bottom-right-radius:4px; }
   .chat-bubble.other{ background:var(--glass-fill); color:var(--text-primary); border-bottom-left-radius:4px; }
@@ -300,6 +302,20 @@
       <input id="home-search" placeholder="Mekan, içki veya semt ara..." oninput="onHomeSearchInput(this.value)">
     </div>
 
+    <div class="px" style="margin-bottom:16px;">
+      <div id="community-banner" onclick="openOverlay('general-chat')" style="position:relative; overflow:hidden; border-radius:var(--radius-lg); padding:16px; display:flex; align-items:center; gap:14px; cursor:pointer; background:linear-gradient(135deg, rgba(139,92,246,.35), rgba(59,130,246,.35)); border:1px solid rgba(139,92,246,.4); box-shadow:0 8px 24px rgba(139,92,246,.15);">
+        <div style="position:relative; width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--blue)); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 4px 14px rgba(139,92,246,.5);">
+          💬
+          <div style="position:absolute; bottom:1px; right:1px; width:14px; height:14px; border-radius:50%; background:var(--success); border:2px solid var(--bg-primary); animation:pulseDot 1.6s ease-in-out infinite;"></div>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div class="headline">🟢 Topluluk</div>
+          <div class="body-sm" id="community-banner-preview" style="margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Sohbete katıl, mekanlar hakkında konuş</div>
+        </div>
+        <span style="color:var(--text-secondary); font-size:20px;">›</span>
+      </div>
+    </div>
+
     <div class="quick-row" style="overflow-x:auto; flex-wrap:nowrap;">
       <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('budget')">
         <div class="emoji">💰</div><div class="label">Bütçe Planlayıcı</div>
@@ -312,9 +328,6 @@
       </div>
       <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('recommend')">
         <div class="emoji">🎯</div><div class="label">Sana Özel</div>
-      </div>
-      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('general-chat')">
-        <div class="emoji">💬</div><div class="label">Sohbet</div>
       </div>
     </div>
 
@@ -1098,6 +1111,16 @@ function renderHome(){
   document.getElementById('updated-scroll').innerHTML = updated.map(venueCardHTML).join('');
   const cheap = [...venues].sort((a,b)=> (a.prices[0]?.price||999)-(b.prices[0]?.price||999));
   document.getElementById('cheap-scroll').innerHTML = cheap.map(venueCardHTML).join('');
+  loadCommunityBannerPreview();
+}
+async function loadCommunityBannerPreview(){
+  if(!currentCity) return;
+  const el = document.getElementById('community-banner-preview');
+  if(!el) return;
+  const { data, error } = await sb.from('chat_messages').select('username, content, image_url').eq('city_id', currentCity.id).order('created_at', { ascending:false }).limit(1);
+  if(error || !data || !data.length) return;
+  const m = data[0];
+  el.innerText = `${m.username}: ${m.content || '📷 Fotoğraf gönderdi'}`;
 }
 
 function renderCatChips(){
@@ -1591,7 +1614,7 @@ function openOverlay(name){
   if(name==='recommend'){ renderRecommendations(); }
   if(name==='general-chat'){
     resetViewportBaseline();
-    document.getElementById('general-chat-title').innerText = (currentCity?.name || '') + ' Sohbet';
+    document.getElementById('general-chat-title').innerText = '🟢 Topluluk';
     loadGeneralChatMessages();
     subscribeGeneralChat();
   }
