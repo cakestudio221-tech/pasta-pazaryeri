@@ -2739,10 +2739,11 @@ async function loadGeneralChatMessages(){
 }
 function renderGeneralChatMessages(){
   const el = document.getElementById('general-chat-messages');
+  const nearBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) < 150;
   el.innerHTML = generalChatMessages.length
     ? generalChatMessages.map(m=>chatMessageHTML(m,'general')).join('')
     : `<div class="body-md" style="text-align:center; padding:40px 0;">Henüz mesaj yok, ilk mesajı sen yaz!</div>`;
-  el.scrollTop = el.scrollHeight;
+  if(nearBottom) el.scrollTop = el.scrollHeight;
 }
 function renderGeneralOnlineUsers(){
   const el = document.getElementById('general-chat-online');
@@ -2757,8 +2758,9 @@ function subscribeGeneralChat(){
       renderGeneralChatMessages();
     })
     .on('postgres_changes', { event:'DELETE', schema:'public', table:'chat_messages' }, payload=>{
+      const before = generalChatMessages.length;
       generalChatMessages = generalChatMessages.filter(m=>m.id!==payload.old.id);
-      renderGeneralChatMessages();
+      if(generalChatMessages.length !== before) renderGeneralChatMessages();
     })
     .on('presence', { event:'sync' }, () => {
       generalOnlineUsers = Object.values(generalChatChannel.presenceState()).flat();
@@ -2818,10 +2820,11 @@ async function loadVenueChatMessages(){
 }
 function renderVenueChatMessages(){
   const el = document.getElementById('detail-chat-messages');
+  const nearBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) < 150;
   el.innerHTML = venueChatMessages.length
     ? venueChatMessages.map(m=>chatMessageHTML(m,'venue')).join('')
     : `<div class="body-md" style="text-align:center; padding:40px 0;">Bu mekanda henüz mesaj yok, ilk mesajı sen yaz!</div>`;
-  el.scrollTop = el.scrollHeight;
+  if(nearBottom) el.scrollTop = el.scrollHeight;
 }
 function onlineChipsHTML(users){
   return users.length
@@ -2847,8 +2850,9 @@ function subscribeVenueChat(){
       renderVenueChatMessages();
     })
     .on('postgres_changes', { event:'DELETE', schema:'public', table:'venue_chat_messages' }, payload=>{
+      const before = venueChatMessages.length;
       venueChatMessages = venueChatMessages.filter(m=>m.id!==payload.old.id);
-      renderVenueChatMessages();
+      if(venueChatMessages.length !== before) renderVenueChatMessages();
     })
     .on('presence', { event:'sync' }, () => {
       venueOnlineUsers = Object.values(venueChatChannel.presenceState()).flat();
