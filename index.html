@@ -619,6 +619,17 @@
           <div class="body-md" style="margin-bottom:6px;">Şifre</div>
           <input id="auth-password" type="password" placeholder="••••••••" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
         </div>
+        <div id="auth-signup-extra" style="display:none;">
+          <div style="height:12px"></div>
+          <div class="body-md" style="margin-bottom:6px;">Ad Soyad</div>
+          <input id="auth-fullname" placeholder="Ad Soyad" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+          <div style="height:12px"></div>
+          <div class="body-md" style="margin-bottom:6px;">Doğum Tarihi</div>
+          <input id="auth-dob" type="date" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+          <div style="height:12px"></div>
+          <div class="body-md" style="margin-bottom:6px;">Şifre Tekrar</div>
+          <input id="auth-password-confirm" type="password" placeholder="••••••••" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        </div>
       </div>
       <div id="auth-forgot-link" style="text-align:right; margin-top:8px;">
         <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="setAuthMode('forgot')">Şifreni mi unuttun?</span>
@@ -828,6 +839,7 @@ function toggleFavoriteCurrent(){
 function setAuthMode(mode){
   authMode = mode;
   document.getElementById('auth-password-group').style.display = mode==='forgot' ? 'none' : 'block';
+  document.getElementById('auth-signup-extra').style.display = mode==='signup' ? 'block' : 'none';
   document.getElementById('auth-forgot-link').style.display = mode==='login' ? 'block' : 'none';
   const toggleBtn = document.getElementById('auth-toggle-btn');
   if(mode==='forgot'){
@@ -847,11 +859,23 @@ function openAuth(mode){
   setAuthMode(mode || 'login');
   document.getElementById('auth-email').value='';
   document.getElementById('auth-password').value='';
+  document.getElementById('auth-fullname').value='';
+  document.getElementById('auth-dob').value='';
+  document.getElementById('auth-dob').max = new Date().toISOString().split('T')[0];
+  document.getElementById('auth-password-confirm').value='';
   openOverlay('auth');
 }
 function requireAuth(){
   if(!currentUser){ openAuth('login'); return false; }
   return true;
+}
+function calculateAge(dobStr){
+  const dob = new Date(dobStr);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if(m<0 || (m===0 && today.getDate()<dob.getDate())) age--;
+  return age;
 }
 async function submitAuth(){
   const email = document.getElementById('auth-email').value.trim();
@@ -865,12 +889,27 @@ async function submitAuth(){
   }
   const password = document.getElementById('auth-password').value;
   if(!email || !password){ showToast('E-posta ve şifre gerekli'); return; }
-  const { error } = authMode==='login'
-    ? await sb.auth.signInWithPassword({ email, password })
-    : await sb.auth.signUp({ email, password });
+  if(authMode==='signup'){
+    const fullName = document.getElementById('auth-fullname').value.trim();
+    const dob = document.getElementById('auth-dob').value;
+    const passwordConfirm = document.getElementById('auth-password-confirm').value;
+    if(!fullName){ showToast('Ad soyad gerekli'); return; }
+    if(!dob){ showToast('Doğum tarihi gerekli'); return; }
+    if(calculateAge(dob) < 18){ showToast('18 yaşından küçükler kayıt olamaz'); return; }
+    if(password !== passwordConfirm){ showToast('Şifreler eşleşmiyor'); return; }
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if(error){ showToast(error.message); return; }
+    if(data.user){
+      await sb.from('profiles').update({ username: fullName, date_of_birth: dob }).eq('id', data.user.id);
+    }
+    closeOverlay('auth');
+    showToast('Kayıt tamamlandı, hoş geldin! 🎉');
+    return;
+  }
+  const { error } = await sb.auth.signInWithPassword({ email, password });
   if(error){ showToast(error.message); return; }
   closeOverlay('auth');
-  showToast(authMode==='login' ? 'Giriş yapıldı 👋' : 'Kayıt tamamlandı, hoş geldin! 🎉');
+  showToast('Giriş yapıldı 👋');
 }
 async function signOutUser(){
   await sb.auth.signOut();
