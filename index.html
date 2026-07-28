@@ -401,6 +401,9 @@
         <div style="height:12px"></div>
         <div class="body-md" style="margin-bottom:6px;">Doğum Tarihi</div>
         <input id="auth-dob" type="date" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        <div style="height:12px"></div>
+        <div class="body-md" style="margin-bottom:6px;">Profil Fotoğrafı (opsiyonel)</div>
+        <input type="file" id="auth-avatar" accept="image/*" style="width:100%; color:var(--text-secondary); font-size:13px;">
       </div>
     </div>
     <div id="auth-forgot-link" style="text-align:right; margin-top:8px;">
@@ -826,6 +829,15 @@
     <div class="px" id="notifications-content"></div>
   </div>
 
+  <!-- OVERLAY: PUBLIC PROFILE -->
+  <div class="overlay" id="overlay-public-profile">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Profil</h1>
+      <div class="close-btn" onclick="closeOverlay('public-profile')">✕</div>
+    </div>
+    <div class="px" id="public-profile-content"></div>
+  </div>
+
   <!-- OVERLAY: NEW PASSWORD -->
   <div class="overlay" id="overlay-newpassword">
     <div class="row-between px" style="padding-top:0;">
@@ -1055,6 +1067,7 @@ function openAuth(mode){
   document.getElementById('auth-fullname').value='';
   document.getElementById('auth-username').value='';
   document.getElementById('auth-dob').value='';
+  document.getElementById('auth-avatar').value='';
   document.getElementById('auth-dob').max = new Date().toISOString().split('T')[0];
   document.getElementById('auth-password-confirm').value='';
   openOverlay('auth');
@@ -1062,6 +1075,11 @@ function openAuth(mode){
 function requireAuth(){
   if(!currentUser){ openAuth('login'); return false; }
   return true;
+}
+const bannedWords = ['amk','aq','mk','sik','yarrak','oc','pic','orospu','gotver','ibne','pezevenk','fuck','shit','bitch','asshole','cunt','nigger','fag'];
+function containsBannedWord(text){
+  const clean = (text || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  return bannedWords.some(w => clean.includes(w));
 }
 function calculateAge(dobStr){
   const dob = new Date(dobStr);
@@ -1088,8 +1106,10 @@ async function submitAuth(){
     const handle = document.getElementById('auth-username').value.trim().toLowerCase();
     const dob = document.getElementById('auth-dob').value;
     const passwordConfirm = document.getElementById('auth-password-confirm').value;
+    const avatarFile = document.getElementById('auth-avatar').files[0];
     if(!fullName){ showToast('Ad soyad gerekli'); return; }
     if(!/^[a-z0-9_.]{3,20}$/.test(handle)){ showToast('Kullanıcı adı 3-20 karakter olmalı, sadece harf/rakam/_/. içerebilir'); return; }
+    if(containsBannedWord(handle)){ showToast('Kullanıcı adında uygunsuz ifade kullanılamaz'); return; }
     if(!dob){ showToast('Doğum tarihi gerekli'); return; }
     if(calculateAge(dob) < 18){ showToast('18 yaşından küçükler kayıt olamaz'); return; }
     if(password !== passwordConfirm){ showToast('Şifreler eşleşmiyor'); return; }
@@ -1102,6 +1122,15 @@ async function submitAuth(){
       if(profileError){
         showToast(profileError.message.includes('unique') ? 'Bu kullanıcı adı zaten alınmış' : (profileError.message || 'Profil güncellenemedi'));
         return;
+      }
+      if(avatarFile){
+        const ext = avatarFile.name.split('.').pop();
+        const path = `${data.user.id}/avatar.${ext}`;
+        const { error: uploadError } = await sb.storage.from('avatars').upload(path, avatarFile, { upsert: true });
+        if(!uploadError){
+          const publicUrl = sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+          await sb.from('profiles').update({ avatar_url: publicUrl }).eq('id', data.user.id);
+        }
       }
     }
     closeOverlay('auth');
@@ -1124,6 +1153,11 @@ async function loadProfile(){
   if(currentProfile?.theme_preference){
     themePreference = currentProfile.theme_preference;
     applyTheme();
+  }
+  if(currentProfile?.is_banned){
+    await sb.auth.signOut();
+    currentProfile = null;
+    showToast('Hesabın askıya alındı');
   }
 }
 async function uploadAvatar(file){
@@ -1166,14 +1200,39 @@ async function renderProfileScreen(){
   const avatarInner = currentProfile?.avatar_url
     ? `<img src="${currentProfile.avatar_url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
     : '🧑';
+  const bio = currentProfile?.bio || '';
   el.innerHTML = `
-    <div class="row gap-12">
-      <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;cursor:pointer;" onclick="document.getElementById('avatar-input').click()">${avatarInner}</div>
-      <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="uploadAvatar(this.files[0])">
-      <div style="flex:1">
-        <div class="headline">${currentProfile?.handle || 'Barmender'}</div>
-        <div class="body-md" style="margin:2px 0 6px;">Seviye ${level} · ${currentUser.email}</div>
-        <div class="progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>
+    <div class="glass" style="padding:16px;">
+      <div class="row gap-12">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;cursor:pointer;flex-shrink:0;" onclick="document.getElementById('avatar-input').click()">${avatarInner}</div>
+        <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="uploadAvatar(this.files[0])">
+        <div style="flex:1; min-width:0;">
+          <div class="row gap-8" style="align-items:center;" id="profile-handle-display-row">
+            <div class="headline" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(currentProfile?.handle || 'Barmender')}</div>
+            <span style="cursor:pointer; font-size:13px; color:var(--text-tertiary); flex-shrink:0;" onclick="showHandleEditForm()">✏️</span>
+          </div>
+          <div id="profile-handle-edit" style="display:none; margin:6px 0;">
+            <input id="profile-handle-input" value="${escapeHTML(currentProfile?.handle || '')}" style="width:100%; padding:10px 12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';">
+            <div class="row gap-8" style="margin-top:6px;">
+              <button class="btn-primary" style="flex:1; padding:8px; font-size:13px;" onclick="submitHandleChange()">Kaydet</button>
+              <button class="btn-outline" style="flex:1; padding:8px; font-size:13px;" onclick="renderProfileScreen()">İptal</button>
+            </div>
+          </div>
+          <div class="body-md" style="margin:2px 0 6px;">Seviye ${level}</div>
+          <div class="progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>
+        </div>
+      </div>
+      <div style="margin-top:14px;" id="profile-bio-display">
+        ${bio
+          ? `<div class="body-md" style="color:var(--text-secondary); cursor:pointer;" onclick="showBioEditForm()">${escapeHTML(bio)}</div>`
+          : `<div class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="showBioEditForm()">+ Biyografi ekle</div>`}
+      </div>
+      <div id="profile-bio-edit" style="display:none; margin-top:10px;">
+        <textarea id="profile-bio-input" maxlength="160" placeholder="Kendinden bahset..." style="width:100%; min-height:60px; padding:10px 12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter'; resize:vertical;">${escapeHTML(bio)}</textarea>
+        <div class="row gap-8" style="margin-top:6px;">
+          <button class="btn-primary" style="flex:1; padding:8px; font-size:13px;" onclick="submitBioChange()">Kaydet</button>
+          <button class="btn-outline" style="flex:1; padding:8px; font-size:13px;" onclick="renderProfileScreen()">İptal</button>
+        </div>
       </div>
     </div>
     <div class="row gap-8" style="margin-top:20px;">
@@ -1202,6 +1261,84 @@ async function renderProfileScreen(){
       <div class="chip ${themePreference==='dark'?'selected':''}" onclick="setThemePreference('dark')">Koyu</div>
     </div>
     <button class="btn-outline" style="margin-top:20px;" onclick="signOutUser()">Çıkış Yap</button>`;
+}
+function showHandleEditForm(){
+  document.getElementById('profile-handle-display-row').style.display = 'none';
+  document.getElementById('profile-handle-edit').style.display = 'block';
+  document.getElementById('profile-handle-input').focus();
+}
+async function submitHandleChange(){
+  const newHandle = document.getElementById('profile-handle-input').value.trim().toLowerCase();
+  if(!/^[a-z0-9_.]{3,20}$/.test(newHandle)){ showToast('Kullanıcı adı 3-20 karakter olmalı, sadece harf/rakam/_/. içerebilir'); return; }
+  if(containsBannedWord(newHandle)){ showToast('Kullanıcı adında uygunsuz ifade kullanılamaz'); return; }
+  if(newHandle === currentProfile.handle){ renderProfileScreen(); return; }
+  const { data: existing } = await sb.from('profiles').select('id').eq('handle', newHandle).maybeSingle();
+  if(existing){ showToast('Bu kullanıcı adı zaten alınmış'); return; }
+  const { error } = await sb.from('profiles').update({ handle: newHandle }).eq('id', currentUser.id);
+  if(error){
+    showToast(error.message.includes('unique') ? 'Bu kullanıcı adı zaten alınmış' : (error.message || 'Kullanıcı adı güncellenemedi'));
+    return;
+  }
+  currentProfile.handle = newHandle;
+  showToast('Kullanıcı adın güncellendi');
+  renderProfileScreen();
+}
+function showBioEditForm(){
+  document.getElementById('profile-bio-display').style.display = 'none';
+  document.getElementById('profile-bio-edit').style.display = 'block';
+  document.getElementById('profile-bio-input').focus();
+}
+async function submitBioChange(){
+  const bio = document.getElementById('profile-bio-input').value.trim().slice(0,160);
+  const { error } = await sb.from('profiles').update({ bio: bio || null }).eq('id', currentUser.id);
+  if(error){ console.error(error); showToast('Biyografi güncellenemedi'); return; }
+  currentProfile.bio = bio || null;
+  showToast('Biyografin güncellendi');
+  renderProfileScreen();
+}
+
+async function viewPublicProfile(userId){
+  if(!userId || userId==='undefined') return;
+  openOverlay('public-profile');
+  renderPublicProfile(userId);
+}
+async function renderPublicProfile(userId){
+  const el = document.getElementById('public-profile-content');
+  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  const { data: p, error } = await sb.from('profiles').select('handle, avatar_url, bio, xp, created_at').eq('id', userId).single();
+  if(error || !p){ el.innerHTML = `<div class="body-md">Profil bulunamadı</div>`; return; }
+  const { count } = await sb.from('prices').select('id', { count:'exact', head:true }).eq('reported_by', userId);
+  const c = count || 0;
+  const level = Math.floor((p.xp||0)/100) + 1;
+  const progressPct = (p.xp||0) % 100;
+  const badges = [
+    { emoji:'🍺', label:'Explorer', earned: c>=1 },
+    { emoji:'⭐', label:'Güvenilir', earned: c>=10 },
+    { emoji:'👑', label:'VIP', earned: c>=25 },
+    { emoji:'🏅', label:'100 Katkı', earned: c>=100 },
+  ];
+  const avatarInner = p.avatar_url
+    ? `<img src="${escapeHTML(p.avatar_url)}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
+    : '🧑';
+  el.innerHTML = `
+    <div class="glass" style="padding:16px;">
+      <div class="row gap-12">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;flex-shrink:0;">${avatarInner}</div>
+        <div style="flex:1; min-width:0;">
+          <div class="headline" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(p.handle || 'Barmender')}</div>
+          <div class="body-md" style="margin:2px 0 6px;">Seviye ${level}</div>
+          <div class="progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>
+        </div>
+      </div>
+      ${p.bio ? `<div class="body-md" style="color:var(--text-secondary); margin-top:14px;">${escapeHTML(p.bio)}</div>` : ''}
+    </div>
+    <div class="row gap-8" style="margin-top:20px;">
+      <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">${c}</div><div class="body-sm">Katkı</div></div>
+    </div>
+    <h3 class="headline" style="margin-top:20px;">Rozetler</h3>
+    <div class="row gap-12" style="margin-top:10px; overflow-x:auto;">
+      ${badges.map(b=>`<div style="text-align:center; ${b.earned?'':'opacity:.35;'}"><div class="badge-circle">${b.emoji}</div><div class="caption" style="margin-top:4px;">${b.label}</div></div>`).join('')}
+    </div>`;
 }
 async function submitNewPassword(){
   const password = document.getElementById('new-password-input').value;
@@ -1587,7 +1724,7 @@ async function renderDetailReviews(){
 
   const listHTML = (data && data.length) ? data.map(r=>`
     <div class="glass" style="padding:14px 16px; margin-bottom:10px;">
-      <div class="row-between"><span class="body-lg" style="font-weight:600;">${r.profiles?.handle || 'Barmender'}</span><span style="color:var(--gold);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+      <div class="row-between"><span class="body-lg" style="font-weight:600; cursor:pointer;" onclick="viewPublicProfile('${r.user_id}')">${r.profiles?.handle || 'Barmender'}</span><span style="color:var(--gold);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
       ${r.comment ? `<div class="body-md" style="margin-top:6px;">${r.comment}</div>` : ''}
     </div>`).join('') : `<div class="body-md" style="text-align:center; padding:20px 0;">Henüz yorum yok</div>`;
 
@@ -2116,7 +2253,7 @@ async function renderLeaderboard(){
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Liderlik tablosu yüklenemedi</div>`; return; }
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Bu periyotta henüz katkı yok</div>`; return; }
   el.innerHTML = data.map((row,i)=>`
-    <div class="glass row-between" style="padding:14px 16px; margin-bottom:8px; ${currentUser && row.user_id===currentUser.id ? 'border:1.5px solid var(--purple);':''}">
+    <div class="glass row-between" style="padding:14px 16px; margin-bottom:8px; cursor:pointer; ${currentUser && row.user_id===currentUser.id ? 'border:1.5px solid var(--purple);':''}" onclick="viewPublicProfile('${row.user_id}')">
       <div class="row gap-12">
         <div class="body-lg" style="font-weight:700; width:24px;">${i+1}</div>
         <div class="body-lg">${row.username || 'Barmender'}</div>
@@ -2143,12 +2280,43 @@ async function renderAdminUsers(){
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Kullanıcı yok</div>`; return; }
   el.innerHTML = data.map(u=>`
-    <div class="glass" style="padding:14px 16px; margin-bottom:10px;">
-      <div class="row-between"><span class="body-lg" style="font-weight:600;">@${escapeHTML(u.handle || '-')}</span>${u.is_admin ? '<span class="verified-pill">Admin</span>' : ''}</div>
+    <div class="glass" style="padding:14px 16px; margin-bottom:10px; ${u.is_banned ? 'border:1.5px solid var(--error);' : ''}">
+      <div class="row-between">
+        <span class="body-lg" style="font-weight:600;">@${escapeHTML(u.handle || '-')}</span>
+        <div class="row gap-8">
+          ${u.is_admin ? '<span class="verified-pill">Admin</span>' : ''}
+          ${u.is_banned ? '<span class="verified-pill" style="background:var(--error);">Yasaklı</span>' : ''}
+        </div>
+      </div>
       <div class="body-sm" style="margin-top:4px;">${escapeHTML(u.full_name || '-')}</div>
       <div class="body-sm">${escapeHTML(u.email || '-')}</div>
       <div class="body-sm">Doğum tarihi: ${u.date_of_birth || '-'} · XP: ${u.xp}</div>
+      ${u.bio ? `<div class="body-sm" style="margin-top:4px; color:var(--text-tertiary);">${escapeHTML(u.bio)}</div>` : ''}
+      <div class="row gap-8" style="margin-top:10px;">
+        <button class="btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="adminToggleAdmin('${u.id}', ${u.is_admin})">${u.is_admin ? 'Adminliği Kaldır' : 'Admin Yap'}</button>
+        <button class="btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="adminToggleBan('${u.id}', ${u.is_banned})">${u.is_banned ? 'Yasağı Kaldır' : 'Yasakla'}</button>
+        <button class="btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="adminResetHandle('${u.id}')">Adı Sıfırla</button>
+      </div>
     </div>`).join('');
+}
+async function adminToggleAdmin(userId, current){
+  const { error } = await sb.from('profiles').update({ is_admin: !current }).eq('id', userId);
+  if(error){ console.error(error); showToast(error.message || 'İşlem başarısız'); return; }
+  showToast(!current ? 'Kullanıcı admin yapıldı' : 'Adminlik kaldırıldı');
+  renderAdminUsers();
+}
+async function adminToggleBan(userId, current){
+  const { error } = await sb.from('profiles').update({ is_banned: !current }).eq('id', userId);
+  if(error){ console.error(error); showToast(error.message || 'İşlem başarısız'); return; }
+  showToast(!current ? 'Kullanıcı yasaklandı' : 'Yasak kaldırıldı');
+  renderAdminUsers();
+}
+async function adminResetHandle(userId){
+  const newHandle = 'kullanici_' + Math.random().toString(36).slice(2,10);
+  const { error } = await sb.from('profiles').update({ handle: newHandle }).eq('id', userId);
+  if(error){ console.error(error); showToast(error.message || 'İşlem başarısız'); return; }
+  showToast('Kullanıcı adı sıfırlandı: ' + newHandle);
+  renderAdminUsers();
 }
 
 async function renderAdminVenues(){
@@ -2304,9 +2472,9 @@ function chatMessageHTML(msg){
     : `<div style="width:32px;height:32px;border-radius:50%;background:var(--glass-fill);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🧑</div>`;
   return `
     <div class="row gap-8" style="align-items:flex-end; margin-bottom:14px;">
-      ${avatar}
+      <div onclick="viewPublicProfile('${msg.user_id}')" style="cursor:pointer;">${avatar}</div>
       <div style="max-width:75%;">
-        <div class="caption" style="margin-bottom:2px; margin-left:4px;">${escapeHTML(msg.username)}</div>
+        <div class="caption" style="margin-bottom:2px; margin-left:4px; cursor:pointer;" onclick="viewPublicProfile('${msg.user_id}')">${escapeHTML(msg.username)}</div>
         <div class="chat-bubble other">${bubbleInner}</div>
         <div class="caption" style="margin-top:2px; margin-left:4px;">${time}</div>
       </div>
@@ -2348,7 +2516,7 @@ function subscribeGeneralChat(){
     })
     .subscribe(async (status)=>{
       if(status==='SUBSCRIBED' && currentUser){
-        await generalChatChannel.track({ username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
+        await generalChatChannel.track({ user_id: currentUser.id, username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
       }
     });
 }
@@ -2404,7 +2572,7 @@ function renderVenueChatMessages(){
 function onlineChipsHTML(users){
   return users.length
     ? users.map(u=>`
-      <div class="online-chip">
+      <div class="online-chip" style="cursor:pointer;" onclick="viewPublicProfile('${u.user_id||''}')">
         ${u.avatar_url ? `<img class="avatar" src="${escapeHTML(u.avatar_url)}">` : `<div class="avatar">🧑</div>`}
         <div class="name">${escapeHTML(u.username)}</div>
       </div>`).join('')
@@ -2430,7 +2598,7 @@ function subscribeVenueChat(){
     })
     .subscribe(async (status)=>{
       if(status==='SUBSCRIBED' && currentUser){
-        await venueChatChannel.track({ username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
+        await venueChatChannel.track({ user_id: currentUser.id, username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
       }
     });
 }
