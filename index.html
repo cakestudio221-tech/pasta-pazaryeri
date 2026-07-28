@@ -2532,7 +2532,7 @@ function chatMessageHTML(msg, chatType){
     ${msg.content ? `<div class="body-md" style="color:${textColor};">${escapeHTML(msg.content)}</div>` : ''}
     ${msg.image_url ? `<img src="${escapeHTML(msg.image_url)}" loading="lazy" style="max-width:200px; max-height:200px; border-radius:12px; ${msg.content?'margin-top:6px;':''} display:block; object-fit:cover;">` : ''}
   `;
-  const actionsBtn = `<span class="msg-actions-btn" onclick="openMessageActions('${chatType}','${msg.id}','${msg.user_id}',${JSON.stringify(msg.username||'')},${isOwn})">⋮</span>`;
+  const actionsBtn = `<span class="msg-actions-btn" onclick="openMessageActions('${chatType}','${msg.id}','${msg.user_id}',${isOwn})">⋮</span>`;
   if(isOwn){
     return `
       <div style="display:flex; justify-content:flex-end; align-items:flex-end; gap:4px; margin-bottom:14px;">
@@ -2578,7 +2578,7 @@ function updateChatInputBlockedState(inputId){
   input.disabled = !!reason;
   input.placeholder = reason || 'Mesaj yaz...';
 }
-function openMessageActions(chatType, msgId, senderId, senderUsername, isOwn){
+function openMessageActions(chatType, msgId, senderId, isOwn){
   const isAdmin = !!currentProfile?.is_admin;
   let html = '';
   if(!isOwn){
