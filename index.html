@@ -279,11 +279,112 @@
   @media (orientation: landscape) and (max-height: 500px) {
     .bottomnav{ display:none; } .fab{ display:none; } .screen{ padding-bottom: 16px; }
   }
+
+  #landing-screen{
+    position:fixed; inset:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    background:
+      radial-gradient(ellipse 120% 60% at 50% 0%, rgba(139,92,246,.35), transparent 60%),
+      radial-gradient(ellipse 100% 50% at 20% 30%, rgba(59,130,246,.2), transparent 55%),
+      var(--bg-primary);
+    padding-top: var(--safe-top); padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left); padding-right: var(--safe-right);
+  }
+  .landing-hero{ position:relative; padding:56px 24px 32px; text-align:center; overflow:hidden; }
+  .landing-hero-glow{
+    position:absolute; top:-80px; left:50%; transform:translateX(-50%);
+    width:280px; height:280px; border-radius:50%;
+    background:radial-gradient(circle, rgba(139,92,246,.4), transparent 70%);
+    filter:blur(10px); pointer-events:none;
+  }
+  .landing-hero-content{ position:relative; }
+  .landing-emoji{ font-size:40px; margin-bottom:16px; letter-spacing:8px; }
+  .landing-title{ font-family:'Sora',sans-serif; font-size:26px; font-weight:700; line-height:1.3; margin:0; }
+  .landing-title-accent{
+    background:linear-gradient(135deg,var(--purple),var(--blue-light));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .landing-subtitle{ color:var(--text-secondary); font-size:14px; line-height:1.5; max-width:320px; margin:16px auto 0; }
+  .landing-stats{ display:flex; justify-content:center; gap:28px; margin:28px 0 24px; }
+  .landing-stat-value{ font-family:'Sora',sans-serif; font-size:22px; font-weight:700; color:var(--text-primary); }
+  .landing-stat-label{ font-size:11px; color:var(--text-tertiary); margin-top:2px; }
+  .landing-cta{ max-width:280px; margin:0 auto; box-shadow:0 8px 24px rgba(139,92,246,.4); }
+  .landing-why{ padding:8px 20px 0; }
+  .landing-why-title{
+    font-family:'Sora',sans-serif; font-size:20px; font-weight:700; text-align:center;
+    background:linear-gradient(135deg,var(--purple),var(--blue-light));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    margin:24px 0 20px;
+  }
+  .landing-why-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .landing-why-card{
+    background:var(--glass-fill); border:1px solid var(--glass-border); border-radius:var(--radius-md);
+    padding:16px 14px; text-align:center;
+  }
+  .landing-why-icon{ font-size:26px; margin-bottom:8px; }
+  .landing-why-name{ font-size:13px; font-weight:600; color:var(--text-primary); }
+  .landing-why-desc{ font-size:11px; color:var(--text-tertiary); margin-top:4px; line-height:1.4; }
 </style>
 </head>
 <body>
 
-<div id="app-shell">
+<div id="landing-screen">
+  <div class="landing-hero">
+    <div class="landing-hero-glow"></div>
+    <div class="landing-hero-content">
+      <div class="landing-emoji">🍸🌃</div>
+      <h1 class="landing-title">Türkiye'nin En Büyük<br><span class="landing-title-accent">Alkollü Mekan Rehberi</span></h1>
+      <p class="landing-subtitle">Güncel menüler, fiyat karşılaştırma, topluluk sohbeti ve sana özel öneriler tek uygulamada.</p>
+      <div class="landing-stats">
+        <div class="landing-stat"><div class="landing-stat-value" id="landing-stat-prices">0</div><div class="landing-stat-label">Güncel Fiyat</div></div>
+        <div class="landing-stat"><div class="landing-stat-value" id="landing-stat-venues">0</div><div class="landing-stat-label">Mekan</div></div>
+        <div class="landing-stat"><div class="landing-stat-value" id="landing-stat-cities">0</div><div class="landing-stat-label">Şehir</div></div>
+      </div>
+      <button class="btn-primary landing-cta" onclick="enterApp()">Hemen Başla</button>
+    </div>
+  </div>
+
+  <div class="landing-why">
+    <h2 class="landing-why-title">Neden Biz?</h2>
+    <div class="landing-why-grid">
+      <div class="landing-why-card">
+        <div class="landing-why-icon">📈</div>
+        <div class="landing-why-name">Güncel Fiyatlar</div>
+        <div class="landing-why-desc">Topluluk sayesinde fiyatlar her dakika güncellenir.</div>
+      </div>
+      <div class="landing-why-card">
+        <div class="landing-why-icon">🏷️</div>
+        <div class="landing-why-name">En Uygun Fiyat</div>
+        <div class="landing-why-desc">Aynı içeceği farklı mekanlardaki fiyatını karşılaştır.</div>
+      </div>
+      <div class="landing-why-card">
+        <div class="landing-why-icon">💬</div>
+        <div class="landing-why-name">Topluluk Gücü</div>
+        <div class="landing-why-desc">Sohbet et, paylaş, öner ve kampanyalardan haberdar ol.</div>
+      </div>
+      <div class="landing-why-card">
+        <div class="landing-why-icon">❤️</div>
+        <div class="landing-why-name">Sana Özel Öneriler</div>
+        <div class="landing-why-desc">Zevkine ve konumuna göre mekan önerileri sunar.</div>
+      </div>
+      <div class="landing-why-card">
+        <div class="landing-why-icon">🗺️</div>
+        <div class="landing-why-name">Keşfet & Planla</div>
+        <div class="landing-why-desc">Gece rotanı oluştur, aradığın mekanı kolayca bul.</div>
+      </div>
+      <div class="landing-why-card">
+        <div class="landing-why-icon">🏆</div>
+        <div class="landing-why-name">Katkı Sağla Ödüller Kazan</div>
+        <div class="landing-why-desc">Fiyat bildir, rozet kazan ve liderlikte yüksel.</div>
+      </div>
+    </div>
+    <div style="text-align:center; padding:16px 16px 40px;">
+      <span class="body-sm" style="color:var(--text-tertiary);">Zaten bir hesabın var mı?</span>
+      <span class="body-sm" style="color:var(--purple); cursor:pointer; font-weight:600;" onclick="enterApp(); openAuth('login');"> Giriş yap</span>
+    </div>
+  </div>
+</div>
+
+<div id="app-shell" style="display:none;">
 
   <!-- HOME -->
   <div class="screen active" id="screen-home">
@@ -1103,9 +1204,25 @@ async function markNotificationRead(id){
   await sb.from('notifications').update({ is_read: true }).eq('id', id);
   loadUnreadNotificationCount();
 }
+function enterApp(){
+  document.getElementById('landing-screen').style.display = 'none';
+  document.getElementById('app-shell').style.display = 'block';
+}
+async function loadLandingStats(){
+  const [prices, venuesRes, cities] = await Promise.all([
+    sb.from('prices').select('id', { count:'exact', head:true }),
+    sb.from('venues').select('id', { count:'exact', head:true }).eq('is_approved', true),
+    sb.from('cities').select('id', { count:'exact', head:true }).eq('is_active', true),
+  ]);
+  const setStat = (id, count) => { const el = document.getElementById(id); if(el) el.innerText = (count || 0).toLocaleString('tr-TR'); };
+  setStat('landing-stat-prices', prices.count);
+  setStat('landing-stat-venues', venuesRes.count);
+  setStat('landing-stat-cities', cities.count);
+}
 async function initAuth(){
   const { data:{ session } } = await sb.auth.getSession();
   currentUser = session?.user || null;
+  if(currentUser) enterApp();
   await loadProfile();
   await loadFavorites();
   await renderProfileScreen();
@@ -2154,6 +2271,7 @@ function showToast(msg){
 }
 
 (async function init(){
+  loadLandingStats();
   await loadCities();
   await loadCategories();
   await loadVenues();
