@@ -588,6 +588,22 @@
     <div class="px" id="leaderboard-content"></div>
   </div>
 
+  <!-- OVERLAY: ADMIN -->
+  <div class="overlay" id="overlay-admin">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Admin Paneli</h1>
+      <div class="close-btn" onclick="closeOverlay('admin')">✕</div>
+    </div>
+    <div class="tab-row" id="admin-tabs">
+      <div class="tab-chip selected" onclick="setAdminTab('venues')">Bekleyen Mekanlar</div>
+      <div class="tab-chip" onclick="setAdminTab('verifications')">Doğrulama Başvuruları</div>
+      <div class="tab-chip" onclick="setAdminTab('cities')">Şehirler</div>
+    </div>
+    <div class="px" id="admin-venues"></div>
+    <div class="px" id="admin-verifications" style="display:none;"></div>
+    <div class="px" id="admin-cities" style="display:none;"></div>
+  </div>
+
   <!-- OVERLAY: AUTH -->
   <div class="overlay" id="overlay-auth">
     <div class="row-between px" style="padding-top:0;">
@@ -890,6 +906,10 @@ async function renderProfileScreen(){
     <div class="glass" style="margin-top:20px; padding:4px 0; cursor:pointer;" onclick="openOverlay('leaderboard')">
       <div class="row-between" style="padding:14px 16px;">🏆 Liderlik Tablosu <span style="color:var(--text-tertiary);">›</span></div>
     </div>
+    ${currentProfile?.is_admin ? `
+    <div class="glass" style="margin-top:12px; padding:4px 0; cursor:pointer;" onclick="openOverlay('admin')">
+      <div class="row-between" style="padding:14px 16px;">🛠️ Admin Paneli <span style="color:var(--text-tertiary);">›</span></div>
+    </div>` : ''}
     <h3 class="headline" style="margin-top:20px;">🌓 Tema</h3>
     <div class="row gap-8" style="margin-top:10px;">
       <div class="chip ${themePreference==='system'?'selected':''}" onclick="setThemePreference('system')">Sistem</div>
@@ -1432,6 +1452,7 @@ function openOverlay(name){
   if(name==='stats'){ loadAndRenderStats(); }
   if(name==='recommend'){ renderRecommendations(); }
   if(name==='leaderboard'){ setLeaderboardPeriod('7d'); }
+  if(name==='admin'){ setAdminTab('venues'); }
 }
 async function loadAndRenderStats(){
   const el = document.getElementById('stats-content');
@@ -1538,6 +1559,96 @@ async function renderLeaderboard(){
       <div class="price">${row[col]}</div>
     </div>`).join('');
 }
+function setAdminTab(tab){
+  document.querySelectorAll('#admin-tabs .tab-chip').forEach((el,i)=>{
+    el.classList.toggle('selected', ['venues','verifications','cities'][i]===tab);
+  });
+  ['venues','verifications','cities'].forEach(t=>{
+    document.getElementById('admin-'+t).style.display = t===tab ? 'block' : 'none';
+  });
+  if(tab==='venues') renderAdminVenues();
+  if(tab==='verifications') renderAdminVerifications();
+  if(tab==='cities') renderAdminCities();
+}
+
+async function renderAdminVenues(){
+  const el = document.getElementById('admin-venues');
+  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  const { data, error } = await sb.from('venues').select('*').eq('is_approved', false).order('created_at', { ascending:false });
+  if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
+  if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Bekleyen mekan yok</div>`; return; }
+  el.innerHTML = data.map(v=>`
+    <div class="glass" style="padding:16px; margin-bottom:10px;">
+      <div class="body-lg" style="font-weight:600;">${v.name}</div>
+      <div class="body-sm">${v.district}, ${v.city}</div>
+      <div class="row gap-8" style="margin-top:10px;">
+        <button class="btn-primary" style="flex:1;" onclick="approveVenue('${v.id}')">Onayla</button>
+        <button class="btn-outline" style="flex:1;" onclick="rejectVenue('${v.id}')">Reddet</button>
+      </div>
+    </div>`).join('');
+}
+async function approveVenue(id){
+  const { error } = await sb.from('venues').update({ is_approved: true }).eq('id', id);
+  if(error){ console.error(error); showToast('Onaylanamadı'); return; }
+  showToast('Mekan onaylandı');
+  renderAdminVenues();
+  await loadVenues();
+  renderHome();
+  renderCompare();
+}
+async function rejectVenue(id){
+  const { error } = await sb.from('venues').delete().eq('id', id);
+  if(error){ console.error(error); showToast('Reddedilemedi'); return; }
+  showToast('Mekan reddedildi');
+  renderAdminVenues();
+}
+
+async function renderAdminVerifications(){
+  const el = document.getElementById('admin-verifications');
+  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  const { data, error } = await sb.from('venue_verification_requests').select('*, venues(name)').eq('status', 'pending').order('created_at', { ascending:false });
+  if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
+  if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Bekleyen başvuru yok</div>`; return; }
+  el.innerHTML = data.map(r=>`
+    <div class="glass" style="padding:16px; margin-bottom:10px;">
+      <div class="body-lg" style="font-weight:600;">${r.venues?.name || 'Mekan'}</div>
+      ${r.message ? `<div class="body-sm" style="margin-top:4px;">${r.message}</div>` : ''}
+      <div class="row gap-8" style="margin-top:10px;">
+        <button class="btn-primary" style="flex:1;" onclick="reviewVerification('${r.id}','approved')">Onayla</button>
+        <button class="btn-outline" style="flex:1;" onclick="reviewVerification('${r.id}','rejected')">Reddet</button>
+      </div>
+    </div>`).join('');
+}
+async function reviewVerification(id, status){
+  const { error } = await sb.from('venue_verification_requests').update({ status }).eq('id', id);
+  if(error){ console.error(error); showToast('İşlem başarısız'); return; }
+  showToast(status==='approved' ? 'Mekan doğrulandı' : 'Başvuru reddedildi');
+  renderAdminVerifications();
+}
+
+async function renderAdminCities(){
+  const el = document.getElementById('admin-cities');
+  el.innerHTML = `
+    <div class="glass" style="padding:16px; margin-bottom:16px;">
+      <div class="body-md" style="margin-bottom:8px;">Yeni Şehir</div>
+      <input id="admin-city-name" placeholder="Örn. İstanbul" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:10px"></div>
+      <button class="btn-primary" onclick="addCity()">Şehir Ekle</button>
+    </div>
+    <div class="body-md" style="margin-bottom:8px;">Mevcut Şehirler</div>
+    <div id="admin-city-list">${cities.map(c=>`<div class="glass row-between" style="padding:14px 16px; margin-bottom:8px;"><span class="body-lg">${c.name}</span></div>`).join('')}</div>`;
+}
+async function addCity(){
+  const name = document.getElementById('admin-city-name').value.trim();
+  if(!name){ showToast('Şehir adı gir'); return; }
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'city';
+  const { error } = await sb.from('cities').insert({ name, slug, is_active: true });
+  if(error){ console.error(error); showToast('Şehir eklenemedi'); return; }
+  showToast('Şehir eklendi');
+  await loadCities();
+  renderAdminCities();
+}
+
 function closeOverlay(name){
   document.getElementById('overlay-'+name).classList.remove('active');
   if(name==='contribute'){ contributeState.venue=null; }
