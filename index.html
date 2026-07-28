@@ -139,6 +139,14 @@
   .venue-scroll{ display:flex; gap:10px; overflow-x:auto; padding:0 16px 4px; scrollbar-width:none; }
   .venue-scroll::-webkit-scrollbar{display:none;}
   @keyframes cardIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  .chat-bubble{ padding:10px 14px; border-radius:16px; word-break:break-word; display:inline-block; max-width:100%; }
+  .chat-bubble.own{ background:linear-gradient(135deg,var(--purple),var(--blue)); color:#fff; border-bottom-right-radius:4px; }
+  .chat-bubble.other{ background:var(--glass-fill); color:var(--text-primary); border-bottom-left-radius:4px; }
+  .online-strip{ display:flex; overflow-x:auto; padding:10px 16px; gap:12px; scrollbar-width:none; }
+  .online-strip::-webkit-scrollbar{display:none;}
+  .online-chip{ display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:56px; }
+  .online-chip .avatar{ width:36px; height:36px; border-radius:50%; object-fit:cover; background:var(--glass-fill); display:flex; align-items:center; justify-content:center; font-size:16px; border:2px solid var(--success); }
+  .online-chip .name{ font-size:10px; color:var(--text-tertiary); margin-top:3px; max-width:56px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .venue-card{ width:150px; flex:0 0 auto; cursor:pointer; -webkit-user-select:none; user-select:none; animation:cardIn .25s ease both; }
   .venue-card:active{ transform:scale(.97); }
   .venue-card img{ width:150px; height:105px; object-fit:cover; border-radius:var(--radius-md); pointer-events:none; }
@@ -401,7 +409,10 @@
     <div class="px" id="detail-prices"></div>
     <div class="px" id="detail-reviews" style="display:none;"></div>
     <div class="px" id="detail-about" style="display:none;"></div>
-    <div class="px" id="detail-chat" style="display:none; padding-bottom:90px;"></div>
+    <div id="detail-chat" style="display:none;">
+      <div class="online-strip" id="detail-chat-online"></div>
+      <div class="px" id="detail-chat-messages" style="padding-bottom:90px;"></div>
+    </div>
     <div style="height:90px"></div>
     <div id="detail-price-cta" style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
       <button class="btn-primary" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>
@@ -594,6 +605,7 @@
       <h1 class="display-md" id="general-chat-title">Sohbet</h1>
       <div class="close-btn" onclick="closeOverlay('general-chat')">✕</div>
     </div>
+    <div class="online-strip" id="general-chat-online"></div>
     <div class="px" id="general-chat-messages" style="padding-bottom:90px;"></div>
     <div style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; padding-bottom: calc(12px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
       <div class="row gap-8">
@@ -1810,26 +1822,38 @@ function escapeHTML(str){
   return div.innerHTML;
 }
 function chatMessageHTML(msg){
+  const isOwn = !!(currentUser && msg.user_id === currentUser.id);
+  const time = new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
+  const bubbleInner = `
+    ${msg.content ? `<div class="body-md" style="color:inherit;">${escapeHTML(msg.content)}</div>` : ''}
+    ${msg.image_url ? `<img src="${escapeHTML(msg.image_url)}" loading="lazy" style="max-width:200px; max-height:200px; border-radius:12px; ${msg.content?'margin-top:6px;':''} display:block; object-fit:cover;">` : ''}
+  `;
+  if(isOwn){
+    return `
+      <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
+        <div style="max-width:75%; text-align:right;">
+          <div class="chat-bubble own">${bubbleInner}</div>
+          <div class="caption" style="margin-top:2px;">${time}</div>
+        </div>
+      </div>`;
+  }
   const avatar = msg.avatar_url
     ? `<img src="${escapeHTML(msg.avatar_url)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
     : `<div style="width:32px;height:32px;border-radius:50%;background:var(--glass-fill);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🧑</div>`;
-  const time = new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
   return `
-    <div class="row gap-8" style="align-items:flex-start; margin-bottom:14px;">
+    <div class="row gap-8" style="align-items:flex-end; margin-bottom:14px;">
       ${avatar}
-      <div style="flex:1; min-width:0;">
-        <div class="row gap-8" style="align-items:baseline;">
-          <span class="body-md" style="font-weight:600;">${escapeHTML(msg.username)}</span>
-          <span class="caption">${time}</span>
-        </div>
-        ${msg.content ? `<div class="body-md" style="margin-top:2px; word-break:break-word;">${escapeHTML(msg.content)}</div>` : ''}
-        ${msg.image_url ? `<img src="${escapeHTML(msg.image_url)}" loading="lazy" style="max-width:200px; max-height:200px; border-radius:12px; margin-top:6px; display:block; object-fit:cover;">` : ''}
+      <div style="max-width:75%;">
+        <div class="caption" style="margin-bottom:2px; margin-left:4px;">${escapeHTML(msg.username)}</div>
+        <div class="chat-bubble other">${bubbleInner}</div>
+        <div class="caption" style="margin-top:2px; margin-left:4px;">${time}</div>
       </div>
     </div>`;
 }
 
 let generalChatChannel = null;
 let generalChatMessages = [];
+let generalOnlineUsers = [];
 
 async function loadGeneralChatMessages(){
   const { data, error } = await sb.from('chat_messages').select('*').eq('city_id', currentCity.id).order('created_at', { ascending:false }).limit(50);
@@ -1844,14 +1868,27 @@ function renderGeneralChatMessages(){
     : `<div class="body-md" style="text-align:center; padding:40px 0;">Henüz mesaj yok, ilk mesajı sen yaz!</div>`;
   el.scrollTop = el.scrollHeight;
 }
+function renderGeneralOnlineUsers(){
+  const el = document.getElementById('general-chat-online');
+  if(el) el.innerHTML = onlineChipsHTML(generalOnlineUsers);
+}
 function subscribeGeneralChat(){
   if(generalChatChannel){ sb.removeChannel(generalChatChannel); generalChatChannel = null; }
-  generalChatChannel = sb.channel('general-chat-'+currentCity.id)
+  generalOnlineUsers = [];
+  generalChatChannel = sb.channel('general-chat-'+currentCity.id, { config: { presence: { key: currentUser?.id || ('anon-'+Math.random()) } } })
     .on('postgres_changes', { event:'INSERT', schema:'public', table:'chat_messages', filter:'city_id=eq.'+currentCity.id }, payload=>{
       generalChatMessages.push(payload.new);
       renderGeneralChatMessages();
     })
-    .subscribe();
+    .on('presence', { event:'sync' }, () => {
+      generalOnlineUsers = Object.values(generalChatChannel.presenceState()).flat();
+      renderGeneralOnlineUsers();
+    })
+    .subscribe(async (status)=>{
+      if(status==='SUBSCRIBED' && currentUser){
+        await generalChatChannel.track({ username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
+      }
+    });
 }
 async function sendGeneralChatMessage(){
   if(!requireAuth()) return;
@@ -1885,6 +1922,7 @@ async function sendGeneralChatPhoto(file){
 
 let venueChatChannel = null;
 let venueChatMessages = [];
+let venueOnlineUsers = [];
 
 async function loadVenueChatMessages(){
   const v = contributeState.venue;
@@ -1895,22 +1933,44 @@ async function loadVenueChatMessages(){
   renderVenueChatMessages();
 }
 function renderVenueChatMessages(){
-  const el = document.getElementById('detail-chat');
+  const el = document.getElementById('detail-chat-messages');
   el.innerHTML = venueChatMessages.length
     ? venueChatMessages.map(chatMessageHTML).join('')
     : `<div class="body-md" style="text-align:center; padding:40px 0;">Bu mekanda henüz mesaj yok, ilk mesajı sen yaz!</div>`;
   el.scrollTop = el.scrollHeight;
 }
+function onlineChipsHTML(users){
+  return users.length
+    ? users.map(u=>`
+      <div class="online-chip">
+        ${u.avatar_url ? `<img class="avatar" src="${escapeHTML(u.avatar_url)}">` : `<div class="avatar">🧑</div>`}
+        <div class="name">${escapeHTML(u.username)}</div>
+      </div>`).join('')
+    : `<div class="caption">Şu an kimse çevrimiçi değil</div>`;
+}
+function renderVenueOnlineUsers(){
+  const el = document.getElementById('detail-chat-online');
+  if(el) el.innerHTML = onlineChipsHTML(venueOnlineUsers);
+}
 function subscribeVenueChat(){
   const v = contributeState.venue;
   if(!v) return;
   if(venueChatChannel){ sb.removeChannel(venueChatChannel); venueChatChannel = null; }
-  venueChatChannel = sb.channel('venue-chat-'+v.id)
+  venueOnlineUsers = [];
+  venueChatChannel = sb.channel('venue-chat-'+v.id, { config: { presence: { key: currentUser?.id || ('anon-'+Math.random()) } } })
     .on('postgres_changes', { event:'INSERT', schema:'public', table:'venue_chat_messages', filter:'venue_id=eq.'+v.id }, payload=>{
       venueChatMessages.push(payload.new);
       renderVenueChatMessages();
     })
-    .subscribe();
+    .on('presence', { event:'sync' }, () => {
+      venueOnlineUsers = Object.values(venueChatChannel.presenceState()).flat();
+      renderVenueOnlineUsers();
+    })
+    .subscribe(async (status)=>{
+      if(status==='SUBSCRIBED' && currentUser){
+        await venueChatChannel.track({ username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
+      }
+    });
 }
 async function sendVenueChatMessage(){
   if(!requireAuth()) return;
