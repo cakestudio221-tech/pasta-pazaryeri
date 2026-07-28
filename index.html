@@ -36,6 +36,7 @@
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-left: env(safe-area-inset-left, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
+    --keyboard-offset: 0px;
   }
   :root[data-theme="light"]{
     --bg-primary:#F5F5F7;
@@ -417,10 +418,10 @@
     <div id="detail-price-cta" style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
       <button class="btn-primary" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>
     </div>
-    <div id="detail-chat-input-row" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:12px 16px; padding-bottom: calc(12px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
+    <div id="detail-chat-input-row" style="display:none; position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
       <div class="row gap-8">
         <div class="stepper-btn" onclick="toggleEmojiPicker('detail-chat-input')">😀</div>
-        <input id="detail-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:12px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendVenueChatMessage()">
+        <input id="detail-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:10px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendVenueChatMessage()" onfocus="setChatFocused('detail-chat-online', true)" onblur="setChatFocused('detail-chat-online', false)">
         <input type="file" id="detail-chat-photo" accept="image/*" style="display:none;" onchange="sendVenueChatPhoto(this.files[0])">
         <div class="stepper-btn" onclick="document.getElementById('detail-chat-photo').click()">📷</div>
         <div class="stepper-btn" style="background:linear-gradient(135deg,var(--purple),var(--blue));" onclick="sendVenueChatMessage()">➤</div>
@@ -607,10 +608,10 @@
     </div>
     <div class="online-strip" id="general-chat-online"></div>
     <div class="px" id="general-chat-messages" style="padding-bottom:90px;"></div>
-    <div style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; padding-bottom: calc(12px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
+    <div style="position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
       <div class="row gap-8">
         <div class="stepper-btn" onclick="toggleEmojiPicker('general-chat-input')">😀</div>
-        <input id="general-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:12px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendGeneralChatMessage()">
+        <input id="general-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:10px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendGeneralChatMessage()" onfocus="setChatFocused('general-chat-online', true)" onblur="setChatFocused('general-chat-online', false)">
         <input type="file" id="general-chat-photo" accept="image/*" style="display:none;" onchange="sendGeneralChatPhoto(this.files[0])">
         <div class="stepper-btn" onclick="document.getElementById('general-chat-photo').click()">📷</div>
         <div class="stepper-btn" style="background:linear-gradient(135deg,var(--purple),var(--blue));" onclick="sendGeneralChatMessage()">➤</div>
@@ -1789,6 +1790,20 @@ async function addCity(){
   showToast('Şehir eklendi');
   await loadCities();
   renderAdminCities();
+}
+
+function updateKeyboardOffset(){
+  if(!window.visualViewport) return;
+  const offset = Math.max(0, Math.round(window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop));
+  document.documentElement.style.setProperty('--keyboard-offset', offset + 'px');
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', updateKeyboardOffset);
+  window.visualViewport.addEventListener('scroll', updateKeyboardOffset);
+}
+function setChatFocused(onlineStripId, focused){
+  const el = document.getElementById(onlineStripId);
+  if(el) el.style.display = focused ? 'none' : 'flex';
 }
 
 const EMOJI_LIST = ['😀','😂','😍','😎','🥳','😭','😡','👍','👎','🍺','🍷','🍸','🥃','🍹','❤️','🔥','🎉','💯','🙏','👀','😅','🤔','😴','🥺','😜','🤣','😇','🫡','🙌','✨'];
