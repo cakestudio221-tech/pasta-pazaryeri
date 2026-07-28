@@ -293,7 +293,7 @@
       </div>
       <div class="row gap-8">
         <div class="icon-btn" onclick="openOverlay('city')">📍 <span id="city-label">Bursa</span></div>
-        <div class="icon-btn" onclick="showToast('Bildirimler yakında geliyor 🔔')">🔔</div>
+        <div class="icon-btn" style="position:relative;" onclick="openOverlay('notifications')">🔔<div id="notif-badge" style="display:none; position:absolute; top:2px; right:2px; width:9px; height:9px; border-radius:50%; background:var(--error); border:1.5px solid var(--bg-secondary);"></div></div>
       </div>
     </div>
 
@@ -662,6 +662,15 @@
     <div class="px" id="admin-cities" style="display:none;"></div>
   </div>
 
+  <!-- OVERLAY: NOTIFICATIONS -->
+  <div class="overlay" id="overlay-notifications">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Bildirimler</h1>
+      <div class="close-btn" onclick="closeOverlay('notifications')">✕</div>
+    </div>
+    <div class="px" id="notifications-content"></div>
+  </div>
+
   <!-- OVERLAY: AUTH -->
   <div class="overlay" id="overlay-auth">
     <div class="row-between px" style="padding-top:0;">
@@ -825,6 +834,7 @@ async function loadVenues(){
       id: v.id, name: v.name, district: v.district, city: v.city, img: v.img,
       rating: Number(v.rating), reviews: v.reviews, verified: v.verified, distance: Number(v.distance),
       lat: v.lat!=null ? Number(v.lat) : null, lng: v.lng!=null ? Number(v.lng) : null,
+      created_by: v.created_by,
       prices, lastPriceUpdate,
     };
   });
@@ -1064,17 +1074,48 @@ async function submitNewPassword(){
   closeOverlay('newpassword');
   showToast('Şifren güncellendi ✅');
 }
+async function loadUnreadNotificationCount(){
+  const badge = document.getElementById('notif-badge');
+  if(!badge) return;
+  if(!currentUser){ badge.style.display = 'none'; return; }
+  const { count } = await sb.from('notifications').select('id', { count:'exact', head:true }).eq('user_id', currentUser.id).eq('is_read', false);
+  badge.style.display = count > 0 ? 'block' : 'none';
+}
+async function renderNotifications(){
+  const el = document.getElementById('notifications-content');
+  if(!currentUser){
+    el.innerHTML = `<div style="text-align:center; padding-top:60px;"><div class="body-md">Bildirimlerini görmek için giriş yap</div><div style="height:16px"></div><button class="btn-primary" onclick="openAuth('login')">Giriş Yap</button></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  const { data, error } = await sb.from('notifications').select('*').eq('user_id', currentUser.id).order('created_at', { ascending:false }).limit(30);
+  if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
+  if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Henüz bildirimin yok</div>`; return; }
+  el.innerHTML = data.map(n=>`
+    <div class="glass" style="padding:14px 16px; margin-bottom:10px; cursor:pointer; ${n.is_read?'':'border:1.5px solid var(--purple);'}" onclick="markNotificationRead('${n.id}')">
+      <div class="body-lg" style="font-weight:600;">${escapeHTML(n.title)}</div>
+      ${n.body ? `<div class="body-sm" style="margin-top:4px;">${escapeHTML(n.body)}</div>` : ''}
+    </div>`).join('');
+  await sb.from('notifications').update({ is_read: true }).eq('user_id', currentUser.id).eq('is_read', false);
+  loadUnreadNotificationCount();
+}
+async function markNotificationRead(id){
+  await sb.from('notifications').update({ is_read: true }).eq('id', id);
+  loadUnreadNotificationCount();
+}
 async function initAuth(){
   const { data:{ session } } = await sb.auth.getSession();
   currentUser = session?.user || null;
   await loadProfile();
   await loadFavorites();
   await renderProfileScreen();
+  await loadUnreadNotificationCount();
   sb.auth.onAuthStateChange(async (_event, session)=>{
     currentUser = session?.user || null;
     await loadProfile();
     await loadFavorites();
     await renderProfileScreen();
+    await loadUnreadNotificationCount();
     if(document.getElementById('screen-favorites').classList.contains('active')) renderFavorites();
     if(_event === 'PASSWORD_RECOVERY'){ openOverlay('newpassword'); }
   });
@@ -1323,9 +1364,52 @@ async function renderDetailAbout(){
     <div class="row gap-8" style="flex-wrap:wrap;">
       ${cats.map(c=>`<div class="chip">${c}</div>`).join('')}
     </div>
-    <div id="verification-section" style="margin-top:20px;"></div>`;
+    <div id="venue-edit-section" style="margin-top:20px;"></div>
+    <div id="verification-section" style="margin-top:12px;"></div>`;
+  renderVenueEditSection(v);
   if(v.verified) return;
   await renderVerificationSection(v);
+}
+
+function renderVenueEditSection(v){
+  const el = document.getElementById('venue-edit-section');
+  const canEdit = currentUser && (currentUser.id === v.created_by || currentProfile?.is_admin);
+  if(!canEdit){ el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <button class="btn-outline" onclick="showVenueEditForm()">✏️ Mekanı Düzenle</button>
+    <div id="venue-edit-form" style="display:none; margin-top:12px;">
+      <div class="body-md" style="margin-bottom:6px;">Mekan Adı</div>
+      <input id="ve-name" value="${escapeHTML(v.name)}" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Semt</div>
+      <input id="ve-district" value="${escapeHTML(v.district)}" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Tahmini Uzaklık (km)</div>
+      <input id="ve-distance" type="number" step="0.1" value="${v.distance}" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Fotoğraf URL</div>
+      <input id="ve-img" value="${escapeHTML(v.img)}" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:16px"></div>
+      <button class="btn-primary" onclick="submitEditVenue()">Kaydet</button>
+    </div>`;
+}
+function showVenueEditForm(){
+  document.getElementById('venue-edit-form').style.display = 'block';
+}
+async function submitEditVenue(){
+  const v = contributeState.venue;
+  const name = document.getElementById('ve-name').value.trim();
+  const district = document.getElementById('ve-district').value.trim();
+  const distance = Number(document.getElementById('ve-distance').value);
+  const img = document.getElementById('ve-img').value.trim();
+  if(!name || !district || !distance || distance<=0){ showToast('Lütfen mekan adı, semt ve uzaklığı gir'); return; }
+  const { error } = await sb.from('venues').update({ name, district, distance, img }).eq('id', v.id);
+  if(error){ console.error(error); showToast(error.message || 'Güncellenemedi'); return; }
+  const wasAdmin = currentProfile?.is_admin;
+  showToast(wasAdmin ? 'Mekan güncellendi' : 'Değişikliklerin onaya gönderildi');
+  await loadVenues();
+  renderHome();
+  renderCompare();
 }
 
 async function renderVerificationSection(v){
@@ -1620,6 +1704,7 @@ function openOverlay(name){
   }
   if(name==='leaderboard'){ setLeaderboardPeriod('7d'); }
   if(name==='admin'){ setAdminTab('venues'); }
+  if(name==='notifications'){ renderNotifications(); }
 }
 async function loadAndRenderStats(){
   const el = document.getElementById('stats-content');
