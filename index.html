@@ -1187,7 +1187,7 @@ async function submitReview(){
   const { error } = await sb.from('reviews').insert({
     venue_id: v.id, user_id: currentUser.id, rating: selectedReviewRating, comment: comment || null,
   });
-  if(error){ console.error(error); showToast('Yorum kaydedilemedi'); return; }
+  if(error){ console.error(error); showToast(error.message || 'Yorum kaydedilemedi'); return; }
   selectedReviewRating = 5;
   showToast('Yorumun eklendi 🎉');
   renderDetailReviews();
@@ -1247,7 +1247,7 @@ function showVerificationForm(){
 async function submitVerificationRequest(venueId){
   const message = document.getElementById('verification-message').value.trim();
   const { error } = await sb.from('venue_verification_requests').insert({ venue_id: venueId, user_id: currentUser.id, message: message || null });
-  if(error){ console.error(error); showToast('Başvuru gönderilemedi'); return; }
+  if(error){ console.error(error); showToast(error.message || 'Başvuru gönderilemedi'); return; }
   showToast('Başvurun alındı, incelenecek');
   renderVerificationSection(contributeState.venue);
 }
@@ -1297,7 +1297,7 @@ async function submitNewVenue(){
     img: img || `https://picsum.photos/seed/${slug}/400/300`,
     rating: 0, reviews: 0, verified: false, created_by: currentUser.id,
   }).select().single();
-  if(error){ console.error(error); showToast('Mekan eklenemedi'); return; }
+  if(error){ console.error(error); showToast(error.message || 'Mekan eklenemedi'); return; }
   const newVenue = { id: data.id, name: data.name, district: data.district, city: data.city,
     img: data.img, rating: Number(data.rating), reviews: data.reviews, verified: data.verified,
     distance: Number(data.distance), lat: null, lng: null, prices: [], lastPriceUpdate: data.created_at };
@@ -1338,7 +1338,7 @@ async function contributeNext(step){
       price: Number(priceVal),
       reported_by: currentUser.id,
     });
-    if(error){ console.error(error); showToast('Fiyat kaydedilemedi'); return; }
+    if(error){ console.error(error); showToast(error.message || 'Fiyat kaydedilemedi'); return; }
     const newXp = (currentProfile?.xp || 0) + 20;
     await sb.from('profiles').update({ xp: newXp }).eq('id', currentUser.id);
     if(currentProfile) currentProfile.xp = newXp;
