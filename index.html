@@ -304,6 +304,9 @@
       <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('recommend')">
         <div class="emoji">🎯</div><div class="label">Sana Özel</div>
       </div>
+      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('general-chat')">
+        <div class="emoji">💬</div><div class="label">Sohbet</div>
+      </div>
     </div>
 
     <div class="section-header">
@@ -393,13 +396,21 @@
       <div class="tab-chip selected" onclick="setDetailTab('prices')">Fiyatlar</div>
       <div class="tab-chip" onclick="setDetailTab('reviews')">Yorumlar</div>
       <div class="tab-chip" onclick="setDetailTab('about')">Hakkında</div>
+      <div class="tab-chip" onclick="setDetailTab('chat')">Sohbet</div>
     </div>
     <div class="px" id="detail-prices"></div>
     <div class="px" id="detail-reviews" style="display:none;"></div>
     <div class="px" id="detail-about" style="display:none;"></div>
+    <div class="px" id="detail-chat" style="display:none; padding-bottom:90px;"></div>
     <div style="height:90px"></div>
-    <div style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
+    <div id="detail-price-cta" style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
       <button class="btn-primary" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>
+    </div>
+    <div id="detail-chat-input-row" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:12px 16px; padding-bottom: calc(12px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
+      <div class="row gap-8">
+        <input id="detail-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:12px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendVenueChatMessage()">
+        <div class="stepper-btn" style="width:44px;height:44px;background:linear-gradient(135deg,var(--purple),var(--blue));" onclick="sendVenueChatMessage()">➤</div>
+      </div>
     </div>
   </div>
 
@@ -572,6 +583,21 @@
     </div>
     <div class="body-md px" style="margin:4px 0 16px;">Konumun ve tercihlerine göre önerilen mekanlar</div>
     <div class="px" id="recommend-content"></div>
+  </div>
+
+  <!-- OVERLAY: GENERAL CHAT -->
+  <div class="overlay" id="overlay-general-chat">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md" id="general-chat-title">Sohbet</h1>
+      <div class="close-btn" onclick="closeOverlay('general-chat')">✕</div>
+    </div>
+    <div class="px" id="general-chat-messages" style="padding-bottom:90px;"></div>
+    <div style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; padding-bottom: calc(12px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
+      <div class="row gap-8">
+        <input id="general-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:12px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendGeneralChatMessage()">
+        <div class="stepper-btn" style="width:44px;height:44px;background:linear-gradient(135deg,var(--purple),var(--blue));" onclick="sendGeneralChatMessage()">➤</div>
+      </div>
+    </div>
   </div>
 
   <!-- OVERLAY: LEADERBOARD -->
@@ -1173,13 +1199,17 @@ let selectedReviewRating = 5;
 
 function setDetailTab(tab){
   document.querySelectorAll('#detail-tabs .tab-chip').forEach((el,i)=>{
-    el.classList.toggle('selected', ['prices','reviews','about'][i]===tab);
+    el.classList.toggle('selected', ['prices','reviews','about','chat'][i]===tab);
   });
-  ['prices','reviews','about'].forEach(t=>{
+  ['prices','reviews','about','chat'].forEach(t=>{
     document.getElementById('detail-'+t).style.display = t===tab ? 'block' : 'none';
   });
+  document.getElementById('detail-price-cta').style.display = tab==='chat' ? 'none' : 'block';
+  document.getElementById('detail-chat-input-row').style.display = tab==='chat' ? 'block' : 'none';
   if(tab==='reviews') renderDetailReviews();
   if(tab==='about') renderDetailAbout();
+  if(tab==='chat'){ loadVenueChatMessages(); subscribeVenueChat(); }
+  else if(venueChatChannel){ sb.removeChannel(venueChatChannel); venueChatChannel=null; }
 }
 
 async function renderDetailReviews(){
@@ -1539,6 +1569,11 @@ function openOverlay(name){
   if(name==='city'){ renderCityList(); }
   if(name==='stats'){ loadAndRenderStats(); }
   if(name==='recommend'){ renderRecommendations(); }
+  if(name==='general-chat'){
+    document.getElementById('general-chat-title').innerText = (currentCity?.name || '') + ' Sohbet';
+    loadGeneralChatMessages();
+    subscribeGeneralChat();
+  }
   if(name==='leaderboard'){ setLeaderboardPeriod('7d'); }
   if(name==='admin'){ setAdminTab('venues'); }
 }
@@ -1737,9 +1772,120 @@ async function addCity(){
   renderAdminCities();
 }
 
+function escapeHTML(str){
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+function chatMessageHTML(msg){
+  const avatar = msg.avatar_url
+    ? `<img src="${escapeHTML(msg.avatar_url)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+    : `<div style="width:32px;height:32px;border-radius:50%;background:var(--glass-fill);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🧑</div>`;
+  const time = new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
+  return `
+    <div class="row gap-8" style="align-items:flex-start; margin-bottom:14px;">
+      ${avatar}
+      <div style="flex:1; min-width:0;">
+        <div class="row gap-8" style="align-items:baseline;">
+          <span class="body-md" style="font-weight:600;">${escapeHTML(msg.username)}</span>
+          <span class="caption">${time}</span>
+        </div>
+        <div class="body-md" style="margin-top:2px; word-break:break-word;">${escapeHTML(msg.content)}</div>
+      </div>
+    </div>`;
+}
+
+let generalChatChannel = null;
+let generalChatMessages = [];
+
+async function loadGeneralChatMessages(){
+  const { data, error } = await sb.from('chat_messages').select('*').eq('city_id', currentCity.id).order('created_at', { ascending:false }).limit(50);
+  if(error){ console.error(error); return; }
+  generalChatMessages = (data || []).reverse();
+  renderGeneralChatMessages();
+}
+function renderGeneralChatMessages(){
+  const el = document.getElementById('general-chat-messages');
+  el.innerHTML = generalChatMessages.length
+    ? generalChatMessages.map(chatMessageHTML).join('')
+    : `<div class="body-md" style="text-align:center; padding:40px 0;">Henüz mesaj yok, ilk mesajı sen yaz!</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+function subscribeGeneralChat(){
+  if(generalChatChannel){ sb.removeChannel(generalChatChannel); generalChatChannel = null; }
+  generalChatChannel = sb.channel('general-chat-'+currentCity.id)
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'chat_messages', filter:'city_id=eq.'+currentCity.id }, payload=>{
+      generalChatMessages.push(payload.new);
+      renderGeneralChatMessages();
+    })
+    .subscribe();
+}
+async function sendGeneralChatMessage(){
+  if(!requireAuth()) return;
+  const input = document.getElementById('general-chat-input');
+  const content = input.value.trim();
+  if(!content) return;
+  if(content.length > 500){ showToast('Mesaj çok uzun (maks 500 karakter)'); return; }
+  input.value = '';
+  const { error } = await sb.from('chat_messages').insert({
+    city_id: currentCity.id, user_id: currentUser.id,
+    username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
+    content,
+  });
+  if(error){ console.error(error); showToast(error.message || 'Mesaj gönderilemedi'); }
+}
+
+let venueChatChannel = null;
+let venueChatMessages = [];
+
+async function loadVenueChatMessages(){
+  const v = contributeState.venue;
+  if(!v) return;
+  const { data, error } = await sb.from('venue_chat_messages').select('*').eq('venue_id', v.id).order('created_at', { ascending:false }).limit(50);
+  if(error){ console.error(error); return; }
+  venueChatMessages = (data || []).reverse();
+  renderVenueChatMessages();
+}
+function renderVenueChatMessages(){
+  const el = document.getElementById('detail-chat');
+  el.innerHTML = venueChatMessages.length
+    ? venueChatMessages.map(chatMessageHTML).join('')
+    : `<div class="body-md" style="text-align:center; padding:40px 0;">Bu mekanda henüz mesaj yok, ilk mesajı sen yaz!</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+function subscribeVenueChat(){
+  const v = contributeState.venue;
+  if(!v) return;
+  if(venueChatChannel){ sb.removeChannel(venueChatChannel); venueChatChannel = null; }
+  venueChatChannel = sb.channel('venue-chat-'+v.id)
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'venue_chat_messages', filter:'venue_id=eq.'+v.id }, payload=>{
+      venueChatMessages.push(payload.new);
+      renderVenueChatMessages();
+    })
+    .subscribe();
+}
+async function sendVenueChatMessage(){
+  if(!requireAuth()) return;
+  const v = contributeState.venue;
+  if(!v) return;
+  const input = document.getElementById('detail-chat-input');
+  const content = input.value.trim();
+  if(!content) return;
+  if(content.length > 500){ showToast('Mesaj çok uzun (maks 500 karakter)'); return; }
+  input.value = '';
+  const { error } = await sb.from('venue_chat_messages').insert({
+    venue_id: v.id, user_id: currentUser.id,
+    username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
+    content,
+  });
+  if(error){ console.error(error); showToast(error.message || 'Mesaj gönderilemedi'); }
+}
+
 function closeOverlay(name){
   document.getElementById('overlay-'+name).classList.remove('active');
   if(name==='contribute'){ contributeState.venue=null; }
+  if(name==='general-chat' && generalChatChannel){ sb.removeChannel(generalChatChannel); generalChatChannel=null; }
+  if(name==='detail' && venueChatChannel){ sb.removeChannel(venueChatChannel); venueChatChannel=null; }
 }
 
 function showToast(msg){
