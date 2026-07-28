@@ -11,6 +11,7 @@
 <meta name="format-detection" content="telephone=no">
 <title>NightCompare</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --bg-primary:#0A0A0F;
@@ -36,9 +37,20 @@
     --safe-left: env(safe-area-inset-left, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
   }
+  :root[data-theme="light"]{
+    --bg-primary:#F5F5F7;
+    --bg-secondary:#FFFFFF;
+    --bg-elevated:#FFFFFF;
+    --text-primary:#0A0A0F;
+    --text-secondary:#4B4B55;
+    --text-tertiary:#8A8A94;
+    --glass-fill:rgba(0,0,0,.04);
+    --glass-border:rgba(0,0,0,.08);
+    --divider:rgba(0,0,0,.06);
+  }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action:manipulation;}
   html, body{
-    margin:0; padding:0; background:#000; font-family:'Inter',sans-serif; color:var(--text-primary);
+    margin:0; padding:0; background:var(--bg-primary); font-family:'Inter',sans-serif; color:var(--text-primary);
     height:100dvh; width:100vw; overflow:hidden; position:fixed; overscroll-behavior-y:none;
     -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   }
@@ -126,7 +138,8 @@
   .section-header{ display:flex; justify-content:space-between; align-items:center; padding:20px 16px 10px; }
   .venue-scroll{ display:flex; gap:10px; overflow-x:auto; padding:0 16px 4px; scrollbar-width:none; }
   .venue-scroll::-webkit-scrollbar{display:none;}
-  .venue-card{ width:150px; flex:0 0 auto; cursor:pointer; -webkit-user-select:none; user-select:none; }
+  @keyframes cardIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  .venue-card{ width:150px; flex:0 0 auto; cursor:pointer; -webkit-user-select:none; user-select:none; animation:cardIn .25s ease both; }
   .venue-card:active{ transform:scale(.97); }
   .venue-card img{ width:150px; height:105px; object-fit:cover; border-radius:var(--radius-md); pointer-events:none; }
   .venue-card .imgwrap{position:relative;}
@@ -138,12 +151,20 @@
     position:absolute; bottom:6px; left:6px; background:rgba(0,0,0,.55); padding:2px 8px;
     border-radius:var(--radius-full); font-size:10px; color:#fff;
   }
+  .badge-fav{
+    position:absolute; bottom:6px; right:6px; width:22px; height:22px; border-radius:50%;
+    background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center;
+    font-size:13px; color:#fff; cursor:pointer;
+  }
+  .badge-fav.is-fav{ color:var(--purple); }
+  .row-fav-btn{ font-size:16px; color:var(--text-tertiary); cursor:pointer; padding:4px; }
+  .row-fav-btn.is-fav{ color:var(--purple); }
   .venue-card .name{ font-size:14px; font-weight:600; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .venue-card .meta{ font-size:12px; color:var(--text-tertiary); margin-top:2px; display:flex; align-items:center; gap:4px;}
 
   .price-row{
     display:flex; align-items:center; gap:10px; padding:12px 16px; margin:0 16px 8px;
-    cursor:pointer; -webkit-user-select:none; user-select:none;
+    cursor:pointer; -webkit-user-select:none; user-select:none; animation:cardIn .25s ease both;
   }
   .price-row:active{ transform:scale(.99); }
   .price-row img{ width:44px; height:44px; border-radius:10px; object-fit:cover; pointer-events:none; }
@@ -256,45 +277,56 @@
   <!-- HOME -->
   <div class="screen active" id="screen-home">
     <div class="topbar row-between">
-      <div class="row gap-4" style="cursor:pointer">
+      <div class="row gap-4">
         <h1 class="display-md">Keşfet</h1>
-        <span style="color:var(--text-secondary)">▾</span>
       </div>
       <div class="row gap-8">
-        <div class="icon-btn">📍 Bursa</div>
-        <div class="icon-btn">🔔</div>
+        <div class="icon-btn" onclick="openOverlay('city')">📍 <span id="city-label">Bursa</span></div>
+        <div class="icon-btn" onclick="showToast('Bildirimler yakında geliyor 🔔')">🔔</div>
       </div>
     </div>
 
     <div class="search-bar glass">
       <span>🔍</span>
-      <input placeholder="Mekan, içki veya semt ara..." onclick="goCompare()" readonly>
+      <input id="home-search" placeholder="Mekan, içki veya semt ara..." oninput="onHomeSearchInput(this.value)">
     </div>
 
-    <div class="quick-row">
-      <div class="quick-card glass" onclick="openOverlay('budget')">
+    <div class="quick-row" style="overflow-x:auto; flex-wrap:nowrap;">
+      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('budget')">
         <div class="emoji">💰</div><div class="label">Bütçe Planlayıcı</div>
       </div>
-      <div class="quick-card glass" onclick="openOverlay('route')">
+      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('route')">
         <div class="emoji">🗺️</div><div class="label">Gece Rotası</div>
+      </div>
+      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('stats')">
+        <div class="emoji">📊</div><div class="label">İstatistikler</div>
+      </div>
+      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('recommend')">
+        <div class="emoji">🎯</div><div class="label">Sana Özel</div>
       </div>
     </div>
 
     <div class="section-header">
       <h3 class="headline">🔥 Trend Mekanlar</h3>
-      <span class="body-sm" style="color:var(--purple)">Tümünü Gör</span>
+      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
     </div>
     <div class="venue-scroll" id="trend-scroll"></div>
 
     <div class="section-header">
       <h3 class="headline">🆕 Yeni Eklenenler</h3>
-      <span class="body-sm" style="color:var(--purple)">Tümünü Gör</span>
+      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
     </div>
     <div class="venue-scroll" id="new-scroll"></div>
 
     <div class="section-header">
+      <h3 class="headline">🕒 Son Güncellenenler</h3>
+      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
+    </div>
+    <div class="venue-scroll" id="updated-scroll"></div>
+
+    <div class="section-header">
       <h3 class="headline">💸 En Uygun Fiyatlılar</h3>
-      <span class="body-sm" style="color:var(--purple)">Tümünü Gör</span>
+      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
     </div>
     <div class="venue-scroll" id="cheap-scroll"></div>
     <div style="height:110px"></div>
@@ -308,7 +340,7 @@
     </div>
     <div class="search-bar glass">
       <span>🔍</span>
-      <input id="compare-search" placeholder="Mekan, içki veya semt ara..." value="Efes" oninput="renderCompare()">
+      <input id="compare-search" placeholder="Mekan, içki veya semt ara..." oninput="renderCompare()">
     </div>
     <div class="quick-row" style="padding-bottom:0; overflow-x:auto; flex-wrap:nowrap;" id="cat-chips"></div>
     <div class="quick-row" style="padding-top:10px; overflow-x:auto; flex-wrap:nowrap;" id="sort-chips"></div>
@@ -328,40 +360,7 @@
 
   <!-- PROFILE -->
   <div class="screen" id="screen-profile">
-    <div class="px" style="padding-top:8px;">
-      <div class="row gap-12">
-        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;">🧑</div>
-        <div style="flex:1">
-          <div class="headline">Barmender</div>
-          <div class="body-md" style="margin:2px 0 6px;">Seviye 12</div>
-          <div class="progress-bar"><div class="fill" style="width:62%"></div></div>
-        </div>
-        <span style="color:var(--text-secondary)">⚙︎</span>
-      </div>
-
-      <div class="row gap-8" style="margin-top:20px;">
-        <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">128</div><div class="body-sm">Katkılarım</div></div>
-        <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">32</div><div class="body-sm">Favoriler</div></div>
-        <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">89</div><div class="body-sm">Yorumlar</div></div>
-      </div>
-
-      <div class="row-between" style="margin-top:20px;">
-        <h3 class="headline">Rozetlerim</h3>
-        <span class="body-sm" style="color:var(--purple)">Tümü ›</span>
-      </div>
-      <div class="row gap-12" style="margin-top:10px; overflow-x:auto;">
-        <div style="text-align:center;"><div class="badge-circle">🍺</div><div class="caption" style="margin-top:4px;">Explorer</div></div>
-        <div style="text-align:center;"><div class="badge-circle">🏅</div><div class="caption" style="margin-top:4px;">100 Katkı</div></div>
-        <div style="text-align:center;"><div class="badge-circle">⭐</div><div class="caption" style="margin-top:4px;">Güvenilir</div></div>
-        <div style="text-align:center; opacity:.35;"><div class="badge-circle">👑</div><div class="caption" style="margin-top:4px;">VIP</div></div>
-      </div>
-
-      <div class="glass" style="margin-top:20px; padding:4px 0;">
-        <div class="row-between" style="padding:14px 16px;">✏️ Katkılarım <span style="color:var(--text-tertiary);">›</span></div>
-        <div class="divider-line"></div>
-        <div class="row-between" style="padding:14px 16px;">🏆 Liderlik Tablosu <span style="color:var(--text-tertiary);">›</span></div>
-      </div>
-    </div>
+    <div class="px" style="padding-top:8px;" id="profile-content"></div>
     <div style="height:100px"></div>
   </div>
 
@@ -373,7 +372,7 @@
     <div class="navitem" data-tab="favorites" onclick="switchTab('favorites')"><div style="font-size:20px;">♡</div><span>Favoriler</span></div>
     <div class="navitem" data-tab="profile" onclick="switchTab('profile')"><div style="font-size:20px;">◍</div><span>Profil</span></div>
   </div>
-  <div class="fab" onclick="openOverlay('contribute'); resetContribute();"><span style="font-size:26px; color:#fff;">+</span></div>
+  <div class="fab" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}"><span style="font-size:26px; color:#fff;">+</span></div>
 
   <!-- OVERLAY: VENUE DETAIL -->
   <div class="overlay" id="overlay-detail">
@@ -382,7 +381,7 @@
       <div class="hero-gradient"></div>
       <div class="row-between" style="position:absolute; top:16px; left:16px; right:16px;">
         <div class="close-btn" onclick="closeOverlay('detail')">←</div>
-        <div class="row gap-8"><div class="close-btn">♡</div><div class="close-btn">⤴</div></div>
+        <div class="row gap-8"><div class="close-btn" id="detail-fav-btn" onclick="toggleFavoriteCurrent()">♡</div><div class="close-btn" onclick="shareVenue()">⤴</div></div>
       </div>
     </div>
     <div class="px" style="margin-top:-8px;">
@@ -390,15 +389,17 @@
       <h1 class="display-md" id="detail-name"></h1>
       <div class="body-md" style="margin-top:4px;" id="detail-meta"></div>
     </div>
-    <div class="tab-row">
-      <div class="tab-chip selected">Fiyatlar</div>
-      <div class="tab-chip">Yorumlar</div>
-      <div class="tab-chip">Hakkında</div>
+    <div class="tab-row" id="detail-tabs">
+      <div class="tab-chip selected" onclick="setDetailTab('prices')">Fiyatlar</div>
+      <div class="tab-chip" onclick="setDetailTab('reviews')">Yorumlar</div>
+      <div class="tab-chip" onclick="setDetailTab('about')">Hakkında</div>
     </div>
     <div class="px" id="detail-prices"></div>
+    <div class="px" id="detail-reviews" style="display:none;"></div>
+    <div class="px" id="detail-about" style="display:none;"></div>
     <div style="height:90px"></div>
     <div style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
-      <button class="btn-primary" onclick="openOverlay('contribute'); resetContribute();">Fiyat Bildir</button>
+      <button class="btn-primary" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>
     </div>
   </div>
 
@@ -420,6 +421,27 @@
       <div id="contribute-venue-list"></div>
     </div>
 
+    <div class="px" id="contribute-step-newvenue" style="display:none;">
+      <h1 class="display-md">Yeni Mekan Ekle</h1>
+      <div class="body-md" style="margin:4px 0 16px;">Listede yoksa buradan ekleyebilirsin</div>
+      <div class="body-md" style="margin-bottom:6px;">Mekan Adı</div>
+      <input id="nv-name" placeholder="Örn. Roof Bar" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Semt</div>
+      <input id="nv-district" placeholder="Örn. Nilüfer" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Tahmini Uzaklık (km)</div>
+      <input id="nv-distance" type="number" step="0.1" placeholder="Örn. 1.5" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Fotoğraf URL (opsiyonel)</div>
+      <input id="nv-img" placeholder="https://..." style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">veya bir fotoğraf yükle</div>
+      <input type="file" id="nv-photo" accept="image/*" style="width:100%; color:var(--text-secondary); font-size:13px;">
+      <div style="height:20px"></div>
+      <button class="btn-primary" onclick="submitNewVenue()">Mekanı Oluştur ve Devam Et</button>
+    </div>
+
     <div class="px" id="contribute-step-drink" style="display:none;">
       <div class="body-md" id="c-venue-name"></div>
       <h1 class="display-md" style="margin-top:4px;">Hangi içki?</h1>
@@ -436,7 +458,7 @@
         <span class="display-md">₺</span>
         <input id="c-price-input" type="number" placeholder="0" style="background:none;border:none;outline:none;color:#fff;font-family:'Sora';font-size:24px;font-weight:700;width:100%;margin-left:8px;">
       </div>
-      <button class="btn-outline" style="margin-bottom:24px;">📷 Menü fotoğrafı çekerek otomatik doldur</button>
+      <button class="btn-outline" style="margin-bottom:24px;" onclick="showToast('Bu özellik yakında geliyor 📸')">📷 Menü fotoğrafı çekerek otomatik doldur</button>
       <button class="btn-primary" onclick="contributeNext('done')">Gönder</button>
     </div>
 
@@ -495,6 +517,15 @@
     <div class="body-md px" style="margin:4px 0 16px;">Gideceğin mekanları seç, rota otomatik oluşsun</div>
 
     <div class="px">
+      <div class="body-md" style="margin-bottom:8px;">Otomatik Rota Oluştur</div>
+      <div class="quick-row" style="padding:0; flex-wrap:wrap;" id="route-auto-cat-chips"></div>
+      <div class="row gap-8" style="margin:12px 0;" id="route-auto-count-chips"></div>
+      <button class="btn-outline" onclick="generateAutoRoute()">Otomatik Oluştur</button>
+    </div>
+    <div class="divider-line" style="margin:20px 16px;"></div>
+    <div class="body-md px">veya mekanları elle seç:</div>
+
+    <div class="px">
       <div class="glass" style="height:120px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
         <span class="body-sm" id="route-map-placeholder">Mekan seçtikçe rota burada görünecek</span>
       </div>
@@ -509,8 +540,72 @@
           <div><div class="headline" id="route-spend">₺0</div><div class="body-sm">Harcama</div></div>
         </div>
         <div style="height:14px"></div>
-        <button class="btn-primary">Rotayı Başlat</button>
+        <button class="btn-primary" onclick="startRoute()">Rotayı Başlat</button>
       </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY: CITY -->
+  <div class="overlay" id="overlay-city">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Şehir Seç</h1>
+      <div class="close-btn" onclick="closeOverlay('city')">✕</div>
+    </div>
+    <div class="px" id="city-list"></div>
+  </div>
+
+  <!-- OVERLAY: STATS -->
+  <div class="overlay" id="overlay-stats">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">İstatistikler</h1>
+      <div class="close-btn" onclick="closeOverlay('stats')">✕</div>
+    </div>
+    <div class="body-md px" style="margin:4px 0 16px;">Kategori bazlı fiyat özeti</div>
+    <div class="px" id="stats-content"></div>
+  </div>
+
+  <!-- OVERLAY: RECOMMEND -->
+  <div class="overlay" id="overlay-recommend">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Sana Özel</h1>
+      <div class="close-btn" onclick="closeOverlay('recommend')">✕</div>
+    </div>
+    <div class="body-md px" style="margin:4px 0 16px;">Konumun ve tercihlerine göre önerilen mekanlar</div>
+    <div class="px" id="recommend-content"></div>
+  </div>
+
+  <!-- OVERLAY: LEADERBOARD -->
+  <div class="overlay" id="overlay-leaderboard">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Liderlik Tablosu</h1>
+      <div class="close-btn" onclick="closeOverlay('leaderboard')">✕</div>
+    </div>
+    <div class="tab-row" id="leaderboard-tabs">
+      <div class="tab-chip selected" onclick="setLeaderboardPeriod('7d')">Haftalık</div>
+      <div class="tab-chip" onclick="setLeaderboardPeriod('30d')">Aylık</div>
+      <div class="tab-chip" onclick="setLeaderboardPeriod('all')">Tüm Zamanlar</div>
+    </div>
+    <div class="px" id="leaderboard-content"></div>
+  </div>
+
+  <!-- OVERLAY: AUTH -->
+  <div class="overlay" id="overlay-auth">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md" id="auth-title">Giriş Yap</h1>
+      <div class="close-btn" onclick="closeOverlay('auth')">✕</div>
+    </div>
+    <div class="px">
+      <div class="glass" style="padding:16px;">
+        <div class="body-md" style="margin-bottom:6px;">E-posta</div>
+        <input id="auth-email" type="email" placeholder="ornek@eposta.com" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        <div style="height:12px"></div>
+        <div class="body-md" style="margin-bottom:6px;">Şifre</div>
+        <input id="auth-password" type="password" placeholder="••••••••" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      </div>
+      <div style="height:16px"></div>
+      <button class="btn-primary" id="auth-submit-btn" onclick="submitAuth()">Giriş Yap</button>
+      <div style="height:10px"></div>
+      <button class="btn-outline" id="auth-toggle-btn" onclick="toggleAuthMode()">Hesabın yok mu? Kayıt ol</button>
     </div>
   </div>
 
@@ -519,30 +614,309 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const venues = [
-  { id:'v1', name:'Hayal Kahvesi', district:'Nilüfer', city:'Bursa', img:'https://picsum.photos/seed/hayalkahvesi/400/300',
-    rating:4.6, reviews:1280, verified:true, distance:1.2,
-    prices:[{cat:'Bira', name:'Efes', price:190, prev:180},{cat:'Bira', name:'Bomonti', price:170}] },
-  { id:'v2', name:"Paddy's Pub", district:'Osmangazi', city:'Bursa', img:'https://picsum.photos/seed/paddys/400/300',
-    rating:4.4, reviews:860, verified:true, distance:2.5,
-    prices:[{cat:'Bira', name:'Efes', price:170, prev:175}] },
-  { id:'v3', name:'Roof Lounge', district:'Nilüfer', city:'Bursa', img:'https://picsum.photos/seed/rooflounge/400/300',
-    rating:4.7, reviews:2130, verified:true, distance:3.1,
-    prices:[{cat:'Bira', name:'Efes', price:220}] },
-  { id:'v4', name:'The Wall', district:'Nilüfer', city:'Bursa', img:'https://picsum.photos/seed/thewall/400/300',
-    rating:4.5, reviews:640, verified:false, distance:0.8,
-    prices:[{cat:'Bira', name:'Efes', price:185}] },
-];
+const SUPABASE_URL = 'https://qalpqlsvuvwrzzyqfuen.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_d5uDYbbPvU9q5wEzUcsQqw_MNd_Da4C';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const categories = ['Bira','Viski','Vodka','Şarap','Kokteyl'];
+let themePreference = 'system';
+
+function resolveTheme(pref){
+  if(pref==='system') return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  return pref;
+}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', resolveTheme(themePreference));
+}
+async function setThemePreference(pref){
+  themePreference = pref;
+  applyTheme();
+  localStorage.setItem('nc_theme', pref);
+  if(currentUser){
+    await sb.from('profiles').update({ theme_preference: pref }).eq('id', currentUser.id);
+    if(currentProfile) currentProfile.theme_preference = pref;
+  }
+  renderProfileScreen();
+}
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', ()=>{
+  if(themePreference==='system') applyTheme();
+});
+{
+  const saved = localStorage.getItem('nc_theme');
+  if(saved) themePreference = saved;
+  applyTheme();
+}
+
+let cities = [];
+let currentCity = null;
+
+async function loadCities(){
+  const { data, error } = await sb.from('cities').select('*').eq('is_active', true);
+  if(error){ console.error(error); return; }
+  cities = data || [];
+  currentCity = cities.find(c=>c.slug==='bursa') || cities[0] || null;
+  if(currentCity) document.getElementById('city-label').innerText = currentCity.name;
+}
+
+let venues = [];
+let trendScores = {};
+
+async function loadTrendScores(){
+  if(!currentCity){ return; }
+  const { data, error } = await sb.from('venue_popularity').select('*').eq('city_id', currentCity.id);
+  if(error){ console.error(error); return; }
+  trendScores = {};
+  (data || []).forEach(row=>{ trendScores[row.venue_id] = row.trend_score; });
+}
+
+function renderCityList(){
+  document.getElementById('city-list').innerHTML = cities.map(c=>`
+    <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer; ${currentCity && c.id===currentCity.id ? 'border:1.5px solid var(--purple);':''}" onclick="switchCity('${c.id}')">
+      <div class="body-lg">${c.name}</div>
+      ${currentCity && c.id===currentCity.id ? '<span style="color:var(--purple);">✓</span>' : ''}
+    </div>`).join('');
+}
+async function switchCity(cityId){
+  const city = cities.find(c=>c.id===cityId);
+  if(!city) return;
+  currentCity = city;
+  document.getElementById('city-label').innerText = currentCity.name;
+  routeState.selected = [];
+  closeOverlay('city');
+  await loadVenues();
+  await loadTrendScores();
+  renderHome();
+  renderCatChips();
+  renderCompare();
+  showToast(`${currentCity.name} şehrine geçildi`);
+}
+
+async function loadVenues(){
+  if(!currentCity){ return; }
+  const { data: venueRows, error: venueErr } = await sb.from('venues').select('*').eq('city_id', currentCity.id).order('created_at', { ascending:false });
+  if(venueErr){ console.error(venueErr); showToast('Mekanlar yüklenemedi'); return; }
+  const { data: priceRows, error: priceErr } = await sb.from('prices').select('*').order('created_at', { ascending:false });
+  if(priceErr){ console.error(priceErr); showToast('Fiyatlar yüklenemedi'); return; }
+
+  venues = (venueRows || []).map(v=>{
+    const rowsForVenue = (priceRows || []).filter(p=>p.venue_id===v.id);
+    const grouped = {};
+    rowsForVenue.forEach(p=>{
+      const key = p.category+'|'+p.drink_name;
+      (grouped[key] ||= []).push(p);
+    });
+    const prices = Object.values(grouped).map(rows=>({
+      cat: rows[0].category,
+      name: rows[0].drink_name,
+      price: Number(rows[0].price),
+      prev: rows[1] ? Number(rows[1].price) : undefined,
+      updatedAt: rows[0].created_at,
+    }));
+    const lastPriceUpdate = prices.length
+      ? prices.reduce((max,p)=> p.updatedAt > max ? p.updatedAt : max, prices[0].updatedAt)
+      : v.created_at;
+    return {
+      id: v.id, name: v.name, district: v.district, city: v.city, img: v.img,
+      rating: Number(v.rating), reviews: v.reviews, verified: v.verified, distance: Number(v.distance),
+      lat: v.lat!=null ? Number(v.lat) : null, lng: v.lng!=null ? Number(v.lng) : null,
+      prices, lastPriceUpdate,
+    };
+  });
+}
+
+let categories = [];
+
+async function loadCategories(){
+  const { data, error } = await sb.from('venue_categories').select('*').order('sort_order');
+  if(error){ console.error(error); return; }
+  categories = (data || []).map(c=>c.name);
+}
+
 const sortOptions = [
   {k:'cheapest', label:'En Ucuz'}, {k:'nearest', label:'En Yakın'},
   {k:'popular', label:'En Popüler'}, {k:'topRated', label:'En Yüksek Puan'},
 ];
 
+let currentUser = null;
+let currentProfile = null;
+let authMode = 'login';
+let favoriteIds = new Set();
+
+async function loadFavorites(){
+  if(!currentUser){ favoriteIds = new Set(); return; }
+  const { data, error } = await sb.from('favorites').select('venue_id').eq('user_id', currentUser.id);
+  if(error){ console.error(error); return; }
+  favoriteIds = new Set((data || []).map(r=>r.venue_id));
+}
+async function shareVenue(){
+  const v = contributeState.venue;
+  if(!v) return;
+  const shareData = { title: v.name, text: `${v.name} — ${v.district}, ${v.city} fiyatlarını NightCompare'de gör`, url: location.href };
+  if(navigator.share){
+    try{ await navigator.share(shareData); } catch(e){ /* kullanıcı iptal etti */ }
+    return;
+  }
+  if(navigator.clipboard){
+    await navigator.clipboard.writeText(`${shareData.text} — ${shareData.url}`);
+    showToast('Bağlantı panoya kopyalandı');
+    return;
+  }
+  showToast('Paylaşım bu tarayıcıda desteklenmiyor');
+}
+function updateDetailFavButton(){
+  const btn = document.getElementById('detail-fav-btn');
+  if(!btn || !contributeState.venue) return;
+  const isFav = favoriteIds.has(contributeState.venue.id);
+  btn.innerText = isFav ? '♥' : '♡';
+  btn.style.color = isFav ? 'var(--purple)' : '#fff';
+}
+async function toggleFavoriteVenue(venueId){
+  if(!requireAuth()) return;
+  const isFav = favoriteIds.has(venueId);
+  if(isFav){
+    await sb.from('favorites').delete().eq('user_id', currentUser.id).eq('venue_id', venueId);
+    favoriteIds.delete(venueId);
+  } else {
+    await sb.from('favorites').insert({ user_id: currentUser.id, venue_id: venueId });
+    favoriteIds.add(venueId);
+  }
+  if(document.getElementById('screen-home').classList.contains('active')) renderHome();
+  if(document.getElementById('screen-compare').classList.contains('active')) renderCompare();
+  if(document.getElementById('screen-favorites').classList.contains('active')) renderFavorites();
+  updateDetailFavButton();
+}
+function toggleFavoriteCurrent(){
+  if(contributeState.venue) toggleFavoriteVenue(contributeState.venue.id);
+}
+
+function setAuthMode(mode){
+  authMode = mode;
+  document.getElementById('auth-title').innerText = mode==='login' ? 'Giriş Yap' : 'Kayıt Ol';
+  document.getElementById('auth-submit-btn').innerText = mode==='login' ? 'Giriş Yap' : 'Kayıt Ol';
+  document.getElementById('auth-toggle-btn').innerText = mode==='login' ? 'Hesabın yok mu? Kayıt ol' : 'Zaten hesabın var mı? Giriş yap';
+}
+function toggleAuthMode(){ setAuthMode(authMode==='login' ? 'signup' : 'login'); }
+function openAuth(mode){
+  setAuthMode(mode || 'login');
+  document.getElementById('auth-email').value='';
+  document.getElementById('auth-password').value='';
+  openOverlay('auth');
+}
+function requireAuth(){
+  if(!currentUser){ openAuth('login'); return false; }
+  return true;
+}
+async function submitAuth(){
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if(!email || !password){ showToast('E-posta ve şifre gerekli'); return; }
+  const { error } = authMode==='login'
+    ? await sb.auth.signInWithPassword({ email, password })
+    : await sb.auth.signUp({ email, password });
+  if(error){ showToast(error.message); return; }
+  closeOverlay('auth');
+  showToast(authMode==='login' ? 'Giriş yapıldı 👋' : 'Kayıt tamamlandı, hoş geldin! 🎉');
+}
+async function signOutUser(){
+  await sb.auth.signOut();
+  showToast('Çıkış yapıldı');
+}
+async function loadProfile(){
+  if(!currentUser){ currentProfile = null; return; }
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  currentProfile = data;
+  if(currentProfile?.theme_preference){
+    themePreference = currentProfile.theme_preference;
+    applyTheme();
+  }
+}
+async function uploadAvatar(file){
+  if(!file || !currentUser) return;
+  const ext = file.name.split('.').pop();
+  const path = `${currentUser.id}/avatar.${ext}`;
+  const { error: uploadError } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
+  if(uploadError){ console.error(uploadError); showToast('Fotoğraf yüklenemedi'); return; }
+  const publicUrl = sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+  const { error } = await sb.from('profiles').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
+  if(error){ console.error(error); showToast('Profil güncellenemedi'); return; }
+  currentProfile.avatar_url = publicUrl;
+  showToast('Profil fotoğrafın güncellendi');
+  renderProfileScreen();
+}
+async function renderProfileScreen(){
+  const el = document.getElementById('profile-content');
+  if(!currentUser){
+    el.innerHTML = `
+      <div style="text-align:center; padding-top:80px;">
+        <div style="font-size:40px;">🔒</div>
+        <div class="headline" style="margin-top:12px;">Giriş yapmadın</div>
+        <div class="body-md" style="margin-top:6px;">Favorilerini ve katkılarını görmek için giriş yap</div>
+        <div style="height:20px"></div>
+        <button class="btn-primary" onclick="openAuth('login')">Giriş Yap</button>
+      </div>`;
+    return;
+  }
+  const xp = currentProfile?.xp || 0;
+  const level = Math.floor(xp/100) + 1;
+  const progressPct = xp % 100;
+  const { count: contribCount } = await sb.from('prices').select('id', { count:'exact', head:true }).eq('reported_by', currentUser.id);
+  const c = contribCount || 0;
+  const badges = [
+    { emoji:'🍺', label:'Explorer', earned: c>=1 },
+    { emoji:'⭐', label:'Güvenilir', earned: c>=10 },
+    { emoji:'👑', label:'VIP', earned: c>=25 },
+    { emoji:'🏅', label:'100 Katkı', earned: c>=100 },
+  ];
+  const avatarInner = currentProfile?.avatar_url
+    ? `<img src="${currentProfile.avatar_url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
+    : '🧑';
+  el.innerHTML = `
+    <div class="row gap-12">
+      <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;cursor:pointer;" onclick="document.getElementById('avatar-input').click()">${avatarInner}</div>
+      <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="uploadAvatar(this.files[0])">
+      <div style="flex:1">
+        <div class="headline">${currentProfile?.username || 'Barmender'}</div>
+        <div class="body-md" style="margin:2px 0 6px;">Seviye ${level} · ${currentUser.email}</div>
+        <div class="progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>
+      </div>
+    </div>
+    <div class="row gap-8" style="margin-top:20px;">
+      <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">${c}</div><div class="body-sm">Katkılarım</div></div>
+      <div class="glass" style="flex:1;text-align:center;padding:14px 0;"><div class="headline">${favoriteIds.size}</div><div class="body-sm">Favoriler</div></div>
+    </div>
+    <h3 class="headline" style="margin-top:20px;">Rozetlerim</h3>
+    <div class="row gap-12" style="margin-top:10px; overflow-x:auto;">
+      ${badges.map(b=>`<div style="text-align:center; ${b.earned?'':'opacity:.35;'}"><div class="badge-circle">${b.emoji}</div><div class="caption" style="margin-top:4px;">${b.label}</div></div>`).join('')}
+    </div>
+    <div class="glass" style="margin-top:20px; padding:4px 0; cursor:pointer;" onclick="openOverlay('leaderboard')">
+      <div class="row-between" style="padding:14px 16px;">🏆 Liderlik Tablosu <span style="color:var(--text-tertiary);">›</span></div>
+    </div>
+    <h3 class="headline" style="margin-top:20px;">🌓 Tema</h3>
+    <div class="row gap-8" style="margin-top:10px;">
+      <div class="chip ${themePreference==='system'?'selected':''}" onclick="setThemePreference('system')">Sistem</div>
+      <div class="chip ${themePreference==='light'?'selected':''}" onclick="setThemePreference('light')">Açık</div>
+      <div class="chip ${themePreference==='dark'?'selected':''}" onclick="setThemePreference('dark')">Koyu</div>
+    </div>
+    <button class="btn-outline" style="margin-top:20px;" onclick="signOutUser()">Çıkış Yap</button>`;
+}
+async function initAuth(){
+  const { data:{ session } } = await sb.auth.getSession();
+  currentUser = session?.user || null;
+  await loadProfile();
+  await loadFavorites();
+  await renderProfileScreen();
+  sb.auth.onAuthStateChange(async (_event, session)=>{
+    currentUser = session?.user || null;
+    await loadProfile();
+    await loadFavorites();
+    await renderProfileScreen();
+    if(document.getElementById('screen-favorites').classList.contains('active')) renderFavorites();
+  });
+}
+
 let compareState = { category:'Bira', sort:'cheapest' };
 let contributeState = { venue:null, category:null };
 let routeState = { selected:[] };
+let routeAutoState = { category:null, count:4 };
 let budgetState = { people:4, pref:'Bira' };
 
 function venueCardHTML(v){
@@ -552,6 +926,7 @@ function venueCardHTML(v){
       <img src="${v.img}" alt="${v.name}" loading="lazy">
       ${v.verified ? '<div class="badge-verified">✓</div>' : ''}
       <div class="badge-price">₺₺</div>
+      <div class="badge-fav ${favoriteIds.has(v.id)?'is-fav':''}" onclick="event.stopPropagation(); toggleFavoriteVenue('${v.id}')">${favoriteIds.has(v.id)?'♥':'♡'}</div>
     </div>
     <div class="name">${v.name}</div>
     <div class="meta">★ ${v.rating} · ${v.district}</div>
@@ -559,8 +934,14 @@ function venueCardHTML(v){
 }
 
 function renderHome(){
-  document.getElementById('trend-scroll').innerHTML = venues.map(venueCardHTML).join('');
-  document.getElementById('new-scroll').innerHTML = [...venues].reverse().map(venueCardHTML).join('');
+  const trend = [...venues].sort((a,b)=>{
+    const scoreDiff = (trendScores[b.id]||0) - (trendScores[a.id]||0);
+    return scoreDiff !== 0 ? scoreDiff : b.rating - a.rating;
+  });
+  document.getElementById('trend-scroll').innerHTML = trend.slice(0,8).map(venueCardHTML).join('');
+  document.getElementById('new-scroll').innerHTML = venues.map(venueCardHTML).join('');
+  const updated = [...venues].sort((a,b)=> b.lastPriceUpdate.localeCompare(a.lastPriceUpdate));
+  document.getElementById('updated-scroll').innerHTML = updated.map(venueCardHTML).join('');
   const cheap = [...venues].sort((a,b)=> (a.prices[0]?.price||999)-(b.prices[0]?.price||999));
   document.getElementById('cheap-scroll').innerHTML = cheap.map(venueCardHTML).join('');
 }
@@ -582,8 +963,9 @@ function renderCompare(){
   const q = document.getElementById('compare-search').value.trim().toLowerCase();
   let results = [];
   venues.forEach(v=>{
+    const venueMatches = v.name.toLowerCase().includes(q) || (v.district||'').toLowerCase().includes(q);
     v.prices.forEach(p=>{
-      if(p.cat===compareState.category && (q==='' || p.name.toLowerCase().includes(q))){
+      if(p.cat===compareState.category && (q==='' || venueMatches || p.name.toLowerCase().includes(q))){
         results.push({venue:v, price:p});
       }
     });
@@ -601,7 +983,7 @@ function renderCompare(){
         <div style="font-size:40px;">🍸</div>
         <div class="body-lg" style="margin-top:12px;">${q ? `"${q}" için Bursa'da henüz fiyat girilmemiş 🎉` : 'Aramaya başlamak için bir içki yazın'}</div>
         ${q ? `<div class="body-md" style="margin-top:8px;">İlk katkıyı sen yap ve rozet kazan</div>
-        <button class="btn-primary" style="margin-top:20px;" onclick="openOverlay('contribute'); resetContribute();">Fiyat Bildir</button>` : ''}
+        <button class="btn-primary" style="margin-top:20px;" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>` : ''}
       </div>`;
     return;
   }
@@ -622,21 +1004,42 @@ function renderCompare(){
         <div class="price" style="color:${isCheapest?'var(--success)':'var(--text-primary)'}">₺${r.price.price}</div>
         ${diff ? `<div class="caption" style="color:${diff>0?'var(--error)':'var(--success)'}">${diff>0?'↑':'↓'} ₺${Math.abs(diff)}</div>` : ''}
       </div>
+      <div class="row-fav-btn ${favoriteIds.has(r.venue.id)?'is-fav':''}" onclick="event.stopPropagation(); toggleFavoriteVenue('${r.venue.id}')">${favoriteIds.has(r.venue.id)?'♥':'♡'}</div>
     </div>`;
   }).join('');
 }
 
 function renderFavorites(){
-  const favs = venues.slice(0,2);
-  document.getElementById('fav-list').innerHTML = favs.map(v=>`
+  const el = document.getElementById('fav-list');
+  if(!currentUser){
+    el.innerHTML = `
+      <div style="text-align:center; padding-top:60px;">
+        <div class="body-md">Favorilerini görmek için giriş yap</div>
+        <div style="height:16px"></div>
+        <button class="btn-primary" onclick="openAuth('login')">Giriş Yap</button>
+      </div>`;
+    return;
+  }
+  const favs = venues.filter(v=>favoriteIds.has(v.id));
+  if(favs.length===0){
+    el.innerHTML = `<div style="text-align:center; padding-top:60px;"><div class="body-md">Henüz favori mekanın yok</div></div>`;
+    return;
+  }
+  el.innerHTML = favs.map(v=>`
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${v.id}')">
       <div><div class="body-lg" style="font-weight:600;">${v.name}</div><div class="body-sm">${v.district}</div></div>
       <span style="color:var(--purple); font-size:18px;">♥</span>
     </div>`).join('');
 }
 
+function recordVenueView(venueId){
+  sb.from('venue_views').insert({ venue_id: venueId, user_id: currentUser?.id || null })
+    .then(({ error }) => { if(error) console.error(error); });
+}
+
 function openDetail(id){
   const v = venues.find(x=>x.id===id);
+  recordVenueView(id);
   document.getElementById('detail-img').src = v.img;
   document.getElementById('detail-name').innerText = v.name;
   document.getElementById('detail-meta').innerText = `★ ${v.rating} (${v.reviews}) · ${v.district}, ${v.city}`;
@@ -653,7 +1056,131 @@ function openDetail(id){
   }
   document.getElementById('detail-prices').innerHTML = html;
   contributeState.venue = v;
+  updateDetailFavButton();
+  setDetailTab('prices');
   openOverlay('detail');
+}
+
+let selectedReviewRating = 5;
+
+function setDetailTab(tab){
+  document.querySelectorAll('#detail-tabs .tab-chip').forEach((el,i)=>{
+    el.classList.toggle('selected', ['prices','reviews','about'][i]===tab);
+  });
+  ['prices','reviews','about'].forEach(t=>{
+    document.getElementById('detail-'+t).style.display = t===tab ? 'block' : 'none';
+  });
+  if(tab==='reviews') renderDetailReviews();
+  if(tab==='about') renderDetailAbout();
+}
+
+async function renderDetailReviews(){
+  const v = contributeState.venue;
+  const el = document.getElementById('detail-reviews');
+  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  const { data, error } = await sb.from('reviews')
+    .select('*, profiles(username)')
+    .eq('venue_id', v.id)
+    .order('created_at', { ascending:false });
+  if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yorumlar yüklenemedi</div>`; return; }
+
+  const formHTML = currentUser ? `
+    <div class="glass" style="padding:16px; margin-bottom:16px;">
+      <div class="body-md" style="margin-bottom:8px;">Puanın</div>
+      <div class="row gap-4" id="review-stars" style="margin-bottom:12px;">
+        ${[1,2,3,4,5].map(n=>`<span onclick="setReviewRating(${n})" style="font-size:22px; cursor:pointer; color:${n<=selectedReviewRating?'var(--gold)':'var(--text-tertiary)'};" id="star-${n}">★</span>`).join('')}
+      </div>
+      <textarea id="review-comment" placeholder="Yorumun (opsiyonel)" style="width:100%; min-height:60px; padding:12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter'; resize:vertical;"></textarea>
+      <div style="height:10px"></div>
+      <button class="btn-primary" onclick="submitReview()">Yorum Ekle</button>
+    </div>` : '';
+
+  const listHTML = (data && data.length) ? data.map(r=>`
+    <div class="glass" style="padding:14px 16px; margin-bottom:10px;">
+      <div class="row-between"><span class="body-lg" style="font-weight:600;">${r.profiles?.username || 'Barmender'}</span><span style="color:var(--gold);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+      ${r.comment ? `<div class="body-md" style="margin-top:6px;">${r.comment}</div>` : ''}
+    </div>`).join('') : `<div class="body-md" style="text-align:center; padding:20px 0;">Henüz yorum yok</div>`;
+
+  el.innerHTML = formHTML + listHTML;
+}
+
+function setReviewRating(n){
+  selectedReviewRating = n;
+  [1,2,3,4,5].forEach(i=>{
+    document.getElementById('star-'+i).style.color = i<=n ? 'var(--gold)' : 'var(--text-tertiary)';
+  });
+}
+
+async function submitReview(){
+  if(!requireAuth()) return;
+  const v = contributeState.venue;
+  const comment = document.getElementById('review-comment').value.trim();
+  const { error } = await sb.from('reviews').insert({
+    venue_id: v.id, user_id: currentUser.id, rating: selectedReviewRating, comment: comment || null,
+  });
+  if(error){ console.error(error); showToast('Yorum kaydedilemedi'); return; }
+  selectedReviewRating = 5;
+  showToast('Yorumun eklendi 🎉');
+  renderDetailReviews();
+}
+
+async function renderDetailAbout(){
+  const v = contributeState.venue;
+  const el = document.getElementById('detail-about');
+  const cats = [...new Set(v.prices.map(p=>p.cat))];
+  el.innerHTML = `
+    <div class="glass" style="padding:0 16px;">
+      <div class="price-list-item"><span class="body-md">Konum</span><span class="body-lg">${v.district}, ${v.city}</span></div>
+      <div class="divider-line"></div>
+      <div class="price-list-item"><span class="body-md">Uzaklık</span><span class="body-lg">${v.distance} km</span></div>
+      <div class="divider-line"></div>
+      <div class="price-list-item"><span class="body-md">Puan</span><span class="body-lg">★ ${v.rating} (${v.reviews})</span></div>
+      <div class="divider-line"></div>
+      <div class="price-list-item"><span class="body-md">Durum</span><span class="body-lg">${v.verified ? '✓ Doğrulanmış' : 'Doğrulanmamış'}</span></div>
+    </div>
+    <div class="body-md" style="margin:16px 0 8px;">Sunulan Kategoriler</div>
+    <div class="row gap-8" style="flex-wrap:wrap;">
+      ${cats.map(c=>`<div class="chip">${c}</div>`).join('')}
+    </div>
+    <div id="verification-section" style="margin-top:20px;"></div>`;
+  if(v.verified) return;
+  await renderVerificationSection(v);
+}
+
+async function renderVerificationSection(v){
+  const el = document.getElementById('verification-section');
+  if(!currentUser){
+    el.innerHTML = `<button class="btn-outline" onclick="openAuth('login')">🏷️ Mekan sahibi misin? Giriş yap</button>`;
+    return;
+  }
+  const { data, error } = await sb.from('venue_verification_requests').select('*').eq('venue_id', v.id).eq('user_id', currentUser.id).order('created_at', { ascending:false }).limit(1);
+  if(error){ console.error(error); return; }
+  const existing = data && data[0];
+  if(existing?.status==='pending'){
+    el.innerHTML = `<div class="body-sm" style="text-align:center;">Doğrulama başvurun inceleniyor</div>`;
+    return;
+  }
+  if(existing?.status==='rejected'){
+    el.innerHTML = `<div class="body-sm" style="text-align:center; color:var(--error);">Başvurun reddedildi</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <button class="btn-outline" onclick="showVerificationForm()">🏷️ Bu mekanın sahibi misin? Doğrulama başvurusu yap</button>
+    <div id="verification-form" style="display:none; margin-top:12px;">
+      <textarea id="verification-message" placeholder="İşletmenle ilgili kısa bir not (opsiyonel)" style="width:100%; min-height:60px; padding:12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter'; resize:vertical;"></textarea>
+      <div style="height:10px"></div>
+      <button class="btn-primary" onclick="submitVerificationRequest('${v.id}')">Başvuruyu Gönder</button>
+    </div>`;
+}
+function showVerificationForm(){
+  document.getElementById('verification-form').style.display = 'block';
+}
+async function submitVerificationRequest(venueId){
+  const message = document.getElementById('verification-message').value.trim();
+  const { error } = await sb.from('venue_verification_requests').insert({ venue_id: venueId, user_id: currentUser.id, message: message || null });
+  if(error){ console.error(error); showToast('Başvuru gönderilemedi'); return; }
+  showToast('Başvurun alındı, incelenecek');
+  renderVerificationSection(contributeState.venue);
 }
 
 function resetContribute(){
@@ -662,7 +1189,11 @@ function resetContribute(){
   document.getElementById('c-price-input').value='';
   const preselected = !!contributeState.venue;
   goContributeStep(preselected ? 'drink' : 'venue');
-  document.getElementById('contribute-venue-list').innerHTML = venues.map(v=>`
+  document.getElementById('contribute-venue-list').innerHTML =
+    `<div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer; border:1px dashed var(--glass-border);" onclick="goContributeStep('newvenue')">
+      <div class="body-lg" style="color:var(--purple); font-weight:600;">+ Yeni mekan ekle</div>
+    </div>` +
+    venues.map(v=>`
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="selectContributeVenue('${v.id}')">
       <div><div class="body-lg">${v.name}</div><div class="body-sm">${v.district} · ${v.distance} km</div></div>
       <span style="color:var(--text-tertiary);">›</span>
@@ -675,15 +1206,46 @@ function selectContributeVenue(id){
   contributeState.venue = venues.find(v=>v.id===id);
   goContributeStep('drink');
 }
+async function submitNewVenue(){
+  const name = document.getElementById('nv-name').value.trim();
+  const district = document.getElementById('nv-district').value.trim();
+  const distance = Number(document.getElementById('nv-distance').value);
+  let img = document.getElementById('nv-img').value.trim();
+  const photoFile = document.getElementById('nv-photo').files[0];
+  if(!name || !district || !distance || distance<=0){
+    showToast('Lütfen mekan adı, semt ve uzaklığı gir'); return;
+  }
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'') || 'venue';
+  if(photoFile){
+    const ext = photoFile.name.split('.').pop();
+    const path = `${slug}-${Date.now()}.${ext}`;
+    const { error: uploadError } = await sb.storage.from('venue-photos').upload(path, photoFile);
+    if(uploadError){ console.error(uploadError); showToast('Fotoğraf yüklenemedi'); return; }
+    img = sb.storage.from('venue-photos').getPublicUrl(path).data.publicUrl;
+  }
+  const { data, error } = await sb.from('venues').insert({
+    name, district, city: currentCity.name, city_id: currentCity.id, distance,
+    img: img || `https://picsum.photos/seed/${slug}/400/300`,
+    rating: 0, reviews: 0, verified: false, created_by: currentUser.id,
+  }).select().single();
+  if(error){ console.error(error); showToast('Mekan eklenemedi'); return; }
+  const newVenue = { id: data.id, name: data.name, district: data.district, city: data.city,
+    img: data.img, rating: Number(data.rating), reviews: data.reviews, verified: data.verified,
+    distance: Number(data.distance), lat: null, lng: null, prices: [], lastPriceUpdate: data.created_at };
+  venues.unshift(newVenue);
+  contributeState.venue = newVenue;
+  showToast('Mekan eklendi! Şimdi bir fiyat gir');
+  goContributeStep('drink');
+}
 function selectContributeCategory(c){
   contributeState.category = c;
   categories.forEach(cat=>document.getElementById('c-cat-'+cat).classList.toggle('selected', cat===c));
 }
 function goContributeStep(step){
-  ['venue','drink','price','done'].forEach(s=>{
+  ['venue','newvenue','drink','price','done'].forEach(s=>{
     document.getElementById('contribute-step-'+s).style.display = s===step ? 'block' : 'none';
   });
-  const stepIndex = {venue:1, drink:1, price:2, done:3}[step];
+  const stepIndex = {venue:1, newvenue:1, drink:1, price:2, done:3}[step];
   [1,2,3].forEach(n=>document.getElementById('step-bar-'+n).classList.toggle('active', n<=stepIndex));
   if(step==='drink' && contributeState.venue){
     document.getElementById('c-venue-name').innerText = contributeState.venue.name;
@@ -692,12 +1254,29 @@ function goContributeStep(step){
     document.getElementById('c-summary').innerText = `${contributeState.venue.name} · ${document.getElementById('c-drink-name').value}`;
   }
 }
-function contributeNext(step){
+async function contributeNext(step){
   if(step==='price' && (!contributeState.category || !document.getElementById('c-drink-name').value.trim())){
     showToast('Lütfen kategori seç ve içki adı yaz'); return;
   }
-  if(step==='done' && !document.getElementById('c-price-input').value){
-    showToast('Lütfen fiyat gir'); return;
+  if(step==='done'){
+    const priceVal = document.getElementById('c-price-input').value;
+    if(!priceVal){ showToast('Lütfen fiyat gir'); return; }
+    if(!requireAuth()) return;
+    const { error } = await sb.from('prices').insert({
+      venue_id: contributeState.venue.id,
+      category: contributeState.category,
+      drink_name: document.getElementById('c-drink-name').value.trim(),
+      price: Number(priceVal),
+      reported_by: currentUser.id,
+    });
+    if(error){ console.error(error); showToast('Fiyat kaydedilemedi'); return; }
+    const newXp = (currentProfile?.xp || 0) + 20;
+    await sb.from('profiles').update({ xp: newXp }).eq('id', currentUser.id);
+    if(currentProfile) currentProfile.xp = newXp;
+    await loadVenues();
+    renderHome();
+    renderCompare();
+    renderProfileScreen();
   }
   goContributeStep(step);
 }
@@ -726,9 +1305,11 @@ function renderBudgetResults(){
     if(!match) return;
     const perPerson = Math.floor(budget/budgetState.people/match.price);
     if(perPerson<1) return;
-    results.push({venue:v, drink:match.name, perPerson, total:perPerson*match.price*budgetState.people});
+    const catPrices = v.prices.filter(p=>p.cat===budgetState.pref).map(p=>p.price);
+    const avgPrice = Math.round(catPrices.reduce((s,p)=>s+p,0)/catPrices.length);
+    results.push({venue:v, drink:match.name, perPerson, avgPrice, total:perPerson*match.price*budgetState.people});
   });
-  results.sort((a,b)=>b.perPerson-a.perPerson);
+  results.sort((a,b)=> b.perPerson-a.perPerson || a.venue.distance-b.venue.distance);
   const el = document.getElementById('budget-results');
   if(results.length===0){
     el.innerHTML = `<div class="glass" style="padding:20px; text-align:center;"><div class="body-md">Bu bütçeyle bölgede uygun seçenek bulunamadı. Bütçeni artırmayı dene.</div></div>`;
@@ -738,14 +1319,45 @@ function renderBudgetResults(){
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${r.venue.id}')">
       <div>
         <div class="body-lg">${r.venue.name}</div>
-        <div class="body-sm">${r.venue.district}</div>
+        <div class="body-sm">${r.venue.district} · ${r.venue.distance} km</div>
         <div class="body-sm" style="color:var(--blue-light); margin-top:4px;">Kişi başı ${r.perPerson} ${r.drink} içebilirsin</div>
+        <div class="caption" style="margin-top:2px;">Ortalama ${budgetState.pref} fiyatı: ₺${r.avgPrice}</div>
       </div>
       <div class="price">₺${r.total}</div>
     </div>`).join('');
 }
 
+function renderRouteAutoCatChips(){
+  if(!routeAutoState.category) routeAutoState.category = categories[0] || null;
+  document.getElementById('route-auto-cat-chips').innerHTML = categories.map(c=>
+    `<div class="chip ${c===routeAutoState.category?'selected':''}" style="margin:4px;" onclick="setRouteAutoCategory('${c}')">${c}</div>`
+  ).join('');
+}
+function setRouteAutoCategory(c){ routeAutoState.category = c; renderRouteAutoCatChips(); }
+function renderRouteAutoCountChips(){
+  document.getElementById('route-auto-count-chips').innerHTML = [3,4,5].map(n=>
+    `<div class="chip ${n===routeAutoState.count?'selected':''}" onclick="setRouteAutoCount(${n})">${n} Mekan</div>`
+  ).join('');
+}
+function setRouteAutoCount(n){ routeAutoState.count = n; renderRouteAutoCountChips(); }
+function generateAutoRoute(){
+  if(!routeAutoState.category){ showToast('Önce bir kategori seç'); return; }
+  const candidates = venues.filter(v=> v.prices.some(p=>p.cat===routeAutoState.category));
+  if(candidates.length===0){ showToast('Bu kategoride mekan bulunamadı'); return; }
+  routeState.selected = [...candidates].sort((a,b)=>a.distance-b.distance).slice(0, routeAutoState.count);
+  renderRouteVenueList();
+}
+
+function haversineKm(lat1, lng1, lat2, lng2){
+  const R = 6371;
+  const dLat = (lat2-lat1) * Math.PI/180;
+  const dLng = (lng2-lng1) * Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
 function renderRouteVenueList(){
+  routeState.selected.sort((a,b)=>a.distance-b.distance);
   document.getElementById('route-venue-list').innerHTML = venues.map(v=>{
     const idx = routeState.selected.findIndex(x=>x.id===v.id);
     const selected = idx>-1;
@@ -754,7 +1366,7 @@ function renderRouteVenueList(){
       ${selected
         ? `<div class="route-dot first">${idx+1}</div>`
         : `<div style="width:24px;height:24px;border-radius:50%;border:1px solid var(--glass-border);"></div>`}
-      <div><div class="body-lg">${v.name}</div><div class="body-sm">${v.district}</div></div>
+      <div><div class="body-lg">${v.name}</div><div class="body-sm">${v.district} · ${v.distance} km</div></div>
     </div>`;
   }).join('');
   updateRouteSummary();
@@ -769,12 +1381,31 @@ function updateRouteSummary(){
   const n = routeState.selected.length;
   document.getElementById('route-summary').style.display = n>0 ? 'block' : 'none';
   document.getElementById('route-map-placeholder').innerText = n>0 ? `🗺  ${n} mekanlık rota hazır` : 'Mekan seçtikçe rota burada görünecek';
-  const distance = n<2 ? 0 : (n-1)*0.6;
+  let distance = 0;
+  for(let i=1;i<n;i++){
+    const a = routeState.selected[i-1], b = routeState.selected[i];
+    distance += (a.lat!=null && a.lng!=null && b.lat!=null && b.lng!=null)
+      ? haversineKm(a.lat, a.lng, b.lat, b.lng)
+      : 0.6;
+  }
   const minutes = n===0 ? 0 : (n-1)*12 + n*45;
   const spend = routeState.selected.reduce((s,v)=> s + (v.prices[0]?.price||0)*2, 0);
   document.getElementById('route-distance').innerText = distance.toFixed(1)+' km';
   document.getElementById('route-duration').innerText = (minutes/60).toFixed(1)+' sa';
   document.getElementById('route-spend').innerText = '₺'+spend;
+}
+
+function startRoute(){
+  if(routeState.selected.length===0){ showToast('Önce mekan seç'); return; }
+  routeState.selected.forEach(v=>{
+    sb.from('venue_visits').insert({ venue_id: v.id, user_id: currentUser?.id || null })
+      .then(({ error }) => { if(error) console.error(error); });
+  });
+  const url = 'https://www.google.com/maps/dir/' + routeState.selected
+    .map(v => (v.lat!=null && v.lng!=null) ? `${v.lat},${v.lng}` : encodeURIComponent(v.name))
+    .join('/');
+  window.open(url, '_blank');
+  showToast('Rota başlatıldı, iyi eğlenceler! 🎉');
 }
 
 function switchTab(tab){
@@ -786,13 +1417,126 @@ function switchTab(tab){
   });
   if(tab==='compare') renderCompare();
   if(tab==='favorites') renderFavorites();
+  if(tab==='profile') renderProfileScreen();
 }
-function goCompare(){ switchTab('compare'); }
+function onHomeSearchInput(value){
+  document.getElementById('compare-search').value = value;
+  switchTab('compare');
+}
 
 function openOverlay(name){
   document.getElementById('overlay-'+name).classList.add('active');
   if(name==='budget'){ renderBudgetPrefChips(); onBudgetChange(); }
-  if(name==='route'){ renderRouteVenueList(); }
+  if(name==='route'){ renderRouteAutoCatChips(); renderRouteAutoCountChips(); renderRouteVenueList(); }
+  if(name==='city'){ renderCityList(); }
+  if(name==='stats'){ loadAndRenderStats(); }
+  if(name==='recommend'){ renderRecommendations(); }
+  if(name==='leaderboard'){ setLeaderboardPeriod('7d'); }
+}
+async function loadAndRenderStats(){
+  const el = document.getElementById('stats-content');
+  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  const { data, error } = await sb.from('category_price_stats').select('*').eq('city_id', currentCity.id);
+  if(error){ console.error(error); el.innerHTML = `<div class="body-md">İstatistikler yüklenemedi</div>`; return; }
+  if(!data || data.length===0){ el.innerHTML = `<div class="body-md">Henüz veri yok</div>`; return; }
+  el.innerHTML = data.map(row=>`
+    <div class="glass" style="padding:14px 16px; margin-bottom:10px;">
+      <div class="headline" style="margin-bottom:8px;">${row.category}</div>
+      <div class="price-list-item"><span class="body-md">Ortalama</span><span class="price">₺${row.avg_price}</span></div>
+      <div class="price-list-item"><span class="body-md">En Ucuz</span><span class="price">₺${row.min_price}</span></div>
+      <div class="price-list-item"><span class="body-md">En Pahalı</span><span class="price">₺${row.max_price}</span></div>
+      <div class="caption">${row.sample_count} fiyat girişine göre</div>
+    </div>`).join('');
+}
+
+let userGeo = null;
+
+function requestUserLocation(){
+  return new Promise(resolve=>{
+    if(!navigator.geolocation){ resolve(null); return; }
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => resolve(null),
+      { timeout: 5000 }
+    );
+  });
+}
+
+function distanceToVenue(v){
+  if(userGeo && v.lat!=null && v.lng!=null) return haversineKm(userGeo.lat, userGeo.lng, v.lat, v.lng);
+  return v.distance;
+}
+
+async function getFavoriteCategory(){
+  const catCounts = {};
+  venues.filter(v=>favoriteIds.has(v.id)).forEach(v=> v.prices.forEach(p=>{ catCounts[p.cat] = (catCounts[p.cat]||0)+1; }));
+  if(currentUser){
+    const { data } = await sb.from('venue_visits').select('venue_id').eq('user_id', currentUser.id);
+    (data||[]).forEach(row=>{
+      const v = venues.find(x=>x.id===row.venue_id);
+      if(v) v.prices.forEach(p=>{ catCounts[p.cat] = (catCounts[p.cat]||0)+2; });
+    });
+  }
+  const sorted = Object.entries(catCounts).sort((a,b)=>b[1]-a[1]);
+  return sorted.length ? sorted[0][0] : null;
+}
+
+// Basit kural tabanlı skor: kategori eşleşmesi + yakınlık + puan. İleride yeni sinyaller
+// (ör. ziyaret sıklığı, yorum puanı) buraya ek terim olarak eklenebilir.
+function scoreVenue(v, favCategory, dist){
+  const categoryMatch = favCategory && v.prices.some(p=>p.cat===favCategory);
+  const proximityScore = Math.max(0, 5 - dist);
+  return (categoryMatch ? 3 : 0) + proximityScore*0.6 + v.rating*0.4;
+}
+
+async function renderRecommendations(){
+  const el = document.getElementById('recommend-content');
+  el.innerHTML = `<div class="body-md">Hazırlanıyor...</div>`;
+  userGeo = await requestUserLocation();
+  const favCategory = await getFavoriteCategory();
+  const scored = venues.map(v=>{
+    const dist = distanceToVenue(v);
+    return { v, dist, score: scoreVenue(v, favCategory, dist) };
+  }).sort((a,b)=>b.score-a.score).slice(0,6);
+  const locNote = userGeo ? '📍 Konumuna göre' : '📍 Konum izni verilmedi, tahmini mesafe kullanıldı';
+  const catNote = favCategory ? `favori kategorin (${favCategory})` : 'genel popülerlik';
+  if(scored.length===0){ el.innerHTML = `<div class="body-md">Henüz öneri için yeterli mekan yok</div>`; return; }
+  el.innerHTML = `<div class="body-sm" style="margin-bottom:12px; color:var(--text-tertiary);">${locNote} ve ${catNote} baz alındı</div>` +
+    scored.map(({v,dist})=>`
+    <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${v.id}')">
+      <div>
+        <div class="body-lg" style="font-weight:600;">${v.name}</div>
+        <div class="body-sm">${v.district} · ${dist.toFixed(1)} km</div>
+      </div>
+      <div class="price">★ ${v.rating}</div>
+    </div>`).join('');
+}
+
+let leaderboardPeriod = '7d';
+
+function setLeaderboardPeriod(period){
+  leaderboardPeriod = period;
+  document.querySelectorAll('#leaderboard-tabs .tab-chip').forEach((el,i)=>{
+    el.classList.toggle('selected', ['7d','30d','all'][i]===period);
+  });
+  renderLeaderboard();
+}
+
+async function renderLeaderboard(){
+  const el = document.getElementById('leaderboard-content');
+  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  const col = leaderboardPeriod==='7d' ? 'contributions_7d' : leaderboardPeriod==='30d' ? 'contributions_30d' : 'contributions_all';
+  const { data, error } = await sb.from('user_contribution_stats').select('*').gt(col, 0).order(col, { ascending:false }).limit(20);
+  if(error){ console.error(error); el.innerHTML = `<div class="body-md">Liderlik tablosu yüklenemedi</div>`; return; }
+  if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Bu periyotta henüz katkı yok</div>`; return; }
+  el.innerHTML = data.map((row,i)=>`
+    <div class="glass row-between" style="padding:14px 16px; margin-bottom:8px; ${currentUser && row.user_id===currentUser.id ? 'border:1.5px solid var(--purple);':''}">
+      <div class="row gap-12">
+        <div class="body-lg" style="font-weight:700; width:24px;">${i+1}</div>
+        <div class="body-lg">${row.username || 'Barmender'}</div>
+      </div>
+      <div class="price">${row[col]}</div>
+    </div>`).join('');
 }
 function closeOverlay(name){
   document.getElementById('overlay-'+name).classList.remove('active');
@@ -805,10 +1549,17 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 1800);
 }
 
-renderHome();
-renderCatChips();
-renderSortChips();
-renderCompare();
+(async function init(){
+  await loadCities();
+  await loadCategories();
+  await loadVenues();
+  await loadTrendScores();
+  renderHome();
+  renderCatChips();
+  renderSortChips();
+  renderCompare();
+  initAuth();
+})();
 
 let lastTouchEnd = 0;
 document.addEventListener('touchend', function (event) {
