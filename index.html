@@ -229,6 +229,23 @@
     position:absolute; top:0; left:0; right:0; height:260px;
     background:linear-gradient(to bottom, transparent 40%, var(--bg-primary) 100%); pointer-events:none;
   }
+  .detail-gallery{
+    display:flex; overflow-x:auto; scroll-snap-type:x mandatory; height:260px;
+    scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  .detail-gallery::-webkit-scrollbar{display:none;}
+  .detail-gallery img{ width:100%; height:260px; object-fit:cover; flex:0 0 100%; scroll-snap-align:start; pointer-events:none; }
+  .detail-gallery-counter{
+    position:absolute; bottom:16px; right:16px; background:rgba(0,0,0,.55); color:#fff;
+    font-size:11px; font-weight:600; padding:3px 10px; border-radius:var(--radius-full);
+  }
+  .amenity-chip{
+    display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:var(--radius-full);
+    background:var(--glass-fill); border:1px solid var(--glass-border); font-size:12px; color:var(--text-secondary);
+  }
+  .detail-info-row{ display:flex; justify-content:space-around; text-align:center; padding:14px 0; }
+  .detail-info-row .label{ font-size:11px; color:var(--text-tertiary); margin-top:2px; }
+  .detail-info-row .value{ font-size:13px; font-weight:600; color:var(--text-primary); }
   .verified-pill{
     display:inline-flex; align-items:center; gap:4px; background:rgba(59,130,246,.15);
     color:var(--verified); font-size:12px; font-weight:600; padding:4px 10px; border-radius:var(--radius-full);
@@ -524,8 +541,9 @@
   <!-- OVERLAY: VENUE DETAIL -->
   <div class="overlay" id="overlay-detail">
     <div style="position:relative;">
-      <img class="hero-img" id="detail-img" src="" alt="">
+      <div class="detail-gallery" id="detail-gallery" onscroll="updateGalleryCounter()"></div>
       <div class="hero-gradient"></div>
+      <div class="detail-gallery-counter" id="detail-gallery-counter" style="display:none;">1/1</div>
       <div class="row-between" style="position:absolute; top:16px; left:16px; right:16px;">
         <div class="close-btn" onclick="closeOverlay('detail')">←</div>
         <div class="row gap-8"><div class="close-btn" id="detail-fav-btn" onclick="toggleFavoriteCurrent()">♡</div><div class="close-btn" onclick="shareVenue()">⤴</div></div>
@@ -535,7 +553,9 @@
       <div id="detail-verified" class="verified-pill" style="margin-bottom:8px;">✓ Doğrulanmış Mekan</div>
       <h1 class="display-md" id="detail-name"></h1>
       <div class="body-md" style="margin-top:4px;" id="detail-meta"></div>
+      <div class="row gap-8" id="detail-amenities" style="flex-wrap:wrap; margin-top:10px;"></div>
     </div>
+    <div class="glass" style="margin:14px 16px 0;" id="detail-info-row"></div>
     <div class="tab-row" id="detail-tabs">
       <div class="tab-chip selected" onclick="setDetailTab('prices')">Fiyatlar</div>
       <div class="tab-chip" onclick="setDetailTab('reviews')">Yorumlar</div>
@@ -551,7 +571,10 @@
     </div>
     <div style="height:90px"></div>
     <div id="detail-price-cta" style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
-      <button class="btn-primary" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>
+      <div class="row gap-8">
+        <button class="btn-primary" style="flex:1;" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>
+        <button class="btn-outline" id="detail-directions-btn" style="flex:0 0 auto; padding:0 16px;" onclick="openDirections()">📍 Yol Tarifi Al</button>
+      </div>
     </div>
     <div id="detail-chat-input-row" style="display:none; position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
       <div class="row gap-8">
@@ -599,6 +622,17 @@
       <div style="height:12px"></div>
       <div class="body-md" style="margin-bottom:6px;">veya bir fotoğraf yükle</div>
       <input type="file" id="nv-photo" accept="image/*" style="width:100%; color:var(--text-secondary); font-size:13px;">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Çalışma Saatleri (opsiyonel)</div>
+      <input id="nv-hours" placeholder="Örn. 18:00-02:00" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Müzik Türü (opsiyonel)</div>
+      <input id="nv-music" placeholder="Örn. Pop, Rock, Elektronik" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Olanaklar</div>
+      <div class="row gap-8" id="nv-amenities" style="flex-wrap:wrap;">
+        ${Object.entries({live_music:'🎵 Canlı Müzik', happy_hour:'🍹 Happy Hour', rooftop:'🏙️ Rooftop', valet:'🚗 Vale'}).map(([k,label])=>`<div class="chip" id="nv-am-${k}" onclick="toggleAmenityChip('nv-am-${k}')">${label}</div>`).join('')}
+      </div>
       <div style="height:20px"></div>
       <button class="btn-primary" onclick="submitNewVenue()">Mekanı Oluştur ve Devam Et</button>
     </div>
@@ -957,6 +991,7 @@ async function loadVenues(){
       rating: Number(v.rating), reviews: v.reviews, verified: v.verified, distance: Number(v.distance),
       lat: v.lat!=null ? Number(v.lat) : null, lng: v.lng!=null ? Number(v.lng) : null,
       created_by: v.created_by,
+      working_hours: v.working_hours, music_genre: v.music_genre, amenities: v.amenities || [],
       prices, lastPriceUpdate,
     };
   });
@@ -1463,13 +1498,68 @@ function recordVenueView(venueId){
     .then(({ error }) => { if(error) console.error(error); });
 }
 
-function openDetail(id){
+const amenityLabels = { live_music:'🎵 Canlı Müzik', happy_hour:'🍹 Happy Hour', rooftop:'🏙️ Rooftop', valet:'🚗 Vale' };
+
+function computePriceTier(v){
+  if(!v.prices || !v.prices.length) return null;
+  const avg = v.prices.reduce((s,p)=>s+p.price,0) / v.prices.length;
+  if(avg < 150) return '₺';
+  if(avg < 300) return '₺₺';
+  return '₺₺₺';
+}
+
+function renderDetailGallery(v, photos){
+  const el = document.getElementById('detail-gallery');
+  const counter = document.getElementById('detail-gallery-counter');
+  const urls = (photos && photos.length) ? photos.map(p=>p.url) : [v.img];
+  el.innerHTML = urls.map(u=>`<img src="${u}" alt="">`).join('');
+  counter.style.display = urls.length > 1 ? 'block' : 'none';
+  counter.innerText = `1/${urls.length}`;
+}
+
+function updateGalleryCounter(){
+  const el = document.getElementById('detail-gallery');
+  const counter = document.getElementById('detail-gallery-counter');
+  if(!el.children.length) return;
+  const idx = Math.round(el.scrollLeft / el.clientWidth) + 1;
+  counter.innerText = `${idx}/${el.children.length}`;
+}
+
+function openDirections(){
+  const v = contributeState.venue;
+  if(!v || v.lat==null || v.lng==null){ showToast('Bu mekan için konum bilgisi yok'); return; }
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${v.lat},${v.lng}`, '_blank');
+}
+
+async function openDetail(id){
   const v = venues.find(x=>x.id===id);
   recordVenueView(id);
-  document.getElementById('detail-img').src = v.img;
   document.getElementById('detail-name').innerText = v.name;
   document.getElementById('detail-meta').innerText = `★ ${v.rating} (${v.reviews}) · ${v.district}, ${v.city}`;
   document.getElementById('detail-verified').style.display = v.verified ? 'inline-flex' : 'none';
+  document.getElementById('detail-directions-btn').style.display = (v.lat!=null && v.lng!=null) ? 'block' : 'none';
+
+  const amenitiesEl = document.getElementById('detail-amenities');
+  amenitiesEl.innerHTML = (v.amenities||[]).map(a=>`<div class="amenity-chip">${amenityLabels[a] || a}</div>`).join('');
+
+  const tier = computePriceTier(v);
+  const infoItems = [];
+  if(v.working_hours) infoItems.push(['Çalışma Saatleri', v.working_hours]);
+  if(tier) infoItems.push(['Ortalama Fiyat', tier]);
+  if(v.music_genre) infoItems.push(['Müzik', v.music_genre]);
+  const infoRowEl = document.getElementById('detail-info-row');
+  if(infoItems.length){
+    infoRowEl.style.display = 'block';
+    infoRowEl.innerHTML = `<div class="detail-info-row">${infoItems.map(([label,value])=>`<div><div class="value">${value}</div><div class="label">${label}</div></div>`).join('')}</div>`;
+  } else {
+    infoRowEl.style.display = 'none';
+  }
+
+  renderDetailGallery(v, null);
+  sb.from('venue_photos').select('*').eq('venue_id', id).order('sort_order').then(({data, error})=>{
+    if(!error && data && data.length) renderDetailGallery(v, data);
+  });
+
   const byCategory = {};
   v.prices.forEach(p=>{ (byCategory[p.cat] ||= []).push(p); });
   let html = '';
@@ -1597,6 +1687,20 @@ function renderVenueEditSection(v){
       <div style="height:12px"></div>
       <div class="body-md" style="margin-bottom:6px;">Fotoğraf URL</div>
       <input id="ve-img" value="${escapeHTML(v.img)}" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Çalışma Saatleri</div>
+      <input id="ve-hours" value="${escapeHTML(v.working_hours || '')}" placeholder="Örn. 18:00-02:00" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Müzik Türü</div>
+      <input id="ve-music" value="${escapeHTML(v.music_genre || '')}" placeholder="Örn. Pop, Rock, Elektronik" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Olanaklar</div>
+      <div class="row gap-8" id="ve-amenities" style="flex-wrap:wrap;">
+        ${Object.entries(amenityLabels).map(([k,label])=>`<div class="chip${(v.amenities||[]).includes(k)?' selected':''}" id="ve-am-${k}" onclick="toggleAmenityChip('ve-am-${k}')">${label}</div>`).join('')}
+      </div>
+      <div style="height:12px"></div>
+      <div class="body-md" style="margin-bottom:6px;">Galeriye Fotoğraf Ekle</div>
+      <input type="file" id="ve-gallery-photo" accept="image/*" style="width:100%; color:var(--text-secondary); font-size:13px;">
       <div style="height:16px"></div>
       <button class="btn-primary" onclick="submitEditVenue()">Kaydet</button>
     </div>`;
@@ -1610,9 +1714,25 @@ async function submitEditVenue(){
   const district = document.getElementById('ve-district').value.trim();
   const distance = Number(document.getElementById('ve-distance').value);
   const img = document.getElementById('ve-img').value.trim();
+  const working_hours = document.getElementById('ve-hours').value.trim() || null;
+  const music_genre = document.getElementById('ve-music').value.trim() || null;
+  const amenities = readAmenityChips('ve-am');
+  const galleryFile = document.getElementById('ve-gallery-photo').files[0];
   if(!name || !district || !distance || distance<=0){ showToast('Lütfen mekan adı, semt ve uzaklığı gir'); return; }
-  const { error } = await sb.from('venues').update({ name, district, distance, img }).eq('id', v.id);
+  const { error } = await sb.from('venues').update({ name, district, distance, img, working_hours, music_genre, amenities }).eq('id', v.id);
   if(error){ console.error(error); showToast(error.message || 'Güncellenemedi'); return; }
+  if(galleryFile){
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'') || 'venue';
+    const ext = galleryFile.name.split('.').pop();
+    const path = `${slug}-gallery-${Date.now()}.${ext}`;
+    const { error: uploadError } = await sb.storage.from('venue-photos').upload(path, galleryFile);
+    if(uploadError){ console.error(uploadError); showToast('Galeri fotoğrafı yüklenemedi'); }
+    else{
+      const url = sb.storage.from('venue-photos').getPublicUrl(path).data.publicUrl;
+      const { error: insertError } = await sb.from('venue_photos').insert({ venue_id: v.id, url });
+      if(insertError) console.error(insertError);
+    }
+  }
   const wasAdmin = currentProfile?.is_admin;
   showToast(wasAdmin ? 'Mekan güncellendi' : 'Değişikliklerin onaya gönderildi');
   await loadVenues();
@@ -1679,12 +1799,22 @@ function selectContributeVenue(id){
   contributeState.venue = venues.find(v=>v.id===id);
   goContributeStep('drink');
 }
+function toggleAmenityChip(id){
+  document.getElementById(id).classList.toggle('selected');
+}
+function readAmenityChips(prefix){
+  return Object.keys(amenityLabels).filter(k=>document.getElementById(`${prefix}-${k}`)?.classList.contains('selected'));
+}
+
 async function submitNewVenue(){
   const name = document.getElementById('nv-name').value.trim();
   const district = document.getElementById('nv-district').value.trim();
   const distance = Number(document.getElementById('nv-distance').value);
   let img = document.getElementById('nv-img').value.trim();
   const photoFile = document.getElementById('nv-photo').files[0];
+  const working_hours = document.getElementById('nv-hours').value.trim() || null;
+  const music_genre = document.getElementById('nv-music').value.trim() || null;
+  const amenities = readAmenityChips('nv-am');
   if(!name || !district || !distance || distance<=0){
     showToast('Lütfen mekan adı, semt ve uzaklığı gir'); return;
   }
@@ -1700,11 +1830,14 @@ async function submitNewVenue(){
     name, district, city: currentCity.name, city_id: currentCity.id, distance,
     img: img || `https://picsum.photos/seed/${slug}/400/300`,
     rating: 0, reviews: 0, verified: false, created_by: currentUser.id,
+    working_hours, music_genre, amenities,
   }).select().single();
   if(error){ console.error(error); showToast(error.message || 'Mekan eklenemedi'); return; }
   const newVenue = { id: data.id, name: data.name, district: data.district, city: data.city,
     img: data.img, rating: Number(data.rating), reviews: data.reviews, verified: data.verified,
-    distance: Number(data.distance), lat: null, lng: null, prices: [], lastPriceUpdate: data.created_at };
+    distance: Number(data.distance), lat: null, lng: null,
+    working_hours: data.working_hours, music_genre: data.music_genre, amenities: data.amenities || [],
+    prices: [], lastPriceUpdate: data.created_at };
   venues.unshift(newVenue);
   contributeState.venue = newVenue;
   showToast('Mekan eklendi! Onaylandıktan sonra herkese görünür olacak — şimdi bir fiyat gir');
