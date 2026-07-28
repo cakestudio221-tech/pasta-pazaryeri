@@ -14,9 +14,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
-    --bg-primary:#0A0A0F;
-    --bg-secondary:#13131C;
-    --bg-elevated:#1C1C28;
+    --bg-primary:#0D0817;
+    --bg-secondary:#170F2B;
+    --bg-elevated:#221639;
     --purple:#8B5CF6;
     --purple-dark:#6D28D9;
     --blue:#3B82F6;
@@ -28,9 +28,9 @@
     --error:#EF4444;
     --verified:#3B82F6;
     --gold:#FBBF24;
-    --glass-fill:rgba(255,255,255,.08);
-    --glass-border:rgba(255,255,255,.15);
-    --divider:rgba(255,255,255,.06);
+    --glass-fill:rgba(139,92,246,.09);
+    --glass-border:rgba(139,92,246,.22);
+    --divider:rgba(139,92,246,.1);
     --radius-sm:12px; --radius-md:16px; --radius-lg:24px; --radius-full:999px;
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -57,7 +57,13 @@
   }
   body{ display:flex; flex-direction:column; }
 
-  #app-shell{ position:relative; width:100%; height:100dvh; background:var(--bg-primary); overflow:hidden; }
+  #app-shell{
+    position:relative; width:100%; height:100dvh; overflow:hidden;
+    background:
+      radial-gradient(ellipse 100% 40% at 50% 0%, rgba(139,92,246,.18), transparent 60%),
+      var(--bg-primary);
+  }
+  :root[data-theme="light"] #app-shell{ background:var(--bg-primary); }
 
   .screen{
     position:absolute; inset:0; overflow-y:auto; overflow-x:hidden;
@@ -404,31 +410,46 @@
     </div>
 
     <div class="px" style="margin-bottom:16px;">
-      <div id="community-banner" onclick="openOverlay('general-chat')" style="position:relative; overflow:hidden; border-radius:var(--radius-lg); padding:16px; display:flex; align-items:center; gap:14px; cursor:pointer; background:linear-gradient(135deg, rgba(139,92,246,.35), rgba(59,130,246,.35)); border:1px solid rgba(139,92,246,.4); box-shadow:0 8px 24px rgba(139,92,246,.15);">
-        <div style="position:relative; width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--blue)); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 4px 14px rgba(139,92,246,.5);">
-          💬
-          <div style="position:absolute; bottom:1px; right:1px; width:14px; height:14px; border-radius:50%; background:var(--success); border:2px solid var(--bg-primary); animation:pulseDot 1.6s ease-in-out infinite;"></div>
+      <div id="community-banner" onclick="openOverlay('general-chat')" style="position:relative; overflow:hidden; border-radius:var(--radius-lg); padding:16px; cursor:pointer; background:linear-gradient(135deg, rgba(139,92,246,.35), rgba(59,130,246,.35)); border:1px solid rgba(139,92,246,.4); box-shadow:0 8px 24px rgba(139,92,246,.15);">
+        <div class="row-between">
+          <div class="row gap-8" style="align-items:center;">
+            <span class="headline">🟢 Topluluk</span>
+            <span class="caption" id="community-active-count" style="background:rgba(0,0,0,.25); padding:2px 8px; border-radius:var(--radius-full);"></span>
+          </div>
+          <span class="body-sm" style="color:var(--purple-dark); font-weight:600;">Tümünü Gör</span>
         </div>
-        <div style="flex:1; min-width:0;">
-          <div class="headline">🟢 Topluluk</div>
-          <div class="body-sm" id="community-banner-preview" style="margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Sohbete katıl, mekanlar hakkında konuş</div>
+        <div id="community-banner-preview" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+          <div class="body-sm" style="color:var(--text-secondary);">Sohbete katıl, mekanlar hakkında konuş</div>
         </div>
-        <span style="color:var(--text-secondary); font-size:20px;">›</span>
       </div>
     </div>
 
-    <div class="quick-row" style="overflow-x:auto; flex-wrap:nowrap;">
-      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('budget')">
-        <div class="emoji">💰</div><div class="label">Bütçe Planlayıcı</div>
+    <div class="quick-row">
+      <div class="quick-card glass" onclick="switchTab('compare')">
+        <div class="emoji">⚖️</div><div class="label">Fiyat Karşılaştır</div>
       </div>
-      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('route')">
-        <div class="emoji">🗺️</div><div class="label">Gece Rotası</div>
+      <div class="quick-card glass" onclick="openOverlay('recommend')">
+        <div class="emoji">📍</div><div class="label">Yakındaki Mekanlar</div>
       </div>
-      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('stats')">
-        <div class="emoji">📊</div><div class="label">İstatistikler</div>
+      <div class="quick-card glass" onclick="openOverlay('route')">
+        <div class="emoji">🧭</div><div class="label">Gece Rotası</div>
       </div>
-      <div class="quick-card glass" style="flex:0 0 auto; width:100px;" onclick="openOverlay('recommend')">
-        <div class="emoji">🎯</div><div class="label">Sana Özel</div>
+      <div class="quick-card glass" onclick="scrollToTrend()">
+        <div class="emoji">🔥</div><div class="label">Trend Mekanlar</div>
+      </div>
+    </div>
+
+    <div class="px" style="margin-bottom:8px;">
+      <div class="glass" style="padding:16px;">
+        <div class="row-between">
+          <h3 class="headline">En Uygun Fiyatı Bul</h3>
+          <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümü</span>
+        </div>
+        <div class="row gap-8" style="margin-top:10px;">
+          <input id="price-finder-input" placeholder="Örn. Efes Pilsen" oninput="renderPriceFinder()" style="flex:1; padding:12px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';">
+          <button class="btn-primary" style="width:auto; padding:12px 18px;" onclick="onHomeSearchInput(document.getElementById('price-finder-input').value)">Karşılaştır ›</button>
+        </div>
+        <div id="price-finder-results" style="margin-top:12px;"></div>
       </div>
     </div>
 
@@ -1152,8 +1173,12 @@ async function renderProfileScreen(){
     <div class="row gap-12" style="margin-top:10px; overflow-x:auto;">
       ${badges.map(b=>`<div style="text-align:center; ${b.earned?'':'opacity:.35;'}"><div class="badge-circle">${b.emoji}</div><div class="caption" style="margin-top:4px;">${b.label}</div></div>`).join('')}
     </div>
-    <div class="glass" style="margin-top:20px; padding:4px 0; cursor:pointer;" onclick="openOverlay('leaderboard')">
-      <div class="row-between" style="padding:14px 16px;">🏆 Liderlik Tablosu <span style="color:var(--text-tertiary);">›</span></div>
+    <div class="glass" style="margin-top:20px; padding:4px 0;">
+      <div class="row-between" style="padding:14px 16px; cursor:pointer;" onclick="openOverlay('budget')">💰 Bütçe Planlayıcı <span style="color:var(--text-tertiary);">›</span></div>
+      <div class="divider-line"></div>
+      <div class="row-between" style="padding:14px 16px; cursor:pointer;" onclick="openOverlay('stats')">📊 İstatistikler <span style="color:var(--text-tertiary);">›</span></div>
+      <div class="divider-line"></div>
+      <div class="row-between" style="padding:14px 16px; cursor:pointer;" onclick="openOverlay('leaderboard')">🏆 Liderlik Tablosu <span style="color:var(--text-tertiary);">›</span></div>
     </div>
     ${currentProfile?.is_admin ? `
     <div class="glass" style="margin-top:12px; padding:4px 0; cursor:pointer;" onclick="openOverlay('admin')">
@@ -1203,6 +1228,9 @@ async function renderNotifications(){
 async function markNotificationRead(id){
   await sb.from('notifications').update({ is_read: true }).eq('id', id);
   loadUnreadNotificationCount();
+}
+function scrollToTrend(){
+  document.getElementById('trend-scroll')?.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 function enterApp(){
   document.getElementById('landing-screen').style.display = 'none';
@@ -1270,15 +1298,78 @@ function renderHome(){
   const cheap = [...venues].sort((a,b)=> (a.prices[0]?.price||999)-(b.prices[0]?.price||999));
   document.getElementById('cheap-scroll').innerHTML = cheap.map(venueCardHTML).join('');
   loadCommunityBannerPreview();
+  renderPriceFinder();
+}
+function renderPriceFinder(){
+  const el = document.getElementById('price-finder-results');
+  if(!el) return;
+  const q = document.getElementById('price-finder-input')?.value.trim().toLowerCase() || '';
+  const results = [];
+  venues.forEach(v=>{
+    v.prices.forEach(p=>{
+      if(q==='' || p.name.toLowerCase().includes(q)){
+        results.push({ venue:v, price:p });
+      }
+    });
+  });
+  results.sort((a,b)=>a.price.price-b.price.price);
+  const top3 = results.slice(0,3);
+  if(top3.length===0){
+    el.innerHTML = `<div class="body-sm" style="color:var(--text-tertiary); text-align:center; padding:8px 0;">Sonuç bulunamadı</div>`;
+    return;
+  }
+  el.innerHTML = top3.map((r,i)=>`
+    <div class="row-between" style="padding:8px 0; ${i>0?'border-top:1px solid var(--divider);':''}">
+      <div class="row gap-8">
+        <span class="body-md" style="font-weight:700; width:16px;">${i+1}</span>
+        <div>
+          <div class="body-md">${escapeHTML(r.venue.name)}</div>
+          <div class="caption">${escapeHTML(r.price.name)}</div>
+        </div>
+      </div>
+      <div class="row gap-8">
+        ${i===0 ? `<span class="caption" style="color:var(--success); font-weight:600;">En Ucuz</span>` : ''}
+        <span class="price">₺${r.price.price}</span>
+      </div>
+    </div>`).join('');
+}
+function renderCommunityBannerMessages(messages){
+  const el = document.getElementById('community-banner-preview');
+  if(!el) return;
+  if(!messages || !messages.length){
+    el.innerHTML = `<div class="body-sm" style="color:var(--text-secondary);">Sohbete katıl, mekanlar hakkında konuş</div>`;
+    return;
+  }
+  el.innerHTML = messages.slice(0,3).map(m=>
+    `<div class="body-sm" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><b>${escapeHTML(m.username)}</b>: ${escapeHTML(m.content || '📷 Fotoğraf gönderdi')}</div>`
+  ).join('');
 }
 async function loadCommunityBannerPreview(){
   if(!currentCity) return;
-  const el = document.getElementById('community-banner-preview');
-  if(!el) return;
-  const { data, error } = await sb.from('chat_messages').select('username, content, image_url').eq('city_id', currentCity.id).order('created_at', { ascending:false }).limit(1);
-  if(error || !data || !data.length) return;
-  const m = data[0];
-  el.innerText = `${m.username}: ${m.content || '📷 Fotoğraf gönderdi'}`;
+  const { data, error } = await sb.from('chat_messages').select('username, content, image_url').eq('city_id', currentCity.id).order('created_at', { ascending:false }).limit(3);
+  if(error) return;
+  renderCommunityBannerMessages(data);
+}
+
+let homePresenceChannel = null;
+async function subscribeHomePresence(){
+  if(!currentCity) return;
+  if(homePresenceChannel){ sb.removeChannel(homePresenceChannel); homePresenceChannel = null; }
+  homePresenceChannel = sb.channel('home-presence-'+currentCity.id, { config: { presence: { key: 'visitor-'+Math.random() } } })
+    .on('presence', { event:'sync' }, () => {
+      const count = Object.keys(homePresenceChannel.presenceState()).length;
+      const el = document.getElementById('community-active-count');
+      if(el) el.innerText = count + ' kişi aktif';
+    })
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'chat_messages', filter:'city_id=eq.'+currentCity.id }, payload=>{
+      loadCommunityBannerPreview();
+    })
+    .subscribe(async (status)=>{
+      if(status==='SUBSCRIBED') await homePresenceChannel.track({ online:true });
+    });
+}
+function unsubscribeHomePresence(){
+  if(homePresenceChannel){ sb.removeChannel(homePresenceChannel); homePresenceChannel = null; }
 }
 
 function renderCatChips(){
@@ -1800,6 +1891,8 @@ function switchTab(tab){
   if(tab==='compare') renderCompare();
   if(tab==='favorites') renderFavorites();
   if(tab==='profile') renderProfileScreen();
+  if(tab==='home') subscribeHomePresence();
+  else unsubscribeHomePresence();
 }
 function onHomeSearchInput(value){
   document.getElementById('compare-search').value = value;
@@ -2280,6 +2373,7 @@ function showToast(msg){
   renderCatChips();
   renderSortChips();
   renderCompare();
+  subscribeHomePresence();
   initAuth();
 })();
 
