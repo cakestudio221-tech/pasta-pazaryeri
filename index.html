@@ -151,6 +151,15 @@
   .chat-bubble{ padding:10px 14px; border-radius:16px; word-break:break-word; display:inline-block; max-width:100%; }
   .chat-bubble.own{ background:linear-gradient(135deg,var(--purple),var(--blue)); color:#fff; border-bottom-right-radius:4px; }
   .chat-bubble.other{ background:var(--glass-fill); color:var(--text-primary); border-bottom-left-radius:4px; }
+  .admin-badge{
+    display:inline-flex; align-items:center; gap:2px; font-size:9px; font-weight:700; letter-spacing:.3px;
+    padding:2px 6px; border-radius:var(--radius-full); color:#1a1a1a;
+    background:linear-gradient(135deg,#f3d98b,#c9932f); vertical-align:middle;
+  }
+  .msg-actions-btn{
+    display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;
+    color:var(--text-tertiary); cursor:pointer; font-size:14px; flex-shrink:0;
+  }
   .online-strip{ display:flex; overflow-x:auto; padding:10px 16px; gap:12px; scrollbar-width:none; }
   .online-strip::-webkit-scrollbar{display:none;}
   .online-chip{ display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:56px; }
@@ -575,6 +584,10 @@
     <div class="px" id="detail-reviews" style="display:none;"></div>
     <div class="px" id="detail-about" style="display:none;"></div>
     <div id="detail-chat" style="display:none;">
+      <div class="row-between px" style="padding:8px 16px 0;">
+        <span class="caption">Mekan Sohbeti</span>
+        <div class="close-btn" id="detail-chat-lock-btn" style="display:none; width:26px; height:26px; font-size:13px;" onclick="toggleChatLock('venue')">🔒</div>
+      </div>
       <div class="online-strip" id="detail-chat-online"></div>
       <div class="px" id="detail-chat-messages" style="padding-bottom:90px;"></div>
     </div>
@@ -584,6 +597,9 @@
         <button class="btn-primary" style="flex:1;" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>
         <button class="btn-outline" id="detail-directions-btn" style="flex:0 0 auto; padding:0 16px;" onclick="openDirections()">📍 Yol Tarifi Al</button>
       </div>
+    </div>
+    <div id="detail-chat-locked-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10; text-align:center; color:var(--text-tertiary); font-size:13px;">
+      🔒 Sohbet şu anda yönetici tarafından durduruldu
     </div>
     <div id="detail-chat-input-row" style="display:none; position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
       <div class="row gap-8">
@@ -773,11 +789,17 @@
   <div class="overlay" id="overlay-general-chat">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md" id="general-chat-title">Sohbet</h1>
-      <div class="close-btn" onclick="closeOverlay('general-chat')">✕</div>
+      <div class="row gap-8">
+        <div class="close-btn" id="general-chat-lock-btn" style="display:none;" onclick="toggleChatLock('general')">🔒</div>
+        <div class="close-btn" onclick="closeOverlay('general-chat')">✕</div>
+      </div>
     </div>
     <div class="online-strip" id="general-chat-online"></div>
     <div class="px" id="general-chat-messages" style="padding-bottom:90px;"></div>
-    <div style="position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
+    <div id="general-chat-locked-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10; text-align:center; color:var(--text-tertiary); font-size:13px;">
+      🔒 Sohbet şu anda yönetici tarafından durduruldu
+    </div>
+    <div id="general-chat-input-row" style="position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
       <div class="row gap-8">
         <div class="stepper-btn" onclick="toggleEmojiPicker('general-chat-input')">😀</div>
         <input id="general-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:10px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendGeneralChatMessage()" onfocus="setChatFocused('general-chat-online', true)" onblur="setChatFocused('general-chat-online', false)">
@@ -813,11 +835,13 @@
       <div class="tab-chip" onclick="setAdminTab('verifications')">Doğrulama Başvuruları</div>
       <div class="tab-chip" onclick="setAdminTab('cities')">Şehirler</div>
       <div class="tab-chip" onclick="setAdminTab('users')">Kullanıcılar</div>
+      <div class="tab-chip" onclick="setAdminTab('reports')">Şikayetler</div>
     </div>
     <div class="px" id="admin-venues"></div>
     <div class="px" id="admin-verifications" style="display:none;"></div>
     <div class="px" id="admin-cities" style="display:none;"></div>
     <div class="px" id="admin-users" style="display:none;"></div>
+    <div class="px" id="admin-reports" style="display:none;"></div>
   </div>
 
   <!-- OVERLAY: NOTIFICATIONS -->
@@ -836,6 +860,15 @@
       <div class="close-btn" onclick="closeOverlay('public-profile')">✕</div>
     </div>
     <div class="px" id="public-profile-content"></div>
+  </div>
+
+  <!-- OVERLAY: MESSAGE ACTIONS -->
+  <div class="overlay" id="overlay-message-actions">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Mesaj</h1>
+      <div class="close-btn" onclick="closeOverlay('message-actions')">✕</div>
+    </div>
+    <div class="px" id="message-actions-content"></div>
   </div>
 
   <!-- OVERLAY: NEW PASSWORD -->
@@ -971,6 +1004,7 @@ async function loadVenues(){
       lat: v.lat!=null ? Number(v.lat) : null, lng: v.lng!=null ? Number(v.lng) : null,
       created_by: v.created_by,
       working_hours: v.working_hours, music_genre: v.music_genre, amenities: v.amenities || [],
+      chat_locked: v.chat_locked || false,
       prices, lastPriceUpdate,
     };
   });
@@ -1697,7 +1731,7 @@ function setDetailTab(tab){
   document.getElementById('detail-chat-input-row').style.display = tab==='chat' ? 'block' : 'none';
   if(tab==='reviews') renderDetailReviews();
   if(tab==='about') renderDetailAbout();
-  if(tab==='chat'){ resetViewportBaseline(); loadVenueChatMessages(); subscribeVenueChat(); }
+  if(tab==='chat'){ resetViewportBaseline(); loadVenueChatMessages(); subscribeVenueChat(); updateVenueChatLockUI(); updateChatInputBlockedState('detail-chat-input'); }
   else if(venueChatChannel){ sb.removeChannel(venueChatChannel); venueChatChannel=null; }
 }
 
@@ -2151,6 +2185,8 @@ function openOverlay(name){
     document.getElementById('general-chat-title').innerText = '🟢 Topluluk';
     loadGeneralChatMessages();
     subscribeGeneralChat();
+    updateGeneralChatLockUI();
+    updateChatInputBlockedState('general-chat-input');
   }
   if(name==='leaderboard'){ setLeaderboardPeriod('7d'); }
   if(name==='admin'){ setAdminTab('venues'); }
@@ -2263,15 +2299,52 @@ async function renderLeaderboard(){
 }
 function setAdminTab(tab){
   document.querySelectorAll('#admin-tabs .tab-chip').forEach((el,i)=>{
-    el.classList.toggle('selected', ['venues','verifications','cities','users'][i]===tab);
+    el.classList.toggle('selected', ['venues','verifications','cities','users','reports'][i]===tab);
   });
-  ['venues','verifications','cities','users'].forEach(t=>{
+  ['venues','verifications','cities','users','reports'].forEach(t=>{
     document.getElementById('admin-'+t).style.display = t===tab ? 'block' : 'none';
   });
   if(tab==='venues') renderAdminVenues();
   if(tab==='verifications') renderAdminVerifications();
   if(tab==='cities') renderAdminCities();
   if(tab==='users') renderAdminUsers();
+  if(tab==='reports') renderAdminReports();
+}
+async function renderAdminReports(){
+  const el = document.getElementById('admin-reports');
+  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  const { data, error } = await sb.from('message_reports').select('*').order('created_at', { ascending:false });
+  if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
+  if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Şikayet yok</div>`; return; }
+  const groups = {};
+  data.forEach(r=>{
+    if(!groups[r.message_id]) groups[r.message_id] = { ...r, count: 0 };
+    groups[r.message_id].count++;
+  });
+  el.innerHTML = Object.values(groups).map(g=>`
+    <div class="glass" style="padding:14px 16px; margin-bottom:10px;">
+      <div class="row-between">
+        <span class="body-lg" style="font-weight:600;">@${escapeHTML(g.sender_username || 'Barmender')}</span>
+        <span class="verified-pill" style="background:var(--error);">${g.count} kişi şikayet etti</span>
+      </div>
+      <div class="body-sm" style="margin-top:2px; color:var(--text-tertiary);">${escapeHTML(g.context_label || '')}</div>
+      ${g.message_content ? `<div class="body-md" style="margin-top:8px;">${escapeHTML(g.message_content)}</div>` : ''}
+      ${g.message_image_url ? `<img src="${escapeHTML(g.message_image_url)}" style="max-width:160px; max-height:160px; border-radius:8px; margin-top:8px; object-fit:cover;">` : ''}
+      <div class="row gap-8" style="margin-top:10px; flex-wrap:wrap;">
+        <button class="btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="deleteMessageAction('${g.chat_type}','${g.message_id}'); dismissReportGroup('${g.message_id}')">🗑️ Mesajı Sil</button>
+        <button class="btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="showModerationForm('mute','${g.sender_user_id}','admin-report-form-${g.message_id}')">🔇 Sustur</button>
+        <button class="btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="showModerationForm('chatban','${g.sender_user_id}','admin-report-form-${g.message_id}')">🚫 Sohbet Banı</button>
+        <button class="btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="showModerationForm('appban','${g.sender_user_id}','admin-report-form-${g.message_id}')">⛔ Uygulama Banı</button>
+        <button class="btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="dismissReportGroup('${g.message_id}')">✓ Şikayeti Kapat</button>
+      </div>
+      <div id="admin-report-form-${g.message_id}"></div>
+    </div>`).join('');
+}
+async function dismissReportGroup(messageId){
+  const { error } = await sb.from('message_reports').delete().eq('message_id', messageId);
+  if(error){ console.error(error); showToast(error.message || 'İşlem başarısız'); return; }
+  showToast('Şikayet(ler) kapatıldı');
+  renderAdminReports();
 }
 async function renderAdminUsers(){
   const el = document.getElementById('admin-users');
@@ -2451,16 +2524,19 @@ function escapeHTML(str){
   div.textContent = str == null ? '' : String(str);
   return div.innerHTML;
 }
-function chatMessageHTML(msg){
+function chatMessageHTML(msg, chatType){
   const isOwn = !!(currentUser && msg.user_id === currentUser.id);
   const time = new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
+  const textColor = msg.is_admin ? 'var(--error)' : 'inherit';
   const bubbleInner = `
-    ${msg.content ? `<div class="body-md" style="color:inherit;">${escapeHTML(msg.content)}</div>` : ''}
+    ${msg.content ? `<div class="body-md" style="color:${textColor};">${escapeHTML(msg.content)}</div>` : ''}
     ${msg.image_url ? `<img src="${escapeHTML(msg.image_url)}" loading="lazy" style="max-width:200px; max-height:200px; border-radius:12px; ${msg.content?'margin-top:6px;':''} display:block; object-fit:cover;">` : ''}
   `;
+  const actionsBtn = `<span class="msg-actions-btn" onclick="openMessageActions('${chatType}','${msg.id}','${msg.user_id}',${JSON.stringify(msg.username||'')},${isOwn})">⋮</span>`;
   if(isOwn){
     return `
-      <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
+      <div style="display:flex; justify-content:flex-end; align-items:flex-end; gap:4px; margin-bottom:14px;">
+        ${currentProfile?.is_admin ? actionsBtn : ''}
         <div style="max-width:75%; text-align:right;">
           <div class="chat-bubble own">${bubbleInner}</div>
           <div class="caption" style="margin-top:2px;">${time}</div>
@@ -2474,11 +2550,181 @@ function chatMessageHTML(msg){
     <div class="row gap-8" style="align-items:flex-end; margin-bottom:14px;">
       <div onclick="viewPublicProfile('${msg.user_id}')" style="cursor:pointer;">${avatar}</div>
       <div style="max-width:75%;">
-        <div class="caption" style="margin-bottom:2px; margin-left:4px; cursor:pointer;" onclick="viewPublicProfile('${msg.user_id}')">${escapeHTML(msg.username)}</div>
+        <div class="caption" style="margin-bottom:2px; margin-left:4px; cursor:pointer;" onclick="viewPublicProfile('${msg.user_id}')">
+          ${escapeHTML(msg.username)}${msg.is_admin ? ' <span class="admin-badge">★ ADMIN</span>' : ''}
+        </div>
         <div class="chat-bubble other">${bubbleInner}</div>
         <div class="caption" style="margin-top:2px; margin-left:4px;">${time}</div>
       </div>
+      ${actionsBtn}
     </div>`;
+}
+
+function findChatMessage(chatType, msgId){
+  const arr = chatType==='general' ? generalChatMessages : venueChatMessages;
+  return arr.find(m=>m.id===msgId);
+}
+function chatSendBlockedReason(){
+  if(!currentProfile) return null;
+  if(currentProfile.is_banned) return 'Uygulamadan banlandınız' + (currentProfile.ban_reason ? ': '+currentProfile.ban_reason : '');
+  if(currentProfile.chat_banned) return 'Sohbetten banlandınız' + (currentProfile.chat_ban_reason ? ': '+currentProfile.chat_ban_reason : '');
+  if(currentProfile.muted_until && new Date(currentProfile.muted_until) > new Date()) return 'Susturuldunuz' + (currentProfile.mute_reason ? ': '+currentProfile.mute_reason : '');
+  return null;
+}
+function updateChatInputBlockedState(inputId){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  const reason = chatSendBlockedReason();
+  input.disabled = !!reason;
+  input.placeholder = reason || 'Mesaj yaz...';
+}
+function openMessageActions(chatType, msgId, senderId, senderUsername, isOwn){
+  const isAdmin = !!currentProfile?.is_admin;
+  let html = '';
+  if(!isOwn){
+    html += `<button class="btn-outline" style="margin-bottom:10px; width:100%;" onclick="reportMessage('${chatType}','${msgId}')">🚩 Şikayet Et</button>`;
+  }
+  if(isAdmin){
+    html += `<button class="btn-outline" style="margin-bottom:10px; width:100%;" onclick="deleteMessageAction('${chatType}','${msgId}')">🗑️ Mesajı Sil</button>`;
+    if(!isOwn){
+      html += `<button class="btn-outline" style="margin-bottom:10px; width:100%;" onclick="showModerationForm('mute','${senderId}')">🔇 Kullanıcıyı Sustur</button>`;
+      html += `<button class="btn-outline" style="margin-bottom:10px; width:100%;" onclick="showModerationForm('chatban','${senderId}')">🚫 Sohbetten Banla</button>`;
+      html += `<button class="btn-outline" style="margin-bottom:10px; width:100%;" onclick="showModerationForm('appban','${senderId}')">⛔ Uygulamadan Banla</button>`;
+    }
+  }
+  if(!html) html = `<div class="body-md" style="text-align:center; padding:20px 0; color:var(--text-tertiary);">Bu mesaj için işlem yok</div>`;
+  html += `<div id="moderation-form"></div>`;
+  document.getElementById('message-actions-content').innerHTML = html;
+  openOverlay('message-actions');
+}
+async function reportMessage(chatType, msgId){
+  if(!requireAuth()) return;
+  const msg = findChatMessage(chatType, msgId);
+  if(!msg) return;
+  const contextLabel = chatType==='general' ? `${currentCity?.name || ''} Genel Sohbet` : (contributeState.venue?.name || 'Mekan Sohbeti');
+  const { error } = await sb.from('message_reports').insert({
+    chat_type: chatType, message_id: msgId, message_content: msg.content || null, message_image_url: msg.image_url || null,
+    sender_user_id: msg.user_id, sender_username: msg.username, context_label: contextLabel,
+    reporter_user_id: currentUser.id,
+  });
+  closeOverlay('message-actions');
+  if(error){
+    showToast(error.code==='23505' ? 'Bu mesajı zaten şikayet ettin' : (error.message || 'Şikayet gönderilemedi'));
+    return;
+  }
+  showToast('Şikayetin iletildi, teşekkürler');
+}
+async function deleteMessageAction(chatType, msgId){
+  const table = chatType==='general' ? 'chat_messages' : 'venue_chat_messages';
+  const { error } = await sb.from(table).delete().eq('id', msgId);
+  closeOverlay('message-actions');
+  if(error){ console.error(error); showToast(error.message || 'Silinemedi'); return; }
+  if(chatType==='general'){ generalChatMessages = generalChatMessages.filter(m=>m.id!==msgId); renderGeneralChatMessages(); }
+  else { venueChatMessages = venueChatMessages.filter(m=>m.id!==msgId); renderVenueChatMessages(); }
+  showToast('Mesaj silindi');
+}
+let selectedMuteMinutes = 10;
+let moderationFormContainerId = 'moderation-form';
+function showModerationForm(kind, userId, containerId){
+  moderationFormContainerId = containerId || 'moderation-form';
+  const el = document.getElementById(moderationFormContainerId);
+  if(!el) return;
+  if(kind==='mute'){
+    selectedMuteMinutes = 10;
+    el.innerHTML = `
+      <div class="glass" style="padding:16px; margin-top:6px;">
+        <div class="body-md" style="margin-bottom:8px;">Susturma Süresi</div>
+        <div class="row gap-8" style="flex-wrap:wrap; margin-bottom:10px;" id="mute-duration-chips">
+          <div class="chip selected" id="mute-dur-10" onclick="selectMuteDuration(10)">10 dk</div>
+          <div class="chip" id="mute-dur-60" onclick="selectMuteDuration(60)">1 saat</div>
+          <div class="chip" id="mute-dur-1440" onclick="selectMuteDuration(1440)">24 saat</div>
+          <div class="chip" id="mute-dur-0" onclick="selectMuteDuration(0)">Süresiz</div>
+        </div>
+        <input id="moderation-reason" placeholder="Sebep (örn. Küfür/hakaret)" style="width:100%; padding:12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        <div style="height:10px"></div>
+        <button class="btn-primary" onclick="submitMute('${userId}')">Sustur</button>
+      </div>`;
+  } else {
+    const label = kind==='chatban' ? 'Sohbetten Banla' : 'Uygulamadan Banla';
+    const fn = kind==='chatban' ? `submitChatBan('${userId}')` : `submitAppBan('${userId}')`;
+    el.innerHTML = `
+      <div class="glass" style="padding:16px; margin-top:6px;">
+        <input id="moderation-reason" placeholder="Sebep (örn. Spam)" style="width:100%; padding:12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        <div style="height:10px"></div>
+        <button class="btn-primary" onclick="${fn}">${label}</button>
+      </div>`;
+  }
+}
+function selectMuteDuration(minutes){
+  selectedMuteMinutes = minutes;
+  [10,60,1440,0].forEach(m=>document.getElementById('mute-dur-'+m)?.classList.toggle('selected', m===minutes));
+}
+function clearModerationForm(){
+  const el = document.getElementById(moderationFormContainerId);
+  if(el) el.innerHTML = '';
+}
+async function submitMute(userId){
+  const reason = document.getElementById('moderation-reason').value.trim();
+  const muted_until = selectedMuteMinutes===0
+    ? new Date(Date.now() + 100*365*24*60*60*1000).toISOString()
+    : new Date(Date.now() + selectedMuteMinutes*60*1000).toISOString();
+  const { error } = await sb.from('profiles').update({ muted_until, mute_reason: reason || null }).eq('id', userId);
+  closeOverlay('message-actions'); clearModerationForm();
+  if(error){ console.error(error); showToast(error.message || 'İşlem başarısız'); return; }
+  showToast('Kullanıcı susturuldu');
+}
+async function submitChatBan(userId){
+  const reason = document.getElementById('moderation-reason').value.trim();
+  const { error } = await sb.from('profiles').update({ chat_banned: true, chat_ban_reason: reason || null }).eq('id', userId);
+  closeOverlay('message-actions'); clearModerationForm();
+  if(error){ console.error(error); showToast(error.message || 'İşlem başarısız'); return; }
+  showToast('Kullanıcı sohbetten banlandı');
+}
+async function submitAppBan(userId){
+  const reason = document.getElementById('moderation-reason').value.trim();
+  const { error } = await sb.from('profiles').update({ is_banned: true, ban_reason: reason || null }).eq('id', userId);
+  closeOverlay('message-actions'); clearModerationForm();
+  if(error){ console.error(error); showToast(error.message || 'İşlem başarısız'); return; }
+  showToast('Kullanıcı uygulamadan banlandı');
+}
+async function toggleChatLock(kind){
+  if(kind==='general'){
+    const newVal = !currentCity.chat_locked;
+    const { error } = await sb.from('cities').update({ chat_locked: newVal }).eq('id', currentCity.id);
+    if(error){ console.error(error); showToast(error.message || 'İşlem başarısız'); return; }
+    currentCity.chat_locked = newVal;
+    updateGeneralChatLockUI();
+    showToast(newVal ? 'Sohbet kilitlendi' : 'Kilit kaldırıldı');
+  } else {
+    const v = contributeState.venue;
+    const newVal = !v.chat_locked;
+    const { error } = await sb.from('venues').update({ chat_locked: newVal }).eq('id', v.id);
+    if(error){ console.error(error); showToast(error.message || 'İşlem başarısız'); return; }
+    v.chat_locked = newVal;
+    updateVenueChatLockUI();
+    showToast(newVal ? 'Sohbet kilitlendi' : 'Kilit kaldırıldı');
+  }
+}
+function updateGeneralChatLockUI(){
+  const isAdmin = !!currentProfile?.is_admin;
+  const locked = !!currentCity?.chat_locked;
+  const lockBtn = document.getElementById('general-chat-lock-btn');
+  lockBtn.style.display = isAdmin ? 'flex' : 'none';
+  lockBtn.innerText = locked ? '🔓' : '🔒';
+  const showBanner = locked && !isAdmin;
+  document.getElementById('general-chat-locked-banner').style.display = showBanner ? 'block' : 'none';
+  document.getElementById('general-chat-input-row').style.display = showBanner ? 'none' : 'block';
+}
+function updateVenueChatLockUI(){
+  const isAdmin = !!currentProfile?.is_admin;
+  const v = contributeState.venue;
+  const locked = !!v?.chat_locked;
+  const lockBtn = document.getElementById('detail-chat-lock-btn');
+  lockBtn.style.display = isAdmin ? 'flex' : 'none';
+  lockBtn.innerText = locked ? '🔓' : '🔒';
+  const showBanner = locked && !isAdmin;
+  document.getElementById('detail-chat-locked-banner').style.display = showBanner ? 'block' : 'none';
+  document.getElementById('detail-chat-input-row').style.display = showBanner ? 'none' : 'block';
 }
 
 let generalChatChannel = null;
@@ -2494,7 +2740,7 @@ async function loadGeneralChatMessages(){
 function renderGeneralChatMessages(){
   const el = document.getElementById('general-chat-messages');
   el.innerHTML = generalChatMessages.length
-    ? generalChatMessages.map(chatMessageHTML).join('')
+    ? generalChatMessages.map(m=>chatMessageHTML(m,'general')).join('')
     : `<div class="body-md" style="text-align:center; padding:40px 0;">Henüz mesaj yok, ilk mesajı sen yaz!</div>`;
   el.scrollTop = el.scrollHeight;
 }
@@ -2510,6 +2756,10 @@ function subscribeGeneralChat(){
       generalChatMessages.push(payload.new);
       renderGeneralChatMessages();
     })
+    .on('postgres_changes', { event:'DELETE', schema:'public', table:'chat_messages' }, payload=>{
+      generalChatMessages = generalChatMessages.filter(m=>m.id!==payload.old.id);
+      renderGeneralChatMessages();
+    })
     .on('presence', { event:'sync' }, () => {
       generalOnlineUsers = Object.values(generalChatChannel.presenceState()).flat();
       renderGeneralOnlineUsers();
@@ -2522,6 +2772,8 @@ function subscribeGeneralChat(){
 }
 async function sendGeneralChatMessage(){
   if(!requireAuth()) return;
+  const blockedReason = chatSendBlockedReason();
+  if(blockedReason){ showToast(blockedReason); return; }
   const input = document.getElementById('general-chat-input');
   const content = input.value.trim();
   if(!content) return;
@@ -2537,6 +2789,8 @@ async function sendGeneralChatMessage(){
 async function sendGeneralChatPhoto(file){
   if(!file) return;
   if(!requireAuth()) return;
+  const blockedReason = chatSendBlockedReason();
+  if(blockedReason){ showToast(blockedReason); return; }
   const ext = file.name.split('.').pop();
   const path = `${currentCity.id}/${Date.now()}-${currentUser.id}.${ext}`;
   const { error: uploadError } = await sb.storage.from('chat-attachments').upload(path, file);
@@ -2565,7 +2819,7 @@ async function loadVenueChatMessages(){
 function renderVenueChatMessages(){
   const el = document.getElementById('detail-chat-messages');
   el.innerHTML = venueChatMessages.length
-    ? venueChatMessages.map(chatMessageHTML).join('')
+    ? venueChatMessages.map(m=>chatMessageHTML(m,'venue')).join('')
     : `<div class="body-md" style="text-align:center; padding:40px 0;">Bu mekanda henüz mesaj yok, ilk mesajı sen yaz!</div>`;
   el.scrollTop = el.scrollHeight;
 }
@@ -2592,6 +2846,10 @@ function subscribeVenueChat(){
       venueChatMessages.push(payload.new);
       renderVenueChatMessages();
     })
+    .on('postgres_changes', { event:'DELETE', schema:'public', table:'venue_chat_messages' }, payload=>{
+      venueChatMessages = venueChatMessages.filter(m=>m.id!==payload.old.id);
+      renderVenueChatMessages();
+    })
     .on('presence', { event:'sync' }, () => {
       venueOnlineUsers = Object.values(venueChatChannel.presenceState()).flat();
       renderVenueOnlineUsers();
@@ -2604,6 +2862,8 @@ function subscribeVenueChat(){
 }
 async function sendVenueChatMessage(){
   if(!requireAuth()) return;
+  const blockedReason = chatSendBlockedReason();
+  if(blockedReason){ showToast(blockedReason); return; }
   const v = contributeState.venue;
   if(!v) return;
   const input = document.getElementById('detail-chat-input');
@@ -2621,6 +2881,8 @@ async function sendVenueChatMessage(){
 async function sendVenueChatPhoto(file){
   if(!file) return;
   if(!requireAuth()) return;
+  const blockedReason = chatSendBlockedReason();
+  if(blockedReason){ showToast(blockedReason); return; }
   const v = contributeState.venue;
   if(!v) return;
   const ext = file.name.split('.').pop();
