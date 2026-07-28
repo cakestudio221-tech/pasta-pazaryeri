@@ -692,7 +692,7 @@ async function switchCity(cityId){
 
 async function loadVenues(){
   if(!currentCity){ return; }
-  const { data: venueRows, error: venueErr } = await sb.from('venues').select('*').eq('city_id', currentCity.id).order('created_at', { ascending:false });
+  const { data: venueRows, error: venueErr } = await sb.from('venues').select('*').eq('city_id', currentCity.id).eq('is_approved', true).order('created_at', { ascending:false });
   if(venueErr){ console.error(venueErr); showToast('Mekanlar yüklenemedi'); return; }
   const { data: priceRows, error: priceErr } = await sb.from('prices').select('*').order('created_at', { ascending:false });
   if(priceErr){ console.error(priceErr); showToast('Fiyatlar yüklenemedi'); return; }
@@ -1234,7 +1234,7 @@ async function submitNewVenue(){
     distance: Number(data.distance), lat: null, lng: null, prices: [], lastPriceUpdate: data.created_at };
   venues.unshift(newVenue);
   contributeState.venue = newVenue;
-  showToast('Mekan eklendi! Şimdi bir fiyat gir');
+  showToast('Mekan eklendi! Onaylandıktan sonra herkese görünür olacak — şimdi bir fiyat gir');
   goContributeStep('drink');
 }
 function selectContributeCategory(c){
