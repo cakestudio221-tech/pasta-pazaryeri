@@ -614,14 +614,35 @@
       <div class="glass" style="padding:16px;">
         <div class="body-md" style="margin-bottom:6px;">E-posta</div>
         <input id="auth-email" type="email" placeholder="ornek@eposta.com" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
-        <div style="height:12px"></div>
-        <div class="body-md" style="margin-bottom:6px;">Şifre</div>
-        <input id="auth-password" type="password" placeholder="••••••••" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        <div id="auth-password-group">
+          <div style="height:12px"></div>
+          <div class="body-md" style="margin-bottom:6px;">Şifre</div>
+          <input id="auth-password" type="password" placeholder="••••••••" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        </div>
+      </div>
+      <div id="auth-forgot-link" style="text-align:right; margin-top:8px;">
+        <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="setAuthMode('forgot')">Şifreni mi unuttun?</span>
       </div>
       <div style="height:16px"></div>
       <button class="btn-primary" id="auth-submit-btn" onclick="submitAuth()">Giriş Yap</button>
       <div style="height:10px"></div>
       <button class="btn-outline" id="auth-toggle-btn" onclick="toggleAuthMode()">Hesabın yok mu? Kayıt ol</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY: NEW PASSWORD -->
+  <div class="overlay" id="overlay-newpassword">
+    <div class="row-between px" style="padding-top:0;">
+      <h1 class="display-md">Yeni Şifre Belirle</h1>
+      <div class="close-btn" onclick="closeOverlay('newpassword')">✕</div>
+    </div>
+    <div class="px">
+      <div class="glass" style="padding:16px;">
+        <div class="body-md" style="margin-bottom:6px;">Yeni Şifre</div>
+        <input id="new-password-input" type="password" placeholder="••••••••" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+      </div>
+      <div style="height:16px"></div>
+      <button class="btn-primary" onclick="submitNewPassword()">Şifreyi Güncelle</button>
     </div>
   </div>
 
@@ -806,9 +827,20 @@ function toggleFavoriteCurrent(){
 
 function setAuthMode(mode){
   authMode = mode;
+  document.getElementById('auth-password-group').style.display = mode==='forgot' ? 'none' : 'block';
+  document.getElementById('auth-forgot-link').style.display = mode==='login' ? 'block' : 'none';
+  const toggleBtn = document.getElementById('auth-toggle-btn');
+  if(mode==='forgot'){
+    document.getElementById('auth-title').innerText = 'Şifremi Sıfırla';
+    document.getElementById('auth-submit-btn').innerText = 'Sıfırlama Linki Gönder';
+    toggleBtn.innerText = 'Girişe dön';
+    toggleBtn.onclick = ()=>setAuthMode('login');
+    return;
+  }
   document.getElementById('auth-title').innerText = mode==='login' ? 'Giriş Yap' : 'Kayıt Ol';
   document.getElementById('auth-submit-btn').innerText = mode==='login' ? 'Giriş Yap' : 'Kayıt Ol';
-  document.getElementById('auth-toggle-btn').innerText = mode==='login' ? 'Hesabın yok mu? Kayıt ol' : 'Zaten hesabın var mı? Giriş yap';
+  toggleBtn.innerText = mode==='login' ? 'Hesabın yok mu? Kayıt ol' : 'Zaten hesabın var mı? Giriş yap';
+  toggleBtn.onclick = toggleAuthMode;
 }
 function toggleAuthMode(){ setAuthMode(authMode==='login' ? 'signup' : 'login'); }
 function openAuth(mode){
@@ -823,6 +855,14 @@ function requireAuth(){
 }
 async function submitAuth(){
   const email = document.getElementById('auth-email').value.trim();
+  if(authMode==='forgot'){
+    if(!email){ showToast('E-posta gerekli'); return; }
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    if(error){ showToast(error.message); return; }
+    showToast('Sıfırlama linki e-postana gönderildi 📧');
+    setAuthMode('login');
+    return;
+  }
   const password = document.getElementById('auth-password').value;
   if(!email || !password){ showToast('E-posta ve şifre gerekli'); return; }
   const { error } = authMode==='login'
@@ -918,6 +958,14 @@ async function renderProfileScreen(){
     </div>
     <button class="btn-outline" style="margin-top:20px;" onclick="signOutUser()">Çıkış Yap</button>`;
 }
+async function submitNewPassword(){
+  const password = document.getElementById('new-password-input').value;
+  if(!password || password.length<6){ showToast('En az 6 karakterli bir şifre gir'); return; }
+  const { error } = await sb.auth.updateUser({ password });
+  if(error){ showToast(error.message); return; }
+  closeOverlay('newpassword');
+  showToast('Şifren güncellendi ✅');
+}
 async function initAuth(){
   const { data:{ session } } = await sb.auth.getSession();
   currentUser = session?.user || null;
@@ -930,6 +978,7 @@ async function initAuth(){
     await loadFavorites();
     await renderProfileScreen();
     if(document.getElementById('screen-favorites').classList.contains('active')) renderFavorites();
+    if(_event === 'PASSWORD_RECOVERY'){ openOverlay('newpassword'); }
   });
 }
 
