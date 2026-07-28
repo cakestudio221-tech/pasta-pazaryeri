@@ -390,14 +390,17 @@
       </div>
       <div id="auth-signup-extra" style="display:none;">
         <div style="height:12px"></div>
+        <div class="body-md" style="margin-bottom:6px;">Şifre Tekrar</div>
+        <input id="auth-password-confirm" type="password" placeholder="••••••••" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        <div style="height:12px"></div>
         <div class="body-md" style="margin-bottom:6px;">Ad Soyad</div>
         <input id="auth-fullname" placeholder="Ad Soyad" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
         <div style="height:12px"></div>
+        <div class="body-md" style="margin-bottom:6px;">Kullanıcı Adı</div>
+        <input id="auth-username" placeholder="ornek_kullanici" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        <div style="height:12px"></div>
         <div class="body-md" style="margin-bottom:6px;">Doğum Tarihi</div>
         <input id="auth-dob" type="date" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
-        <div style="height:12px"></div>
-        <div class="body-md" style="margin-bottom:6px;">Şifre Tekrar</div>
-        <input id="auth-password-confirm" type="password" placeholder="••••••••" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
       </div>
     </div>
     <div id="auth-forgot-link" style="text-align:right; margin-top:8px;">
@@ -806,10 +809,12 @@
       <div class="tab-chip selected" onclick="setAdminTab('venues')">Bekleyen Mekanlar</div>
       <div class="tab-chip" onclick="setAdminTab('verifications')">Doğrulama Başvuruları</div>
       <div class="tab-chip" onclick="setAdminTab('cities')">Şehirler</div>
+      <div class="tab-chip" onclick="setAdminTab('users')">Kullanıcılar</div>
     </div>
     <div class="px" id="admin-venues"></div>
     <div class="px" id="admin-verifications" style="display:none;"></div>
     <div class="px" id="admin-cities" style="display:none;"></div>
+    <div class="px" id="admin-users" style="display:none;"></div>
   </div>
 
   <!-- OVERLAY: NOTIFICATIONS -->
@@ -1048,6 +1053,7 @@ function openAuth(mode){
   document.getElementById('auth-email').value='';
   document.getElementById('auth-password').value='';
   document.getElementById('auth-fullname').value='';
+  document.getElementById('auth-username').value='';
   document.getElementById('auth-dob').value='';
   document.getElementById('auth-dob').max = new Date().toISOString().split('T')[0];
   document.getElementById('auth-password-confirm').value='';
@@ -1079,16 +1085,24 @@ async function submitAuth(){
   if(!email || !password){ showToast('E-posta ve şifre gerekli'); return; }
   if(authMode==='signup'){
     const fullName = document.getElementById('auth-fullname').value.trim();
+    const handle = document.getElementById('auth-username').value.trim().toLowerCase();
     const dob = document.getElementById('auth-dob').value;
     const passwordConfirm = document.getElementById('auth-password-confirm').value;
     if(!fullName){ showToast('Ad soyad gerekli'); return; }
+    if(!/^[a-z0-9_.]{3,20}$/.test(handle)){ showToast('Kullanıcı adı 3-20 karakter olmalı, sadece harf/rakam/_/. içerebilir'); return; }
     if(!dob){ showToast('Doğum tarihi gerekli'); return; }
     if(calculateAge(dob) < 18){ showToast('18 yaşından küçükler kayıt olamaz'); return; }
     if(password !== passwordConfirm){ showToast('Şifreler eşleşmiyor'); return; }
+    const { data: existing } = await sb.from('profiles').select('id').eq('handle', handle).maybeSingle();
+    if(existing){ showToast('Bu kullanıcı adı zaten alınmış'); return; }
     const { data, error } = await sb.auth.signUp({ email, password });
     if(error){ showToast(error.message); return; }
     if(data.user){
-      await sb.from('profiles').update({ username: fullName, date_of_birth: dob }).eq('id', data.user.id);
+      const { error: profileError } = await sb.from('profiles').update({ full_name: fullName, handle, date_of_birth: dob }).eq('id', data.user.id);
+      if(profileError){
+        showToast(profileError.message.includes('unique') ? 'Bu kullanıcı adı zaten alınmış' : (profileError.message || 'Profil güncellenemedi'));
+        return;
+      }
     }
     closeOverlay('auth');
     showToast('Kayıt tamamlandı, hoş geldin! 🎉');
@@ -1157,7 +1171,7 @@ async function renderProfileScreen(){
       <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;cursor:pointer;" onclick="document.getElementById('avatar-input').click()">${avatarInner}</div>
       <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="uploadAvatar(this.files[0])">
       <div style="flex:1">
-        <div class="headline">${currentProfile?.username || 'Barmender'}</div>
+        <div class="headline">${currentProfile?.handle || 'Barmender'}</div>
         <div class="body-md" style="margin:2px 0 6px;">Seviye ${level} · ${currentUser.email}</div>
         <div class="progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>
       </div>
@@ -1555,7 +1569,7 @@ async function renderDetailReviews(){
   const el = document.getElementById('detail-reviews');
   el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
   const { data, error } = await sb.from('reviews')
-    .select('*, profiles(username)')
+    .select('*, profiles(handle)')
     .eq('venue_id', v.id)
     .order('created_at', { ascending:false });
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yorumlar yüklenemedi</div>`; return; }
@@ -1573,7 +1587,7 @@ async function renderDetailReviews(){
 
   const listHTML = (data && data.length) ? data.map(r=>`
     <div class="glass" style="padding:14px 16px; margin-bottom:10px;">
-      <div class="row-between"><span class="body-lg" style="font-weight:600;">${r.profiles?.username || 'Barmender'}</span><span style="color:var(--gold);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+      <div class="row-between"><span class="body-lg" style="font-weight:600;">${r.profiles?.handle || 'Barmender'}</span><span style="color:var(--gold);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
       ${r.comment ? `<div class="body-md" style="margin-top:6px;">${r.comment}</div>` : ''}
     </div>`).join('') : `<div class="body-md" style="text-align:center; padding:20px 0;">Henüz yorum yok</div>`;
 
@@ -2112,14 +2126,29 @@ async function renderLeaderboard(){
 }
 function setAdminTab(tab){
   document.querySelectorAll('#admin-tabs .tab-chip').forEach((el,i)=>{
-    el.classList.toggle('selected', ['venues','verifications','cities'][i]===tab);
+    el.classList.toggle('selected', ['venues','verifications','cities','users'][i]===tab);
   });
-  ['venues','verifications','cities'].forEach(t=>{
+  ['venues','verifications','cities','users'].forEach(t=>{
     document.getElementById('admin-'+t).style.display = t===tab ? 'block' : 'none';
   });
   if(tab==='venues') renderAdminVenues();
   if(tab==='verifications') renderAdminVerifications();
   if(tab==='cities') renderAdminCities();
+  if(tab==='users') renderAdminUsers();
+}
+async function renderAdminUsers(){
+  const el = document.getElementById('admin-users');
+  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  const { data, error } = await sb.rpc('admin_list_users');
+  if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
+  if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Kullanıcı yok</div>`; return; }
+  el.innerHTML = data.map(u=>`
+    <div class="glass" style="padding:14px 16px; margin-bottom:10px;">
+      <div class="row-between"><span class="body-lg" style="font-weight:600;">@${escapeHTML(u.handle || '-')}</span>${u.is_admin ? '<span class="verified-pill">Admin</span>' : ''}</div>
+      <div class="body-sm" style="margin-top:4px;">${escapeHTML(u.full_name || '-')}</div>
+      <div class="body-sm">${escapeHTML(u.email || '-')}</div>
+      <div class="body-sm">Doğum tarihi: ${u.date_of_birth || '-'} · XP: ${u.xp}</div>
+    </div>`).join('');
 }
 
 async function renderAdminVenues(){
@@ -2319,7 +2348,7 @@ function subscribeGeneralChat(){
     })
     .subscribe(async (status)=>{
       if(status==='SUBSCRIBED' && currentUser){
-        await generalChatChannel.track({ username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
+        await generalChatChannel.track({ username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
       }
     });
 }
@@ -2332,7 +2361,7 @@ async function sendGeneralChatMessage(){
   input.value = '';
   const { error } = await sb.from('chat_messages').insert({
     city_id: currentCity.id, user_id: currentUser.id,
-    username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
+    username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
     content,
   });
   if(error){ console.error(error); showToast(error.message || 'Mesaj gönderilemedi'); }
@@ -2347,7 +2376,7 @@ async function sendGeneralChatPhoto(file){
   const imageUrl = sb.storage.from('chat-attachments').getPublicUrl(path).data.publicUrl;
   const { error } = await sb.from('chat_messages').insert({
     city_id: currentCity.id, user_id: currentUser.id,
-    username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
+    username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
     content: null, image_url: imageUrl,
   });
   if(error){ console.error(error); showToast(error.message || 'Mesaj gönderilemedi'); }
@@ -2401,7 +2430,7 @@ function subscribeVenueChat(){
     })
     .subscribe(async (status)=>{
       if(status==='SUBSCRIBED' && currentUser){
-        await venueChatChannel.track({ username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
+        await venueChatChannel.track({ username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null });
       }
     });
 }
@@ -2416,7 +2445,7 @@ async function sendVenueChatMessage(){
   input.value = '';
   const { error } = await sb.from('venue_chat_messages').insert({
     venue_id: v.id, user_id: currentUser.id,
-    username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
+    username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
     content,
   });
   if(error){ console.error(error); showToast(error.message || 'Mesaj gönderilemedi'); }
@@ -2433,7 +2462,7 @@ async function sendVenueChatPhoto(file){
   const imageUrl = sb.storage.from('chat-attachments').getPublicUrl(path).data.publicUrl;
   const { error: insertError } = await sb.from('venue_chat_messages').insert({
     venue_id: v.id, user_id: currentUser.id,
-    username: currentProfile?.username || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
+    username: currentProfile?.handle || 'Barmender', avatar_url: currentProfile?.avatar_url || null,
     content: null, image_url: imageUrl,
   });
   if(insertError){ console.error(insertError); showToast(insertError.message || 'Mesaj gönderilemedi'); }
