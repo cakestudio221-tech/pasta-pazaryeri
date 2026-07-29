@@ -498,6 +498,12 @@
     </div>
 
     <div class="section-header">
+      <h3 class="headline">✨ Sana Özel</h3>
+      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="openOverlay('recommend')">Tümünü Gör</span>
+    </div>
+    <div class="venue-scroll" id="personalized-scroll"></div>
+
+    <div class="section-header">
       <h3 class="headline">🔥 Trend Mekanlar</h3>
       <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
     </div>
@@ -1513,6 +1519,7 @@ function renderHome(){
   document.getElementById('cheap-scroll').innerHTML = cheap.map(venueCardHTML).join('');
   loadCommunityBannerPreview();
   renderPriceFinder();
+  renderPersonalizedSection();
 }
 function renderPriceFinder(){
   const el = document.getElementById('price-finder-results');
@@ -2247,6 +2254,19 @@ async function loadAndRenderStats(){
 }
 
 let userGeo = null;
+let geoRequested = false;
+async function renderPersonalizedSection(){
+  const el = document.getElementById('personalized-scroll');
+  if(!el) return;
+  if(!venues.length){ el.innerHTML = ''; return; }
+  if(!geoRequested){ geoRequested = true; userGeo = await requestUserLocation(); }
+  const favCategory = await getFavoriteCategory();
+  const scored = venues.map(v=>{
+    const dist = distanceToVenue(v);
+    return { v, dist, score: scoreVenue(v, favCategory, dist) };
+  }).sort((a,b)=>b.score-a.score).slice(0,8);
+  el.innerHTML = scored.map(({v})=>venueCardHTML(v)).join('');
+}
 
 function requestUserLocation(){
   return new Promise(resolve=>{
