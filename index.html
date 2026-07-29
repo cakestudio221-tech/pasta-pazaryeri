@@ -160,6 +160,12 @@
     display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;
     color:var(--text-tertiary); cursor:pointer; font-size:14px; flex-shrink:0;
   }
+  .title-badge{
+    display:inline-flex; align-items:center; gap:3px; font-size:10.5px; font-weight:700; letter-spacing:.2px;
+    padding:3px 9px; border-radius:var(--radius-full); color:#fff;
+    background:linear-gradient(135deg,var(--purple),var(--blue)); vertical-align:middle; white-space:nowrap;
+  }
+  .points-value{ font-family:'Sora',sans-serif; font-size:20px; font-weight:700; color:var(--text-primary); }
   .online-strip{ display:flex; overflow-x:auto; padding:10px 16px; gap:12px; scrollbar-width:none; }
   .online-strip::-webkit-scrollbar{display:none;}
   .online-chip{ display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:56px; }
@@ -226,6 +232,9 @@
     padding-bottom: var(--safe-bottom); -webkit-overflow-scrolling: touch;
   }
   .overlay.active{ top:0; }
+  /* position:fixed children of an overlay are now truly viewport-fixed (see .overlay above),
+     so they must be hidden explicitly when their overlay isn't active or they'd show through on every screen. */
+  .overlay:not(.active) .fixed-footer{ display:none !important; }
   .close-btn, .back-btn{
     width:34px; height:34px; border-radius:50%; background:rgba(0,0,0,.4); display:flex;
     align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:16px;
@@ -592,16 +601,16 @@
       <div class="px" id="detail-chat-messages" style="padding-bottom:90px;"></div>
     </div>
     <div style="height:90px"></div>
-    <div id="detail-price-cta" style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
+    <div id="detail-price-cta" class="fixed-footer" style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
       <div class="row gap-8">
         <button class="btn-primary" style="flex:1;" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>
         <button class="btn-outline" id="detail-directions-btn" style="flex:0 0 auto; padding:0 16px;" onclick="openDirections()">📍 Yol Tarifi Al</button>
       </div>
     </div>
-    <div id="detail-chat-locked-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10; text-align:center; color:var(--text-tertiary); font-size:13px;">
+    <div id="detail-chat-locked-banner" class="fixed-footer" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10; text-align:center; color:var(--text-tertiary); font-size:13px;">
       🔒 Sohbet şu anda yönetici tarafından durduruldu
     </div>
-    <div id="detail-chat-input-row" style="display:none; position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
+    <div id="detail-chat-input-row" class="fixed-footer" style="display:none; position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
       <div class="row gap-8">
         <div class="stepper-btn" onclick="toggleEmojiPicker('detail-chat-input')">😀</div>
         <input id="detail-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:10px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendVenueChatMessage()" onfocus="setChatFocused('detail-chat-online', true)" onblur="setChatFocused('detail-chat-online', false)">
@@ -796,10 +805,10 @@
     </div>
     <div class="online-strip" id="general-chat-online"></div>
     <div class="px" id="general-chat-messages" style="padding-bottom:90px;"></div>
-    <div id="general-chat-locked-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10; text-align:center; color:var(--text-tertiary); font-size:13px;">
+    <div id="general-chat-locked-banner" class="fixed-footer" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10; text-align:center; color:var(--text-tertiary); font-size:13px;">
       🔒 Sohbet şu anda yönetici tarafından durduruldu
     </div>
-    <div id="general-chat-input-row" style="position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
+    <div id="general-chat-input-row" class="fixed-footer" style="position:fixed; bottom:var(--keyboard-offset); left:0; right:0; padding:10px 16px; padding-bottom: calc(10px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10;">
       <div class="row gap-8">
         <div class="stepper-btn" onclick="toggleEmojiPicker('general-chat-input')">😀</div>
         <input id="general-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:10px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendGeneralChatMessage()" onfocus="setChatFocused('general-chat-online', true)" onblur="setChatFocused('general-chat-online', false)">
@@ -1207,6 +1216,21 @@ async function uploadAvatar(file){
   showToast('Profil fotoğrafın güncellendi');
   renderProfileScreen();
 }
+const titleTiers = [
+  { min:0, title:'Çaylak', emoji:'🐣' },
+  { min:100, title:'Gece Kaşifi', emoji:'🧭' },
+  { min:300, title:'Gece Ustası', emoji:'🍸' },
+  { min:600, title:'Efsane', emoji:'👑' },
+  { min:1000, title:'Gece İkonu', emoji:'🌟' },
+];
+function getTitleTier(xp){
+  let current = titleTiers[0];
+  for(const t of titleTiers){ if(xp >= t.min) current = t; }
+  return current;
+}
+function getNextTitleTier(xp){
+  return titleTiers.find(t => t.min > xp) || null;
+}
 async function renderProfileScreen(){
   const el = document.getElementById('profile-content');
   if(!currentUser){
@@ -1221,8 +1245,9 @@ async function renderProfileScreen(){
     return;
   }
   const xp = currentProfile?.xp || 0;
-  const level = Math.floor(xp/100) + 1;
-  const progressPct = xp % 100;
+  const tier = getTitleTier(xp);
+  const nextTier = getNextTitleTier(xp);
+  const progressPct = nextTier ? Math.round(((xp - tier.min) / (nextTier.min - tier.min)) * 100) : 100;
   const { count: contribCount } = await sb.from('prices').select('id', { count:'exact', head:true }).eq('reported_by', currentUser.id);
   const c = contribCount || 0;
   const badges = [
@@ -1241,8 +1266,9 @@ async function renderProfileScreen(){
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;cursor:pointer;flex-shrink:0;" onclick="document.getElementById('avatar-input').click()">${avatarInner}</div>
         <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="uploadAvatar(this.files[0])">
         <div style="flex:1; min-width:0;">
-          <div class="row gap-8" style="align-items:center;" id="profile-handle-display-row">
+          <div class="row gap-8" style="align-items:center; flex-wrap:wrap;" id="profile-handle-display-row">
             <div class="headline" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(currentProfile?.handle || 'Barmender')}</div>
+            <span class="title-badge">${tier.emoji} ${tier.title}</span>
             <span style="cursor:pointer; font-size:13px; color:var(--text-tertiary); flex-shrink:0;" onclick="showHandleEditForm()">✏️</span>
           </div>
           <div id="profile-handle-edit" style="display:none; margin:6px 0;">
@@ -1252,8 +1278,12 @@ async function renderProfileScreen(){
               <button class="btn-outline" style="flex:1; padding:8px; font-size:13px;" onclick="renderProfileScreen()">İptal</button>
             </div>
           </div>
-          <div class="body-md" style="margin:2px 0 6px;">Seviye ${level}</div>
+          <div class="row gap-4" style="align-items:baseline; margin:4px 0 6px;">
+            <span class="points-value">${xp.toLocaleString('tr-TR')}</span>
+            <span class="body-sm">Puan</span>
+          </div>
           <div class="progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>
+          <div class="caption" style="margin-top:4px;">${nextTier ? `${nextTier.title}'a ${(nextTier.min - xp).toLocaleString('tr-TR')} puan kaldı` : 'En yüksek unvana ulaştın! 🎉'}</div>
         </div>
       </div>
       <div style="margin-top:14px;" id="profile-bio-display">
@@ -1343,8 +1373,10 @@ async function renderPublicProfile(userId){
   if(error || !p){ el.innerHTML = `<div class="body-md">Profil bulunamadı</div>`; return; }
   const { count } = await sb.from('prices').select('id', { count:'exact', head:true }).eq('reported_by', userId);
   const c = count || 0;
-  const level = Math.floor((p.xp||0)/100) + 1;
-  const progressPct = (p.xp||0) % 100;
+  const xp = p.xp || 0;
+  const tier = getTitleTier(xp);
+  const nextTier = getNextTitleTier(xp);
+  const progressPct = nextTier ? Math.round(((xp - tier.min) / (nextTier.min - tier.min)) * 100) : 100;
   const badges = [
     { emoji:'🍺', label:'Explorer', earned: c>=1 },
     { emoji:'⭐', label:'Güvenilir', earned: c>=10 },
@@ -1359,8 +1391,14 @@ async function renderPublicProfile(userId){
       <div class="row gap-12">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;flex-shrink:0;">${avatarInner}</div>
         <div style="flex:1; min-width:0;">
-          <div class="headline" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(p.handle || 'Barmender')}</div>
-          <div class="body-md" style="margin:2px 0 6px;">Seviye ${level}</div>
+          <div class="row gap-8" style="align-items:center; flex-wrap:wrap;">
+            <div class="headline" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(p.handle || 'Barmender')}</div>
+            <span class="title-badge">${tier.emoji} ${tier.title}</span>
+          </div>
+          <div class="row gap-4" style="align-items:baseline; margin:4px 0 6px;">
+            <span class="points-value">${xp.toLocaleString('tr-TR')}</span>
+            <span class="body-sm">Puan</span>
+          </div>
           <div class="progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>
         </div>
       </div>
