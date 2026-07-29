@@ -531,9 +531,8 @@
 
   <!-- COMPARE -->
   <div class="screen" id="screen-compare">
-    <div class="topbar row-between">
+    <div class="topbar">
       <h1 class="display-md">Fiyat Karşılaştır</h1>
-      <span style="font-size:20px; color:var(--text-secondary)">⚙︎</span>
     </div>
     <div class="search-bar glass">
       <span>🔍</span>
@@ -693,7 +692,7 @@
         <span class="display-md">₺</span>
         <input id="c-price-input" type="number" placeholder="0" style="background:none;border:none;outline:none;color:#fff;font-family:'Sora';font-size:24px;font-weight:700;width:100%;margin-left:8px;">
       </div>
-      <button class="btn-outline" style="margin-bottom:24px;" onclick="showToast('Bu özellik yakında geliyor 📸')">📷 Menü fotoğrafı çekerek otomatik doldur</button>
+      <div style="height:8px"></div>
       <button class="btn-primary" onclick="contributeNext('done')">Gönder</button>
     </div>
 
@@ -1801,13 +1800,63 @@ async function renderDetailReviews(){
       <button class="btn-primary" onclick="submitReview()">Yorum Ekle</button>
     </div>` : '';
 
-  const listHTML = (data && data.length) ? data.map(r=>`
+  const listHTML = (data && data.length) ? data.map(r=>{
+    const isOwn = !!(currentUser && r.user_id === currentUser.id);
+    const isAdmin = !!currentProfile?.is_admin;
+    return `
     <div class="glass" style="padding:14px 16px; margin-bottom:10px;">
-      <div class="row-between"><span class="body-lg" style="font-weight:600; cursor:pointer;" onclick="viewPublicProfile('${r.user_id}')">${r.profiles?.handle || 'Barmender'}</span><span style="color:var(--gold);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
-      ${r.comment ? `<div class="body-md" style="margin-top:6px;">${r.comment}</div>` : ''}
-    </div>`).join('') : `<div class="body-md" style="text-align:center; padding:20px 0;">Henüz yorum yok</div>`;
+      <div class="row-between">
+        <span class="body-lg" style="font-weight:600; cursor:pointer;" onclick="viewPublicProfile('${r.user_id}')">${r.profiles?.handle || 'Barmender'}</span>
+        <div class="row gap-8" style="align-items:center;">
+          <span id="review-rating-display-${r.id}" style="color:var(--gold);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+          ${isOwn ? `<span style="cursor:pointer; font-size:13px; color:var(--text-tertiary);" onclick="showReviewEditForm('${r.id}')">✏️</span>` : ''}
+          ${(isOwn || isAdmin) ? `<span style="cursor:pointer; font-size:13px; color:var(--text-tertiary);" onclick="deleteReview('${r.id}')">🗑️</span>` : ''}
+        </div>
+      </div>
+      ${r.comment ? `<div class="body-md" style="margin-top:6px;" id="review-comment-display-${r.id}">${escapeHTML(r.comment)}</div>` : ''}
+      ${isOwn ? `
+      <div id="review-edit-form-${r.id}" style="display:none; margin-top:8px;">
+        <div class="row gap-4" id="edit-review-stars-${r.id}" style="margin-bottom:8px;">
+          ${[1,2,3,4,5].map(n=>`<span onclick="setEditReviewRating('${r.id}',${n})" style="font-size:20px; cursor:pointer; color:${n<=r.rating?'var(--gold)':'var(--text-tertiary)'};" id="edit-star-${r.id}-${n}">★</span>`).join('')}
+        </div>
+        <textarea id="edit-review-comment-${r.id}" style="width:100%; min-height:50px; padding:10px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter'; resize:vertical;">${escapeHTML(r.comment||'')}</textarea>
+        <div class="row gap-8" style="margin-top:8px;">
+          <button class="btn-primary" style="flex:1; padding:8px; font-size:13px;" onclick="submitReviewEdit('${r.id}')">Kaydet</button>
+          <button class="btn-outline" style="flex:1; padding:8px; font-size:13px;" onclick="renderDetailReviews()">İptal</button>
+        </div>
+      </div>` : ''}
+    </div>`;}).join('') : `<div class="body-md" style="text-align:center; padding:20px 0;">Henüz yorum yok</div>`;
 
   el.innerHTML = formHTML + listHTML;
+}
+let editReviewRatings = {};
+function showReviewEditForm(reviewId){
+  editReviewRatings[reviewId] = null;
+  document.getElementById('review-rating-display-'+reviewId).style.display = 'none';
+  const commentDisplay = document.getElementById('review-comment-display-'+reviewId);
+  if(commentDisplay) commentDisplay.style.display = 'none';
+  document.getElementById('review-edit-form-'+reviewId).style.display = 'block';
+}
+function setEditReviewRating(reviewId, n){
+  editReviewRatings[reviewId] = n;
+  [1,2,3,4,5].forEach(i=>{
+    document.getElementById(`edit-star-${reviewId}-${i}`).style.color = i<=n ? 'var(--gold)' : 'var(--text-tertiary)';
+  });
+}
+async function submitReviewEdit(reviewId){
+  const comment = document.getElementById('edit-review-comment-'+reviewId).value.trim();
+  const update = { comment: comment || null };
+  if(editReviewRatings[reviewId]) update.rating = editReviewRatings[reviewId];
+  const { error } = await sb.from('reviews').update(update).eq('id', reviewId);
+  if(error){ console.error(error); showToast(error.message || 'Yorum güncellenemedi'); return; }
+  showToast('Yorumun güncellendi');
+  renderDetailReviews();
+}
+async function deleteReview(reviewId){
+  const { error } = await sb.from('reviews').delete().eq('id', reviewId);
+  if(error){ console.error(error); showToast(error.message || 'Yorum silinemedi'); return; }
+  showToast('Yorum silindi');
+  renderDetailReviews();
 }
 
 function setReviewRating(n){
