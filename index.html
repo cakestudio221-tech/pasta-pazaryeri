@@ -220,12 +220,12 @@
   .fab:active{ transform:translateX(-50%) scale(.92); }
 
   .overlay{
-    position:fixed; inset:0; background:var(--bg-primary); z-index:60;
-    transform:translateY(100%); transition:transform .3s ease; overflow-y:auto; overflow-x:hidden;
+    position:fixed; left:0; right:0; bottom:0; top:100%; background:var(--bg-primary); z-index:60;
+    transition:top .3s ease; overflow-y:auto; overflow-x:hidden;
     padding-top: var(--safe-top); padding-left: var(--safe-left); padding-right: var(--safe-right);
     padding-bottom: var(--safe-bottom); -webkit-overflow-scrolling: touch;
   }
-  .overlay.active{ transform:translateY(0); }
+  .overlay.active{ top:0; }
   .close-btn, .back-btn{
     width:34px; height:34px; border-radius:50%; background:rgba(0,0,0,.4); display:flex;
     align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:16px;
