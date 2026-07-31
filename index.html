@@ -135,6 +135,12 @@
 
   /* Alan bazlı form hatası: input altında kırmızı metin + kenarlık vurgusu.
      Inline style'ları ezmesi için !important gerekiyor. */
+  /* SVG ikonlar: currentColor ile tema uyumlu, flex kaplarda ortalı */
+  [data-icon]{ display:inline-flex; align-items:center; justify-content:center; }
+  .navitem [data-icon]{ margin-bottom:2px; }
+  .badge-fav svg, .row-fav-btn svg, .close-btn svg{ pointer-events:none; }
+  .icon-btn{ gap:5px; }
+
   .field-error{
     color:var(--error-text); font-size:12.5px; line-height:1.4; margin-top:6px;
     display:none; align-items:center; gap:4px;
@@ -421,7 +427,7 @@
 <div class="overlay" id="overlay-city">
   <div class="row-between px" style="padding-top:0;">
     <h1 class="display-md">Şehir Seç</h1>
-    <div class="close-btn" onclick="closeOverlay('city')">✕</div>
+    <div class="close-btn" onclick="closeOverlay('city')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
   </div>
   <div class="px" id="city-list"></div>
 </div>
@@ -430,7 +436,7 @@
 <div class="overlay" id="overlay-auth">
   <div class="row-between px" style="padding-top:0;">
     <h1 class="display-md" id="auth-title">Giriş Yap</h1>
-    <div class="close-btn" onclick="closeOverlay('auth')">✕</div>
+    <div class="close-btn" onclick="closeOverlay('auth')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
   </div>
   <div class="px">
     <div class="glass" style="padding:16px;">
@@ -481,13 +487,13 @@
         <h1 class="display-md">Keşfet</h1>
       </div>
       <div class="row gap-8">
-        <div class="icon-btn" onclick="openOverlay('city')">📍 <span id="city-label">Bursa</span></div>
-        <div class="icon-btn" style="position:relative;" onclick="openOverlay('notifications')">🔔<div id="notif-badge" style="display:none; position:absolute; top:2px; right:2px; width:9px; height:9px; border-radius:50%; background:var(--error); border:1.5px solid var(--bg-secondary);"></div></div>
+        <div class="icon-btn" onclick="openOverlay('city')" aria-label="Şehir seç" role="button" tabindex="0"><span data-icon="pin" data-icon-size="14"></span><span id="city-label">Bursa</span></div>
+        <div class="icon-btn" style="position:relative;" onclick="openOverlay('notifications')" aria-label="Bildirimler" role="button" tabindex="0"><span data-icon="bell" data-icon-size="17"></span><div id="notif-badge" style="display:none; position:absolute; top:2px; right:2px; width:9px; height:9px; border-radius:50%; background:var(--error); border:1.5px solid var(--bg-secondary);"></div></div>
       </div>
     </div>
 
     <div class="search-bar glass">
-      <span>🔍</span>
+      <span data-icon="search" data-icon-size="17" style="color:var(--text-tertiary);"></span>
       <input id="home-search" placeholder="Mekan, içki veya semt ara..." oninput="onHomeSearchInput(this.value)">
     </div>
 
@@ -573,7 +579,7 @@
       <h1 class="display-md">Fiyat Karşılaştır</h1>
     </div>
     <div class="search-bar glass">
-      <span>🔍</span>
+      <span data-icon="search" data-icon-size="17" style="color:var(--text-tertiary);"></span>
       <input id="compare-search" placeholder="Mekan, içki veya semt ara..." oninput="renderCompare()">
     </div>
     <div class="quick-row" style="padding-bottom:0; overflow-x:auto; flex-wrap:nowrap;" id="cat-chips"></div>
@@ -604,13 +610,13 @@
 
   <!-- BOTTOM NAV -->
   <div class="bottomnav">
-    <div class="navitem active" data-tab="home" onclick="switchTab('home')"><div style="font-size:20px;">🧭</div><span>Keşfet</span></div>
-    <div class="navitem" data-tab="compare" onclick="switchTab('compare')"><div style="font-size:20px;">⇄</div><span>Karşılaştır</span></div>
+    <div class="navitem active" data-tab="home" onclick="switchTab('home')"><div data-icon="compass" data-icon-size="21"></div><span>Keşfet</span></div>
+    <div class="navitem" data-tab="compare" onclick="switchTab('compare')"><div data-icon="compare" data-icon-size="21"></div><span>Karşılaştır</span></div>
     <div style="width:56px;"></div>
-    <div class="navitem" data-tab="favorites" onclick="switchTab('favorites')"><div style="font-size:20px;">♡</div><span>Favoriler</span></div>
-    <div class="navitem" data-tab="profile" onclick="switchTab('profile')"><div style="font-size:20px;">◍</div><span>Profil</span></div>
+    <div class="navitem" data-tab="favorites" onclick="switchTab('favorites')"><div data-icon="heart" data-icon-size="21"></div><span>Favoriler</span></div>
+    <div class="navitem" data-tab="profile" onclick="switchTab('profile')"><div data-icon="user" data-icon-size="21"></div><span>Profil</span></div>
   </div>
-  <div class="fab" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}"><span style="font-size:26px; color:#fff;">+</span></div>
+  <div class="fab" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}"><span data-icon="plus" data-icon-size="26" style="color:#fff;"></span></div>
 
   <!-- OVERLAY: VENUE DETAIL -->
   <div class="overlay" id="overlay-detail">
@@ -619,8 +625,8 @@
       <div class="hero-gradient"></div>
       <div class="detail-gallery-counter" id="detail-gallery-counter" style="display:none;">1/1</div>
       <div class="row-between" style="position:absolute; top:16px; left:16px; right:16px;">
-        <div class="close-btn" onclick="closeOverlay('detail')">←</div>
-        <div class="row gap-8"><div class="close-btn" id="detail-fav-btn" onclick="toggleFavoriteCurrent()">♡</div><div class="close-btn" onclick="shareVenue()">⤴</div></div>
+        <div class="close-btn" onclick="closeOverlay('detail')" data-icon="back" aria-label="Geri" role="button" tabindex="0"></div>
+        <div class="row gap-8"><div class="close-btn" id="detail-fav-btn" onclick="toggleFavoriteCurrent()" data-icon="heart" data-icon-size="17" aria-label="Favorilere ekle" aria-pressed="false" role="button" tabindex="0"></div><div class="close-btn" onclick="shareVenue()" data-icon="share" aria-label="Paylaş" role="button" tabindex="0"></div></div>
       </div>
     </div>
     <div class="px" style="margin-top:-8px;">
@@ -642,7 +648,7 @@
     <div id="detail-chat" style="display:none;">
       <div class="row-between px" style="padding:8px 16px 0;">
         <span class="caption">Mekan Sohbeti</span>
-        <div class="close-btn" id="detail-chat-lock-btn" style="display:none; width:26px; height:26px; font-size:13px;" onclick="toggleChatLock('venue')">🔒</div>
+        <div class="close-btn" id="detail-chat-lock-btn" style="display:none; width:26px; height:26px; font-size:13px;" onclick="toggleChatLock('venue')" data-icon="lock" aria-label="Sohbet kilidini aç/kapat" role="button" tabindex="0"></div>
       </div>
       <div class="online-strip" id="detail-chat-online"></div>
       <div class="px" id="detail-chat-messages" style="padding-bottom:90px;"></div>
@@ -672,7 +678,7 @@
   <div class="overlay" id="overlay-contribute">
     <div class="row-between px" style="padding-top:0;">
       <h3 class="headline">Fiyat Bildir</h3>
-      <div class="close-btn" onclick="closeOverlay('contribute')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('contribute')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="step-track" style="margin:16px 0;">
       <div class="step-bar active" id="step-bar-1"></div>
@@ -754,7 +760,7 @@
   <div class="overlay" id="overlay-budget">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">Bütçe Planlayıcı</h1>
-      <div class="close-btn" onclick="closeOverlay('budget')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('budget')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="body-md px" style="margin:4px 0 16px;">Bütçene uygun en iyi mekanları bul</div>
 
@@ -787,7 +793,7 @@
   <div class="overlay" id="overlay-route">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">Gece Rotası</h1>
-      <div class="close-btn" onclick="closeOverlay('route')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('route')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="body-md px" style="margin:4px 0 16px;">Gideceğin mekanları seç, rota otomatik oluşsun</div>
 
@@ -824,7 +830,7 @@
   <div class="overlay" id="overlay-stats">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">İstatistikler</h1>
-      <div class="close-btn" onclick="closeOverlay('stats')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('stats')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="body-md px" style="margin:4px 0 16px;">Kategori bazlı fiyat özeti</div>
     <div class="px" id="stats-content"></div>
@@ -834,7 +840,7 @@
   <div class="overlay" id="overlay-recommend">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">Sana Özel</h1>
-      <div class="close-btn" onclick="closeOverlay('recommend')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('recommend')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="body-md px" style="margin:4px 0 16px;">Konumun ve tercihlerine göre önerilen mekanlar</div>
     <div class="px" id="recommend-content"></div>
@@ -845,8 +851,8 @@
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md" id="general-chat-title">Sohbet</h1>
       <div class="row gap-8">
-        <div class="close-btn" id="general-chat-lock-btn" style="display:none;" onclick="toggleChatLock('general')">🔒</div>
-        <div class="close-btn" onclick="closeOverlay('general-chat')">✕</div>
+        <div class="close-btn" id="general-chat-lock-btn" style="display:none;" onclick="toggleChatLock('general')" data-icon="lock" aria-label="Sohbet kilidini aç/kapat" role="button" tabindex="0"></div>
+        <div class="close-btn" onclick="closeOverlay('general-chat')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
       </div>
     </div>
     <div class="online-strip" id="general-chat-online"></div>
@@ -869,7 +875,7 @@
   <div class="overlay" id="overlay-leaderboard">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">Liderlik Tablosu</h1>
-      <div class="close-btn" onclick="closeOverlay('leaderboard')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('leaderboard')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="tab-row" id="leaderboard-tabs">
       <div class="tab-chip selected" onclick="setLeaderboardPeriod('7d')">Haftalık</div>
@@ -883,7 +889,7 @@
   <div class="overlay" id="overlay-admin">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">Admin Paneli</h1>
-      <div class="close-btn" onclick="closeOverlay('admin')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('admin')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="tab-row" id="admin-tabs">
       <div class="tab-chip selected" onclick="setAdminTab('venues')">Bekleyen Mekanlar</div>
@@ -903,7 +909,7 @@
   <div class="overlay" id="overlay-notifications">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">Bildirimler</h1>
-      <div class="close-btn" onclick="closeOverlay('notifications')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('notifications')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="px" id="notifications-content"></div>
   </div>
@@ -912,7 +918,7 @@
   <div class="overlay" id="overlay-public-profile">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">Profil</h1>
-      <div class="close-btn" onclick="closeOverlay('public-profile')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('public-profile')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="px" id="public-profile-content"></div>
   </div>
@@ -921,7 +927,7 @@
   <div class="overlay" id="overlay-message-actions">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">Mesaj</h1>
-      <div class="close-btn" onclick="closeOverlay('message-actions')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('message-actions')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="px" id="message-actions-content"></div>
   </div>
@@ -930,7 +936,7 @@
   <div class="overlay" id="overlay-newpassword">
     <div class="row-between px" style="padding-top:0;">
       <h1 class="display-md">Yeni Şifre Belirle</h1>
-      <div class="close-btn" onclick="closeOverlay('newpassword')">✕</div>
+      <div class="close-btn" onclick="closeOverlay('newpassword')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
     <div class="px">
       <div class="glass" style="padding:16px;">
@@ -1118,8 +1124,10 @@ function updateDetailFavButton(){
   const btn = document.getElementById('detail-fav-btn');
   if(!btn || !contributeState.venue) return;
   const isFav = favoriteIds.has(contributeState.venue.id);
-  btn.innerText = isFav ? '♥' : '♡';
-  btn.style.color = isFav ? 'var(--purple)' : '#fff';
+  btn.innerHTML = icon('heart', 17, isFav);
+  btn.style.color = isFav ? 'var(--purple-text)' : '#fff';
+  btn.setAttribute('aria-label', isFav ? 'Favorilerden kaldır' : 'Favorilere ekle');
+  btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
 }
 async function toggleFavoriteVenue(venueId){
   if(!requireAuth()) return;
@@ -1314,7 +1322,7 @@ async function renderProfileScreen(){
   if(!currentUser){
     el.innerHTML = `
       <div style="text-align:center; padding-top:80px;">
-        <div style="font-size:40px;">🔒</div>
+        <div style="color:var(--text-tertiary); display:flex; justify-content:center;" aria-hidden="true">${icon('lock', 40)}</div>
         <div class="headline" style="margin-top:12px;">Giriş yapmadın</div>
         <div class="body-md" style="margin-top:6px;">Favorilerini ve katkılarını görmek için giriş yap</div>
         <div style="height:20px"></div>
@@ -1604,7 +1612,7 @@ function venueCardHTML(v){
       ${v.verified ? '<div class="badge-verified">✓</div>' : ''}
       ${computePriceTier(v) ? `<div class="badge-price">${computePriceTier(v)}</div>` : ''}
       ${v.activeCheckins>0 ? `<div class="badge-checkin">🔥 ${v.activeCheckins}</div>` : ''}
-      <div class="badge-fav ${favoriteIds.has(v.id)?'is-fav':''}" onclick="event.stopPropagation(); this.classList.add('pop'); toggleFavoriteVenue('${v.id}')">${favoriteIds.has(v.id)?'♥':'♡'}</div>
+      <div class="badge-fav ${favoriteIds.has(v.id)?'is-fav':''}" onclick="event.stopPropagation(); this.classList.add('pop'); toggleFavoriteVenue('${v.id}')">${icon('heart', 13, favoriteIds.has(v.id))}</div>
     </div>
     <div class="name">${escapeHTML(v.name)}</div>
     <div class="meta">${ratingLabel(v)} · ${escapeHTML(v.district)}</div>
@@ -1770,7 +1778,7 @@ function renderCompare(){
         <div class="price" style="color:${isCheapest?'var(--success-text)':'var(--text-primary)'}">₺${r.price.price}</div>
         ${diff ? `<div class="caption" style="color:${diff>0?'var(--error-text)':'var(--success-text)'}">${diff>0?'↑':'↓'} ₺${Math.abs(diff)}</div>` : ''}
       </div>
-      <div class="row-fav-btn ${favoriteIds.has(r.venue.id)?'is-fav':''}" onclick="event.stopPropagation(); toggleFavoriteVenue('${r.venue.id}')">${favoriteIds.has(r.venue.id)?'♥':'♡'}</div>
+      <div class="row-fav-btn ${favoriteIds.has(r.venue.id)?'is-fav':''}" onclick="event.stopPropagation(); toggleFavoriteVenue('${r.venue.id}')">${icon('heart', 16, favoriteIds.has(r.venue.id))}</div>
     </div>`;
   }).join('');
 }
@@ -2826,6 +2834,40 @@ function escapeHTML(str){
   div.textContent = str == null ? '' : String(str);
   return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+// --- İkon seti (inline SVG, Lucide tarzı) ---
+// Emoji platformlar arası farklı render olduğu için arayüz ikonları SVG.
+// currentColor kullanır: tema/hover renkleri otomatik uyar. İçerik emoji'leri
+// (rozet, unvan, olanak) marka kimliği olarak korunur.
+const ICONS = {
+  compass:'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+  compare:'<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
+  heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+  user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  close:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  back:'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+  share:'<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/>',
+  lock:'<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+};
+function icon(name, size, filled){
+  const s = size || 22;
+  return `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="${filled?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;">${ICONS[name]||''}</svg>`;
+}
+
+// Statik HTML'deki data-icon yuvalarını doldurur (dinamik içerik icon()'u doğrudan çağırır).
+function renderIcons(root){
+  (root || document).querySelectorAll('[data-icon]').forEach(el=>{
+    if(el.dataset.iconDone) return;
+    el.innerHTML = icon(el.dataset.icon, Number(el.dataset.iconSize) || 22, el.dataset.iconFilled === '1');
+    el.dataset.iconDone = '1';
+  });
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ()=>renderIcons());
+else renderIcons();
+
 // --- Alan bazlı form doğrulama yardımcıları ---
 // Hata elemanını gerektiğinde kendisi oluşturur; her input için ayrı HTML gerekmez.
 // Her zaman false döner ki `if(!x) return setFieldError(...)` şeklinde kullanılabilsin.
