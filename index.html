@@ -1520,13 +1520,13 @@ function venueCardHTML(v){
   return `
   <div class="venue-card" onclick="openDetail('${v.id}')">
     <div class="imgwrap">
-      <img src="${v.img}" alt="${v.name}" loading="lazy">
+      <img src="${escapeHTML(v.img)}" alt="${escapeHTML(v.name)}" loading="lazy">
       ${v.verified ? '<div class="badge-verified">✓</div>' : ''}
       ${computePriceTier(v) ? `<div class="badge-price">${computePriceTier(v)}</div>` : ''}
       <div class="badge-fav ${favoriteIds.has(v.id)?'is-fav':''}" onclick="event.stopPropagation(); toggleFavoriteVenue('${v.id}')">${favoriteIds.has(v.id)?'♥':'♡'}</div>
     </div>
-    <div class="name">${v.name}</div>
-    <div class="meta">${ratingLabel(v)} · ${v.district}</div>
+    <div class="name">${escapeHTML(v.name)}</div>
+    <div class="meta">${ratingLabel(v)} · ${escapeHTML(v.district)}</div>
   </div>`;
 }
 
@@ -1698,7 +1698,7 @@ function renderFavorites(){
   }
   el.innerHTML = favs.map(v=>`
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${v.id}')">
-      <div><div class="body-lg" style="font-weight:600;">${v.name}</div><div class="body-sm">${v.district}</div></div>
+      <div><div class="body-lg" style="font-weight:600;">${escapeHTML(v.name)}</div><div class="body-sm">${escapeHTML(v.district)}</div></div>
       <span style="color:var(--purple); font-size:18px;">♥</span>
     </div>`).join('');
 }
@@ -1776,7 +1776,7 @@ async function openDetail(id){
   for(const cat in byCategory){
     html += `<div class="body-md" style="margin:12px 0 6px; color:var(--text-primary); font-weight:600;">${cat}</div><div class="glass" style="padding:0 16px;">`;
     byCategory[cat].forEach(p=>{
-      html += `<div class="price-list-item"><span class="body-lg">${p.name}</span><span class="price">₺${p.price}</span></div>`;
+      html += `<div class="price-list-item"><span class="body-lg">${escapeHTML(p.name)}</span><span class="price">₺${p.price}</span></div>`;
     });
     html += `</div>`;
   }
@@ -1910,7 +1910,7 @@ async function renderDetailAbout(){
   const cats = [...new Set(v.prices.map(p=>p.cat))];
   el.innerHTML = `
     <div class="glass" style="padding:0 16px;">
-      <div class="price-list-item"><span class="body-md">Konum</span><span class="body-lg">${v.district}, ${v.city}</span></div>
+      <div class="price-list-item"><span class="body-md">Konum</span><span class="body-lg">${escapeHTML(v.district)}, ${escapeHTML(v.city)}</span></div>
       <div class="divider-line"></div>
       <div class="price-list-item"><span class="body-md">Uzaklık</span><span class="body-lg">${v.distance} km</span></div>
       <div class="divider-line"></div>
@@ -2048,7 +2048,7 @@ function resetContribute(){
     </div>` +
     venues.map(v=>`
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="selectContributeVenue('${v.id}')">
-      <div><div class="body-lg">${v.name}</div><div class="body-sm">${v.district} · ${v.distance} km</div></div>
+      <div><div class="body-lg">${escapeHTML(v.name)}</div><div class="body-sm">${escapeHTML(v.district)} · ${v.distance} km</div></div>
       <span style="color:var(--text-tertiary);">›</span>
     </div>`).join('');
   document.getElementById('c-category-chips').innerHTML = categories.map(c=>
@@ -2182,9 +2182,9 @@ function renderBudgetResults(){
   el.innerHTML = `<div class="headline" style="margin-bottom:10px;">Önerilen Mekanlar</div>` + results.map(r=>`
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${r.venue.id}')">
       <div>
-        <div class="body-lg">${r.venue.name}</div>
-        <div class="body-sm">${r.venue.district} · ${r.venue.distance} km</div>
-        <div class="body-sm" style="color:var(--blue-light); margin-top:4px;">Kişi başı ${r.perPerson} ${r.drink} içebilirsin</div>
+        <div class="body-lg">${escapeHTML(r.venue.name)}</div>
+        <div class="body-sm">${escapeHTML(r.venue.district)} · ${r.venue.distance} km</div>
+        <div class="body-sm" style="color:var(--blue-light); margin-top:4px;">Kişi başı ${r.perPerson} ${escapeHTML(r.drink)} içebilirsin</div>
         <div class="caption" style="margin-top:2px;">Ortalama ${budgetState.pref} fiyatı: ₺${r.avgPrice}</div>
       </div>
       <div class="price">₺${r.total}</div>
@@ -2230,7 +2230,7 @@ function renderRouteVenueList(){
       ${selected
         ? `<div class="route-dot first">${idx+1}</div>`
         : `<div style="width:24px;height:24px;border-radius:50%;border:1px solid var(--glass-border);"></div>`}
-      <div><div class="body-lg">${v.name}</div><div class="body-sm">${v.district} · ${v.distance} km</div></div>
+      <div><div class="body-lg">${escapeHTML(v.name)}</div><div class="body-sm">${escapeHTML(v.district)} · ${v.distance} km</div></div>
     </div>`;
   }).join('');
   updateRouteSummary();
@@ -2394,8 +2394,8 @@ async function renderRecommendations(){
     scored.map(({v,dist})=>`
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${v.id}')">
       <div>
-        <div class="body-lg" style="font-weight:600;">${v.name}</div>
-        <div class="body-sm">${v.district} · ${dist.toFixed(1)} km</div>
+        <div class="body-lg" style="font-weight:600;">${escapeHTML(v.name)}</div>
+        <div class="body-sm">${escapeHTML(v.district)} · ${dist.toFixed(1)} km</div>
       </div>
       <div class="price">${ratingLabel(v)}</div>
     </div>`).join('');
@@ -2533,8 +2533,8 @@ async function renderAdminVenues(){
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Bekleyen mekan yok</div>`; return; }
   el.innerHTML = data.map(v=>`
     <div class="glass" style="padding:16px; margin-bottom:10px;">
-      <div class="body-lg" style="font-weight:600;">${v.name}</div>
-      <div class="body-sm">${v.district}, ${v.city}</div>
+      <div class="body-lg" style="font-weight:600;">${escapeHTML(v.name)}</div>
+      <div class="body-sm">${escapeHTML(v.district)}, ${escapeHTML(v.city)}</div>
       <div class="row gap-8" style="margin-top:10px;">
         <button class="btn-primary" style="flex:1;" onclick="approveVenue('${v.id}')">Onayla</button>
         <button class="btn-outline" style="flex:1;" onclick="rejectVenue('${v.id}')">Reddet</button>
@@ -2565,8 +2565,8 @@ async function renderAdminVerifications(){
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Bekleyen başvuru yok</div>`; return; }
   el.innerHTML = data.map(r=>`
     <div class="glass" style="padding:16px; margin-bottom:10px;">
-      <div class="body-lg" style="font-weight:600;">${r.venues?.name || 'Mekan'}</div>
-      ${r.message ? `<div class="body-sm" style="margin-top:4px;">${r.message}</div>` : ''}
+      <div class="body-lg" style="font-weight:600;">${escapeHTML(r.venues?.name || 'Mekan')}</div>
+      ${r.message ? `<div class="body-sm" style="margin-top:4px;">${escapeHTML(r.message)}</div>` : ''}
       <div class="row gap-8" style="margin-top:10px;">
         <button class="btn-primary" style="flex:1;" onclick="reviewVerification('${r.id}','approved')">Onayla</button>
         <button class="btn-outline" style="flex:1;" onclick="reviewVerification('${r.id}','rejected')">Reddet</button>
@@ -2655,7 +2655,7 @@ function insertEmoji(emoji){
 function escapeHTML(str){
   const div = document.createElement('div');
   div.textContent = str == null ? '' : String(str);
-  return div.innerHTML;
+  return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 function chatMessageHTML(msg, chatType){
   const isOwn = !!(currentUser && msg.user_id === currentUser.id);
