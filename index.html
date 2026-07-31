@@ -1500,17 +1500,20 @@ let routeState = { selected:[] };
 let routeAutoState = { category:null, count:4 };
 let budgetState = { people:4, pref:'Bira' };
 
+function ratingLabel(v){
+  return v.reviews>0 ? `★ ${v.rating}` : 'Henüz puan yok';
+}
 function venueCardHTML(v){
   return `
   <div class="venue-card" onclick="openDetail('${v.id}')">
     <div class="imgwrap">
       <img src="${v.img}" alt="${v.name}" loading="lazy">
       ${v.verified ? '<div class="badge-verified">✓</div>' : ''}
-      <div class="badge-price">₺₺</div>
+      ${computePriceTier(v) ? `<div class="badge-price">${computePriceTier(v)}</div>` : ''}
       <div class="badge-fav ${favoriteIds.has(v.id)?'is-fav':''}" onclick="event.stopPropagation(); toggleFavoriteVenue('${v.id}')">${favoriteIds.has(v.id)?'♥':'♡'}</div>
     </div>
     <div class="name">${v.name}</div>
-    <div class="meta">★ ${v.rating} · ${v.district}</div>
+    <div class="meta">${ratingLabel(v)} · ${v.district}</div>
   </div>`;
 }
 
@@ -1729,7 +1732,7 @@ async function openDetail(id){
   const v = venues.find(x=>x.id===id);
   recordVenueView(id);
   document.getElementById('detail-name').innerText = v.name;
-  document.getElementById('detail-meta').innerText = `★ ${v.rating} (${v.reviews}) · ${v.district}, ${v.city}`;
+  document.getElementById('detail-meta').innerText = `${ratingLabel(v)}${v.reviews>0?` (${v.reviews})`:''} · ${v.district}, ${v.city}`;
   document.getElementById('detail-verified').style.display = v.verified ? 'inline-flex' : 'none';
   document.getElementById('detail-directions-btn').style.display = (v.lat!=null && v.lng!=null) ? 'block' : 'none';
 
@@ -1898,7 +1901,7 @@ async function renderDetailAbout(){
       <div class="divider-line"></div>
       <div class="price-list-item"><span class="body-md">Uzaklık</span><span class="body-lg">${v.distance} km</span></div>
       <div class="divider-line"></div>
-      <div class="price-list-item"><span class="body-md">Puan</span><span class="body-lg">★ ${v.rating} (${v.reviews})</span></div>
+      <div class="price-list-item"><span class="body-md">Puan</span><span class="body-lg">${ratingLabel(v)}${v.reviews>0?` (${v.reviews})`:''}</span></div>
       <div class="divider-line"></div>
       <div class="price-list-item"><span class="body-md">Durum</span><span class="body-lg">${v.verified ? '✓ Doğrulanmış' : 'Doğrulanmamış'}</span></div>
     </div>
@@ -2383,7 +2386,7 @@ async function renderRecommendations(){
         <div class="body-lg" style="font-weight:600;">${v.name}</div>
         <div class="body-sm">${v.district} · ${dist.toFixed(1)} km</div>
       </div>
-      <div class="price">★ ${v.rating}</div>
+      <div class="price">${ratingLabel(v)}</div>
     </div>`).join('');
 }
 
