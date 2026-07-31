@@ -1443,9 +1443,10 @@ async function renderNotifications(){
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Henüz bildirimin yok</div>`; return; }
   el.innerHTML = data.map(n=>`
-    <div class="glass" style="padding:14px 16px; margin-bottom:10px; cursor:pointer; ${n.is_read?'':'border:1.5px solid var(--purple);'}" onclick="markNotificationRead('${n.id}')">
+    <div class="glass" style="padding:14px 16px; margin-bottom:10px; cursor:pointer; ${n.is_read?'':'border:1.5px solid var(--purple);'}" onclick="openNotification('${n.id}','${n.venue_id||''}')">
       <div class="body-lg" style="font-weight:600;">${escapeHTML(n.title)}</div>
       ${n.body ? `<div class="body-sm" style="margin-top:4px;">${escapeHTML(n.body)}</div>` : ''}
+      ${n.venue_id ? `<div class="caption" style="color:var(--purple); margin-top:4px;">Mekana git ›</div>` : ''}
     </div>`).join('');
   await sb.from('notifications').update({ is_read: true }).eq('user_id', currentUser.id).eq('is_read', false);
   loadUnreadNotificationCount();
@@ -1453,6 +1454,14 @@ async function renderNotifications(){
 async function markNotificationRead(id){
   await sb.from('notifications').update({ is_read: true }).eq('id', id);
   loadUnreadNotificationCount();
+}
+function openNotification(id, venueId){
+  markNotificationRead(id);
+  if(!venueId) return;
+  const exists = venues.find(v=>v.id===venueId);
+  if(!exists){ showToast('Bu mekan şu an seçili şehirde görünmüyor'); return; }
+  closeOverlay('notifications');
+  openDetail(venueId);
 }
 function scrollToTrend(){
   document.getElementById('trend-scroll')?.scrollIntoView({ behavior:'smooth', block:'start' });
