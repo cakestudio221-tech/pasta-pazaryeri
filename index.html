@@ -1077,10 +1077,12 @@ async function toggleFavoriteVenue(venueId){
   if(!requireAuth()) return;
   const isFav = favoriteIds.has(venueId);
   if(isFav){
-    await sb.from('favorites').delete().eq('user_id', currentUser.id).eq('venue_id', venueId);
+    const { error } = await sb.from('favorites').delete().eq('user_id', currentUser.id).eq('venue_id', venueId);
+    if(error){ console.error(error); showToast(error.message || 'Favorilerden kaldırılamadı'); return; }
     favoriteIds.delete(venueId);
   } else {
-    await sb.from('favorites').insert({ user_id: currentUser.id, venue_id: venueId });
+    const { error } = await sb.from('favorites').insert({ user_id: currentUser.id, venue_id: venueId });
+    if(error){ console.error(error); showToast(error.message || 'Favorilere eklenemedi'); return; }
     favoriteIds.add(venueId);
   }
   if(document.getElementById('screen-home').classList.contains('active')) renderHome();
