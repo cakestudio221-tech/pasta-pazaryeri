@@ -1534,11 +1534,11 @@ function renderHome(){
     return scoreDiff !== 0 ? scoreDiff : b.rating - a.rating;
   });
   document.getElementById('trend-scroll').innerHTML = trend.slice(0,8).map(venueCardHTML).join('');
-  document.getElementById('new-scroll').innerHTML = venues.map(venueCardHTML).join('');
+  document.getElementById('new-scroll').innerHTML = venues.slice(0,8).map(venueCardHTML).join('');
   const updated = [...venues].sort((a,b)=> b.lastPriceUpdate.localeCompare(a.lastPriceUpdate));
-  document.getElementById('updated-scroll').innerHTML = updated.map(venueCardHTML).join('');
+  document.getElementById('updated-scroll').innerHTML = updated.slice(0,8).map(venueCardHTML).join('');
   const cheap = [...venues].sort((a,b)=> (a.prices[0]?.price||999)-(b.prices[0]?.price||999));
-  document.getElementById('cheap-scroll').innerHTML = cheap.map(venueCardHTML).join('');
+  document.getElementById('cheap-scroll').innerHTML = cheap.slice(0,8).map(venueCardHTML).join('');
   loadCommunityBannerPreview();
   renderPriceFinder();
   renderPersonalizedSection();
@@ -2123,20 +2123,18 @@ async function contributeNext(step){
     showToast('Lütfen kategori seç ve içki adı yaz'); return;
   }
   if(step==='done'){
-    const priceVal = document.getElementById('c-price-input').value;
-    if(!priceVal){ showToast('Lütfen fiyat gir'); return; }
+    const priceVal = Number(document.getElementById('c-price-input').value);
+    if(!priceVal || priceVal <= 0){ showToast('Lütfen geçerli bir fiyat gir'); return; }
     if(!requireAuth()) return;
     const { error } = await sb.from('prices').insert({
       venue_id: contributeState.venue.id,
       category: contributeState.category,
       drink_name: document.getElementById('c-drink-name').value.trim(),
-      price: Number(priceVal),
+      price: priceVal,
       reported_by: currentUser.id,
     });
     if(error){ console.error(error); showToast(error.message || 'Fiyat kaydedilemedi'); return; }
-    const newXp = (currentProfile?.xp || 0) + 20;
-    await sb.from('profiles').update({ xp: newXp }).eq('id', currentUser.id);
-    if(currentProfile) currentProfile.xp = newXp;
+    await loadProfile();
     await loadVenues();
     renderHome();
     renderCompare();
