@@ -119,6 +119,15 @@
   .chip:active{ transform:scale(.95); }
   .chip.selected{ background:var(--purple); border-color:var(--purple); color:#fff; }
 
+  /* Alan bazlı form hatası: input altında kırmızı metin + kenarlık vurgusu.
+     Inline style'ları ezmesi için !important gerekiyor. */
+  .field-error{
+    color:var(--error); font-size:12.5px; line-height:1.4; margin-top:6px;
+    display:none; align-items:center; gap:4px;
+  }
+  .field-error.show{ display:flex; animation:cardIn .18s ease both; }
+  .invalid{ border-color:var(--error) !important; }
+
   .topbar{ padding:8px 16px 16px; }
   .icon-btn{
     display:flex; align-items:center; gap:4px; padding:8px 10px; border-radius:var(--radius-full);
@@ -688,9 +697,8 @@
       <input id="nv-music" placeholder="Örn. Pop, Rock, Elektronik" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
       <div style="height:12px"></div>
       <div class="body-md" style="margin-bottom:6px;">Olanaklar</div>
-      <div class="row gap-8" id="nv-amenities" style="flex-wrap:wrap;">
-        ${Object.entries({live_music:'🎵 Canlı Müzik', happy_hour:'🍹 Happy Hour', rooftop:'🏙️ Rooftop', valet:'🚗 Vale'}).map(([k,label])=>`<div class="chip" id="nv-am-${k}" onclick="toggleAmenityChip('nv-am-${k}')">${label}</div>`).join('')}
-      </div>
+      <!-- İçerik JS tarafından amenityChipsHTML('nv-am') ile doldurulur (statik HTML'de template literal çalışmaz) -->
+      <div class="row gap-8" id="nv-amenities" style="flex-wrap:wrap;"></div>
       <div style="height:20px"></div>
       <button class="btn-primary" id="nv-submit-btn" onclick="submitNewVenue()">Mekanı Oluştur ve Devam Et</button>
     </div>
@@ -1122,6 +1130,8 @@ function toggleFavoriteCurrent(){
 
 function setAuthMode(mode){
   authMode = mode;
+  // Mod değişince önceki moda ait hata vurguları kalmasın
+  clearFormErrors(['auth-email','auth-password','auth-password-confirm','auth-fullname','auth-username','auth-dob']);
   document.getElementById('auth-password-group').style.display = mode==='forgot' ? 'none' : 'block';
   document.getElementById('auth-signup-extra').style.display = mode==='signup' ? 'block' : 'none';
   document.getElementById('auth-forgot-link').style.display = mode==='login' ? 'block' : 'none';
@@ -1177,9 +1187,11 @@ function calculateAge(dobStr){
   return age;
 }
 async function submitAuth(){
+  clearFormErrors(['auth-email','auth-password','auth-password-confirm','auth-fullname','auth-username','auth-dob']);
   const email = document.getElementById('auth-email').value.trim();
   if(authMode==='forgot'){
-    if(!email){ showToast('E-posta gerekli'); return; }
+    if(!email) return setFieldError('auth-email', 'E-posta adresini gir');
+    if(!EMAIL_RE.test(email)) return setFieldError('auth-email', 'Geçerli bir e-posta adresi gir (örn. ad@site.com)');
     const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
     if(error){ showToast(error.message); return; }
     showToast('Sıfırlama linki e-postana gönderildi 📧');
@@ -1187,21 +1199,27 @@ async function submitAuth(){
     return;
   }
   const password = document.getElementById('auth-password').value;
-  if(!email || !password){ showToast('E-posta ve şifre gerekli'); return; }
+  if(!email) return setFieldError('auth-email', 'E-posta adresini gir');
+  if(!EMAIL_RE.test(email)) return setFieldError('auth-email', 'Geçerli bir e-posta adresi gir (örn. ad@site.com)');
+  if(!password) return setFieldError('auth-password', 'Şifreni gir');
   if(authMode==='signup'){
     const fullName = document.getElementById('auth-fullname').value.trim();
     const handle = document.getElementById('auth-username').value.trim().toLowerCase();
     const dob = document.getElementById('auth-dob').value;
     const passwordConfirm = document.getElementById('auth-password-confirm').value;
     const avatarFile = document.getElementById('auth-avatar').files[0];
-    if(!fullName){ showToast('Ad soyad gerekli'); return; }
-    if(!/^[a-z0-9_.]{3,20}$/.test(handle)){ showToast('Kullanıcı adı 3-20 karakter olmalı, sadece harf/rakam/_/. içerebilir'); return; }
-    if(containsBannedWord(handle)){ showToast('Kullanıcı adında uygunsuz ifade kullanılamaz'); return; }
-    if(!dob){ showToast('Doğum tarihi gerekli'); return; }
-    if(calculateAge(dob) < 18){ showToast('18 yaşından küçükler kayıt olamaz'); return; }
-    if(password !== passwordConfirm){ showToast('Şifreler eşleşmiyor'); return; }
+    if(!fullName) return setFieldError('auth-fullname', 'Ad ve soyadını gir');
+    if(fullName.length < 3) return setFieldError('auth-fullname', 'Ad soyad en az 3 karakter olmalı');
+    if(!handle) return setFieldError('auth-username', 'Bir kullanıcı adı seç');
+    if(!/^[a-z0-9_.]{3,20}$/.test(handle)) return setFieldError('auth-username', 'Kullanıcı adı 3-20 karakter olmalı; sadece harf, rakam, _ ve . kullanabilirsin');
+    if(containsBannedWord(handle)) return setFieldError('auth-username', 'Bu kullanıcı adında uygunsuz bir ifade var, başka bir tane dene');
+    if(!dob) return setFieldError('auth-dob', 'Doğum tarihini gir');
+    if(calculateAge(dob) < 18) return setFieldError('auth-dob', '18 yaşından küçükler kayıt olamaz');
+    if(password.length < 6) return setFieldError('auth-password', 'Şifre en az 6 karakter olmalı');
+    if(!passwordConfirm) return setFieldError('auth-password-confirm', 'Şifreni tekrar gir');
+    if(password !== passwordConfirm) return setFieldError('auth-password-confirm', 'Şifreler eşleşmiyor');
     const { data: existing } = await sb.from('profiles').select('id').eq('handle', handle).maybeSingle();
-    if(existing){ showToast('Bu kullanıcı adı zaten alınmış'); return; }
+    if(existing) return setFieldError('auth-username', 'Bu kullanıcı adı zaten alınmış, başka bir tane dene');
     const { data, error } = await sb.auth.signUp({ email, password });
     if(error){ showToast(error.message); return; }
     if(data.user){
@@ -1475,8 +1493,10 @@ async function renderPublicProfile(userId){
     </div>`;
 }
 async function submitNewPassword(){
+  clearFormErrors(['new-password-input']);
   const password = document.getElementById('new-password-input').value;
-  if(!password || password.length<6){ showToast('En az 6 karakterli bir şifre gir'); return; }
+  if(!password) return setFieldError('new-password-input', 'Yeni şifreni gir');
+  if(password.length < 6) return setFieldError('new-password-input', 'Şifre en az 6 karakter olmalı');
   const { error } = await sb.auth.updateUser({ password });
   if(error){ showToast(error.message); return; }
   closeOverlay('newpassword');
@@ -1770,6 +1790,13 @@ function recordVenueView(venueId){
 }
 
 const amenityLabels = { live_music:'🎵 Canlı Müzik', happy_hour:'🍹 Happy Hour', rooftop:'🏙️ Rooftop', valet:'🚗 Vale' };
+// Olanak chip'lerini tek yerden üret — hem yeni mekan formu (nv-am) hem düzenleme formu (ve-am) kullanır.
+function amenityChipsHTML(prefix, selected){
+  const sel = selected || [];
+  return Object.entries(amenityLabels).map(([k,label])=>
+    `<div class="chip${sel.includes(k)?' selected':''}" id="${prefix}-${k}" onclick="toggleAmenityChip('${prefix}-${k}')">${label}</div>`
+  ).join('');
+}
 
 function computePriceTier(v){
   if(!v.prices || !v.prices.length) return null;
@@ -2054,7 +2081,7 @@ function renderVenueEditSection(v){
       <div style="height:12px"></div>
       <div class="body-md" style="margin-bottom:6px;">Olanaklar</div>
       <div class="row gap-8" id="ve-amenities" style="flex-wrap:wrap;">
-        ${Object.entries(amenityLabels).map(([k,label])=>`<div class="chip${(v.amenities||[]).includes(k)?' selected':''}" id="ve-am-${k}" onclick="toggleAmenityChip('ve-am-${k}')">${label}</div>`).join('')}
+        ${amenityChipsHTML('ve-am', v.amenities)}
       </div>
       <div style="height:12px"></div>
       <div class="body-md" style="margin-bottom:6px;">Galeriye Fotoğraf Ekle</div>
@@ -2175,9 +2202,12 @@ async function submitNewVenue(){
   const working_hours = document.getElementById('nv-hours').value.trim() || null;
   const music_genre = document.getElementById('nv-music').value.trim() || null;
   const amenities = readAmenityChips('nv-am');
-  if(!name || !district || !distance || distance<=0){
-    showToast('Lütfen mekan adı, semt ve uzaklığı gir'); return;
-  }
+  clearFormErrors(['nv-name','nv-district','nv-distance']);
+  if(!name) return setFieldError('nv-name', 'Mekanın adını gir');
+  if(name.length < 2) return setFieldError('nv-name', 'Mekan adı en az 2 karakter olmalı');
+  if(!district) return setFieldError('nv-district', 'Mekanın bulunduğu semti gir');
+  if(!document.getElementById('nv-distance').value.trim()) return setFieldError('nv-distance', 'Tahmini uzaklığı gir');
+  if(isNaN(distance) || distance <= 0) return setFieldError('nv-distance', 'Uzaklık 0’dan büyük bir sayı olmalı');
   submitNewVenueInFlight = true;
   const btn = document.getElementById('nv-submit-btn');
   if(btn) btn.disabled = true;
@@ -2222,6 +2252,9 @@ function goContributeStep(step){
   });
   const stepIndex = {venue:1, newvenue:1, drink:1, price:2, done:3}[step];
   [1,2,3].forEach(n=>document.getElementById('step-bar-'+n).classList.toggle('active', n<=stepIndex));
+  if(step==='newvenue'){
+    document.getElementById('nv-amenities').innerHTML = amenityChipsHTML('nv-am');
+  }
   if(step==='drink' && contributeState.venue){
     document.getElementById('c-venue-name').innerText = contributeState.venue.name;
   }
@@ -2231,13 +2264,18 @@ function goContributeStep(step){
 }
 let contributePriceInFlight = false;
 async function contributeNext(step){
-  if(step==='price' && (!contributeState.category || !document.getElementById('c-drink-name').value.trim())){
-    showToast('Lütfen kategori seç ve içki adı yaz'); return;
+  if(step==='price'){
+    clearFormErrors(['c-drink-name']);
+    if(!contributeState.category){ showToast('Önce bir kategori seç'); return; }
+    if(!document.getElementById('c-drink-name').value.trim()) return setFieldError('c-drink-name', 'İçkinin adını yaz (örn. Efes)');
   }
   if(step==='done'){
     if(contributePriceInFlight) return;
-    const priceVal = Number(document.getElementById('c-price-input').value);
-    if(!priceVal || priceVal <= 0){ showToast('Lütfen geçerli bir fiyat gir'); return; }
+    clearFormErrors(['c-price-input']);
+    const rawPrice = document.getElementById('c-price-input').value.trim();
+    const priceVal = Number(rawPrice);
+    if(!rawPrice) return setFieldError('c-price-input', 'Fiyatı gir');
+    if(isNaN(priceVal) || priceVal <= 0) return setFieldError('c-price-input', 'Fiyat 0’dan büyük olmalı');
     if(!requireAuth()) return;
     contributePriceInFlight = true;
     try{
@@ -2408,6 +2446,7 @@ function onHomeSearchInput(value){
 
 function openOverlay(name){
   document.getElementById('overlay-'+name).classList.add('active');
+  pushOverlayHistory(name);
   if(name==='budget'){ renderBudgetPrefChips(); onBudgetChange(); }
   if(name==='route'){ renderRouteAutoCatChips(); renderRouteAutoCountChips(); renderRouteVenueList(); }
   if(name==='city'){ renderCityList(); }
@@ -2773,6 +2812,48 @@ function escapeHTML(str){
   div.textContent = str == null ? '' : String(str);
   return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+// --- Alan bazlı form doğrulama yardımcıları ---
+// Hata elemanını gerektiğinde kendisi oluşturur; her input için ayrı HTML gerekmez.
+// Her zaman false döner ki `if(!x) return setFieldError(...)` şeklinde kullanılabilsin.
+function setFieldError(inputId, message){
+  const input = document.getElementById(inputId);
+  if(!input){ showToast(message); return false; }
+  input.classList.add('invalid');
+  input.setAttribute('aria-invalid', 'true');
+  let err = document.getElementById(inputId + '-error');
+  if(!err){
+    err = document.createElement('div');
+    err.id = inputId + '-error';
+    err.className = 'field-error';
+    err.setAttribute('role', 'alert');
+    input.insertAdjacentElement('afterend', err);
+  }
+  err.textContent = message;
+  err.classList.add('show');
+  input.setAttribute('aria-describedby', inputId + '-error');
+  // İlk hatalı alanı görünür yap ve odakla
+  if(!document.querySelector('.invalid:not(#' + CSS.escape(inputId) + ')')){
+    input.scrollIntoView({ behavior:'smooth', block:'center' });
+    try { input.focus({ preventScroll:true }); } catch(e){ /* yoksay */ }
+  }
+  return false;
+}
+function clearFieldError(inputId){
+  const input = document.getElementById(inputId);
+  if(input){
+    input.classList.remove('invalid');
+    input.removeAttribute('aria-invalid');
+  }
+  const err = document.getElementById(inputId + '-error');
+  if(err) err.classList.remove('show');
+}
+function clearFormErrors(ids){ ids.forEach(clearFieldError); }
+// Kullanıcı yazmaya başlayınca hatayı temizle (tek delege dinleyici)
+document.addEventListener('input', (e)=>{
+  if(e.target && e.target.id && e.target.classList.contains('invalid')) clearFieldError(e.target.id);
+});
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function skeletonRows(n){
   return `<div>${Array(n).fill('<div class="skeleton-row"></div>').join('')}</div>`;
 }
@@ -3160,12 +3241,51 @@ async function sendVenueChatPhoto(file){
   if(insertError){ console.error(insertError); showToast(insertError.message || 'Mesaj gönderilemedi'); }
 }
 
-function closeOverlay(name){
+// --- Overlay geçmiş yönetimi ---
+// Overlay'ler tam ekran sheet olduğu için klasik backdrop yok; bunun yerine ESC ve
+// tarayıcı/Android geri tuşu en üstteki overlay'i kapatır (uygulamadan çıkmak yerine).
+let overlayStack = [];
+let overlayHistorySupported = true;
+
+function pushOverlayHistory(name){
+  if(overlayStack.includes(name)) return;
+  overlayStack.push(name);
+  if(!overlayHistorySupported) return;
+  // file:// üzerinde pushState SecurityError atar — o durumda geçmişsiz moda düş.
+  try { history.pushState({ ncOverlay: name }, ''); }
+  catch(e){ overlayHistorySupported = false; }
+}
+
+function doCloseOverlay(name){
   document.getElementById('overlay-'+name).classList.remove('active');
   if(name==='contribute'){ contributeState.venue=null; }
   if(name==='general-chat' && generalChatChannel){ sb.removeChannel(generalChatChannel); generalChatChannel=null; }
   if(name==='detail' && venueChatChannel){ sb.removeChannel(venueChatChannel); venueChatChannel=null; }
 }
+
+function closeOverlay(name){
+  // En üstteyse history.back() ile kapat ki geçmiş girdisi de temizlensin;
+  // gerçek kapatmayı popstate yapar (tek yol, çift kapatma olmaz).
+  if(overlayHistorySupported && overlayStack[overlayStack.length-1] === name){
+    history.back();
+    return;
+  }
+  const i = overlayStack.lastIndexOf(name);
+  if(i > -1) overlayStack.splice(i, 1);
+  doCloseOverlay(name);
+}
+
+window.addEventListener('popstate', ()=>{
+  const top = overlayStack.pop();
+  if(top) doCloseOverlay(top);
+});
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && overlayStack.length){
+    e.preventDefault();
+    history.back();
+  }
+});
 
 function showToast(msg){
   const t = document.getElementById('toast');
