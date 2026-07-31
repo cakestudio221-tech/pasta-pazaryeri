@@ -135,6 +135,25 @@
 
   /* Alan bazlı form hatası: input altında kırmızı metin + kenarlık vurgusu.
      Inline style'ları ezmesi için !important gerekiyor. */
+  /* Konfeti: sadece transform+opacity animasyonu — layout/paint tetiklemez, 60fps kalır */
+  .confetti-wrap{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:5; }
+  .confetti-wrap i{
+    position:absolute; top:-14px; width:8px; height:13px; border-radius:2px;
+    will-change:transform, opacity;
+    animation:confettiFall 1.8s cubic-bezier(.15,.6,.35,1) forwards;
+  }
+  @keyframes confettiFall{
+    0%{ transform:translate3d(0,0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate3d(var(--dx,0), 78vh, 0) rotate(var(--rot,360deg)); opacity:0; }
+  }
+  @keyframes popIn{ 0%{ transform:scale(.4); opacity:0; } 60%{ transform:scale(1.12); } 100%{ transform:scale(1); opacity:1; } }
+  #done-check.pop-in{ animation:popIn .5s cubic-bezier(.2,.8,.3,1) both; }
+  /* Hareket azaltma tercihini yapan kullanıcılar için animasyonları sustur */
+  @media (prefers-reduced-motion: reduce){
+    .confetti-wrap{ display:none; }
+    *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  }
+
   /* SVG ikonlar: currentColor ile tema uyumlu, flex kaplarda ortalı */
   [data-icon]{ display:inline-flex; align-items:center; justify-content:center; }
   .navitem [data-icon]{ margin-bottom:2px; }
@@ -743,13 +762,13 @@
       <button class="btn-primary" onclick="contributeNext('done')">Gönder</button>
     </div>
 
-    <div class="px" id="contribute-step-done" style="display:none; text-align:center; padding-top:60px;">
-      <div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto;">✓</div>
+    <div class="px" id="contribute-step-done" style="display:none; text-align:center; padding-top:60px; position:relative;">
+      <div id="done-check" style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto;">✓</div>
       <h1 class="display-md" style="margin-top:20px;">Teşekkürler! 🎉</h1>
-      <div class="body-lg" style="margin-top:8px;">Katkın için +20 XP kazandın</div>
-      <div class="glass" style="padding:16px; margin-top:20px; text-align:left;">
-        <div class="row-between"><span class="body-md">Explorer rozeti</span><span class="body-sm">7/10 katkı</span></div>
-        <div class="progress-bar" style="margin-top:8px;"><div class="fill" style="width:70%; background:var(--blue);"></div></div>
+      <div class="body-lg" style="margin-top:8px;">Katkın için +<span id="done-xp">0</span> XP kazandın</div>
+      <div class="glass" id="done-badge-box" style="padding:16px; margin-top:20px; text-align:left;">
+        <div class="row-between"><span class="body-md" id="done-badge-label">Rozet ilerlemen</span><span class="body-sm" id="done-badge-count"></span></div>
+        <div class="progress-bar" style="margin-top:8px;"><div class="fill" id="done-badge-fill" style="width:0%; background:var(--blue); transition:width .7s cubic-bezier(.2,.7,.3,1);"></div></div>
       </div>
       <div style="height:24px"></div>
       <button class="btn-primary" onclick="closeOverlay('contribute')">Harika!</button>
@@ -2309,16 +2328,44 @@ async function contributeNext(step){
         reported_by: currentUser.id,
       });
       if(error){ console.error(error); showToast(error.message || 'Fiyat kaydedilemedi'); return; }
+      const xpOnce = currentProfile?.xp || 0;
       await loadProfile();
       await loadVenues();
       renderHome();
       renderCompare();
       renderProfileScreen();
+      // XP tetikleyici sunucuda çalışıyor; gerçek farkı göster (sabit +20 varsayma).
+      kazanildiXP = Math.max(0, (currentProfile?.xp || 0) - xpOnce);
+      await celebrateContribution();
     } finally {
       contributePriceInFlight = false;
     }
   }
   goContributeStep(step);
+}
+
+let kazanildiXP = 0;
+// "Teşekkürler" ekranını gerçek verilerle doldurur + kutlama efektlerini başlatır.
+async function celebrateContribution(){
+  const xpEl = document.getElementById('done-xp');
+  animateCount(xpEl, kazanildiXP || 20);
+
+  const check = document.getElementById('done-check');
+  if(check){ check.classList.remove('pop-in'); void check.offsetWidth; check.classList.add('pop-in'); }
+  launchConfetti(document.getElementById('contribute-step-done'));
+
+  // Rozet ilerlemesi: gerçek katkı sayısından hesaplanır
+  const { count } = await sb.from('prices').select('id', { count:'exact', head:true }).eq('reported_by', currentUser.id);
+  const prog = nextBadgeProgress(count || 0);
+  const box = document.getElementById('done-badge-box');
+  if(!prog){
+    if(box) box.innerHTML = `<div class="body-md">Tüm rozetleri topladın 🏅</div>`;
+    return;
+  }
+  document.getElementById('done-badge-label').textContent = prog.label + ' rozeti';
+  document.getElementById('done-badge-count').textContent = `${prog.have}/${prog.need} katkı`;
+  const fill = document.getElementById('done-badge-fill');
+  if(fill) requestAnimationFrame(()=>{ fill.style.width = prog.pct + '%'; });
 }
 
 function onBudgetChange(){
@@ -2855,6 +2902,53 @@ const ICONS = {
 function icon(name, size, filled){
   const s = size || 22;
   return `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="${filled?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;">${ICONS[name]||''}</svg>`;
+}
+
+// --- Kutlama efektleri ---
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Sayıyı 0'dan hedefe sayarak artırır (requestAnimationFrame, ease-out).
+function animateCount(el, to, duration){
+  if(!el) return;
+  if(REDUCED_MOTION){ el.textContent = to; return; }
+  const ms = duration || 900;
+  const start = performance.now();
+  function tick(now){
+    const p = Math.min((now - start) / ms, 1);
+    el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); // easeOutCubic
+    if(p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function launchConfetti(host){
+  if(!host || REDUCED_MOTION) return;
+  const colors = ['#8B5CF6','#3B82F6','#FBBF24','#22C55E','#EC4899'];
+  const wrap = document.createElement('div');
+  wrap.className = 'confetti-wrap';
+  wrap.setAttribute('aria-hidden', 'true');
+  for(let i = 0; i < 30; i++){
+    const p = document.createElement('i');
+    p.style.background = colors[i % colors.length];
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = (Math.random() * 0.3).toFixed(2) + 's';
+    p.style.setProperty('--dx', Math.round(Math.random() * 160 - 80) + 'px');
+    p.style.setProperty('--rot', Math.round(Math.random() * 720 - 360) + 'deg');
+    wrap.appendChild(p);
+  }
+  host.appendChild(wrap);
+  setTimeout(()=>wrap.remove(), 2400);
+}
+
+// Bir sonraki rozete kalan gerçek ilerleme (önceden 7/10 sabit kodluydu).
+const BADGE_TIERS = [
+  { label:'Explorer', need:1 }, { label:'Güvenilir', need:10 },
+  { label:'VIP', need:25 }, { label:'100 Katkı', need:100 },
+];
+function nextBadgeProgress(count){
+  const next = BADGE_TIERS.find(t=>count < t.need);
+  if(!next) return null;
+  return { label: next.label, have: count, need: next.need, pct: Math.min(100, Math.round(count / next.need * 100)) };
 }
 
 // Statik HTML'deki data-icon yuvalarını doldurur (dinamik içerik icon()'u doğrudan çağırır).
