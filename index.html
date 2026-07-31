@@ -23,11 +23,18 @@
     --blue-light:#60A5FA;
     --text-primary:#F5F5F7;
     --text-secondary:#A1A1AA;
-    --text-tertiary:#6B6B76;
+    --text-tertiary:#8E8E9C; /* WCAG AA: eski #6B6B76 koyu zeminde 3.75:1 ile kalıyordu */
     --success:#22C55E;
     --error:#EF4444;
     --verified:#3B82F6;
     --gold:#FBBF24;
+    /* Metin için güvenli semantik tonlar. Canlı renkler dolgu/kenarlıkta kalır;
+       metinde bu değişkenler kullanılır (koyu temada canlı tonlar zaten AA geçiyor). */
+    --success-text:#22C55E;
+    --error-text:#EF4444;
+    --blue-text:#60A5FA;
+    --gold-text:#FBBF24;
+    --purple-text:#8B5CF6;
     --glass-fill:rgba(139,92,246,.09);
     --glass-border:rgba(139,92,246,.22);
     --divider:rgba(139,92,246,.1);
@@ -44,7 +51,14 @@
     --bg-elevated:#FFFFFF;
     --text-primary:#0A0A0F;
     --text-secondary:#4B4B55;
-    --text-tertiary:#8A8A94;
+    --text-tertiary:#62626D; /* WCAG AA: eski #8A8A94 açık zeminde 3.14:1 ile kalıyordu */
+    /* Canlı tonlar açık zeminde AA'yı geçmiyor (gold 1.53:1, success 2.09:1 ...),
+       bu yüzden metin için koyulaştırılmış karşılıkları. */
+    --success-text:#15803D;
+    --error-text:#C81E1E;
+    --blue-text:#1D4ED8;
+    --gold-text:#A16207;
+    --purple-text:#6D28D9;
     --glass-fill:rgba(0,0,0,.04);
     --glass-border:rgba(0,0,0,.08);
     --divider:rgba(0,0,0,.06);
@@ -105,7 +119,7 @@
   }
   .btn-primary:active{ transform:scale(.97); opacity:.9; }
   .btn-outline{
-    background:transparent; border:1px solid var(--glass-border); color:var(--blue-light);
+    background:transparent; border:1px solid var(--glass-border); color:var(--blue-text);
     border-radius:var(--radius-md); padding:13px; width:100%; font-weight:600; cursor:pointer; font-family:'Inter';
     -webkit-user-select:none; user-select:none;
   }
@@ -117,16 +131,16 @@
     -webkit-user-select:none; user-select:none;
   }
   .chip:active{ transform:scale(.95); }
-  .chip.selected{ background:var(--purple); border-color:var(--purple); color:#fff; }
+  .chip.selected{ background:var(--purple); border-color:var(--purple-text); color:#fff; }
 
   /* Alan bazlı form hatası: input altında kırmızı metin + kenarlık vurgusu.
      Inline style'ları ezmesi için !important gerekiyor. */
   .field-error{
-    color:var(--error); font-size:12.5px; line-height:1.4; margin-top:6px;
+    color:var(--error-text); font-size:12.5px; line-height:1.4; margin-top:6px;
     display:none; align-items:center; gap:4px;
   }
   .field-error.show{ display:flex; animation:cardIn .18s ease both; }
-  .invalid{ border-color:var(--error) !important; }
+  .invalid{ border-color:var(--error-text) !important; }
 
   .topbar{ padding:8px 16px 16px; }
   .icon-btn{
@@ -209,9 +223,9 @@
     background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center;
     font-size:13px; color:#fff; cursor:pointer;
   }
-  .badge-fav.is-fav{ color:var(--purple); }
+  .badge-fav.is-fav{ color:var(--purple-text); }
   .row-fav-btn{ font-size:16px; color:var(--text-tertiary); cursor:pointer; padding:4px; }
-  .row-fav-btn.is-fav{ color:var(--purple); }
+  .row-fav-btn.is-fav{ color:var(--purple-text); }
   .venue-card .name{ font-size:14px; font-weight:600; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .venue-card .meta{ font-size:12px; color:var(--text-tertiary); margin-top:2px; display:flex; align-items:center; gap:4px;}
 
@@ -236,7 +250,7 @@
   .navitem:active{ opacity:.7; }
   .navitem svg{ width:22px; height:22px; }
   .navitem span{ font-size:10px; color:var(--text-tertiary); }
-  .navitem.active span{ color:var(--purple); }
+  .navitem.active span{ color:var(--purple-text); }
   .fab{
     position:fixed; bottom: calc(44px + var(--safe-bottom)); left:50%; transform:translateX(-50%);
     width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--blue));
@@ -292,7 +306,7 @@
   .tab-row{ display:flex; gap:8px; padding:16px; }
   .tab-chip{ padding:8px 16px; border-radius:var(--radius-full); font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--glass-border); color:var(--text-secondary); -webkit-user-select:none; user-select:none;}
   .tab-chip:active{ transform:scale(.95); }
-  .tab-chip.selected{ background:var(--purple); border-color:var(--purple); color:#fff;}
+  .tab-chip.selected{ background:var(--purple); border-color:var(--purple-text); color:#fff;}
 
   .price-list-item{ display:flex; justify-content:space-between; padding:10px 0; }
   .divider-line{ height:1px; background:var(--divider); margin:0 16px; }
@@ -332,7 +346,7 @@
 
   .route-dot{ width:28px; height:28px; border-radius:50%; background:var(--glass-fill); border:1px solid var(--glass-border);
     display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0;}
-  .route-dot.first{ background:var(--purple); border-color:var(--purple); }
+  .route-dot.first{ background:var(--purple); border-color:var(--purple-text); }
   .route-line{ width:2px; flex:1; background:var(--divider); margin:2px 0; min-height:34px;}
 
   ::selection{ background:var(--purple); color:#fff; }
@@ -367,7 +381,7 @@
     box-shadow:0 8px 24px rgba(139,92,246,.4);
   }
   .anj-btn-outline{
-    background:transparent; border:1.5px solid var(--purple); color:var(--purple); margin-top:9px;
+    background:transparent; border:1.5px solid var(--purple); color:var(--purple-text); margin-top:9px;
   }
   .anj-divider{ display:flex; align-items:center; gap:10px; margin:12px 0; color:var(--text-tertiary); font-size:11px; }
   .anj-divider::before, .anj-divider::after{ content:''; flex:1; height:1px; background:var(--divider); }
@@ -444,12 +458,12 @@
         <div style="text-align:center; margin:4px 0 2px;">
           <div id="auth-avatar-preview" onclick="document.getElementById('auth-avatar').click()" style="width:76px; height:76px; border-radius:50%; background:var(--glass-fill); border:1.5px dashed var(--glass-border); display:flex; align-items:center; justify-content:center; font-size:26px; overflow:hidden; cursor:pointer; margin:0 auto;">📷</div>
           <input type="file" id="auth-avatar" accept="image/*" style="display:none;" onchange="previewAuthAvatar(this.files[0])">
-          <div class="body-sm" style="margin-top:8px; cursor:pointer; color:var(--purple);" onclick="document.getElementById('auth-avatar').click()">Profil fotoğrafı ekle (opsiyonel)</div>
+          <div class="body-sm" style="margin-top:8px; cursor:pointer; color:var(--purple-text);" onclick="document.getElementById('auth-avatar').click()">Profil fotoğrafı ekle (opsiyonel)</div>
         </div>
       </div>
     </div>
     <div id="auth-forgot-link" style="text-align:right; margin-top:8px;">
-      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="setAuthMode('forgot')">Şifreni mi unuttun?</span>
+      <span class="body-sm" style="color:var(--purple-text); cursor:pointer;" onclick="setAuthMode('forgot')">Şifreni mi unuttun?</span>
     </div>
     <div style="height:16px"></div>
     <button class="btn-primary" id="auth-submit-btn" onclick="submitAuth()">Giriş Yap</button>
@@ -511,7 +525,7 @@
       <div class="glass" style="padding:16px;">
         <div class="row-between">
           <h3 class="headline">En Uygun Fiyatı Bul</h3>
-          <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümü</span>
+          <span class="body-sm" style="color:var(--purple-text); cursor:pointer;" onclick="switchTab('compare')">Tümü</span>
         </div>
         <div class="row gap-8" style="margin-top:10px;">
           <input id="price-finder-input" placeholder="Örn. Efes Pilsen" oninput="renderPriceFinder()" style="flex:1; padding:12px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';">
@@ -523,31 +537,31 @@
 
     <div class="section-header">
       <h3 class="headline">✨ Sana Özel</h3>
-      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="openOverlay('recommend')">Tümünü Gör</span>
+      <span class="body-sm" style="color:var(--purple-text); cursor:pointer;" onclick="openOverlay('recommend')">Tümünü Gör</span>
     </div>
     <div class="venue-scroll" id="personalized-scroll"></div>
 
     <div class="section-header">
       <h3 class="headline">🔥 Trend Mekanlar</h3>
-      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
+      <span class="body-sm" style="color:var(--purple-text); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
     </div>
     <div class="venue-scroll" id="trend-scroll"></div>
 
     <div class="section-header">
       <h3 class="headline">🆕 Yeni Eklenenler</h3>
-      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
+      <span class="body-sm" style="color:var(--purple-text); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
     </div>
     <div class="venue-scroll" id="new-scroll"></div>
 
     <div class="section-header">
       <h3 class="headline">🕒 Son Güncellenenler</h3>
-      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
+      <span class="body-sm" style="color:var(--purple-text); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
     </div>
     <div class="venue-scroll" id="updated-scroll"></div>
 
     <div class="section-header">
       <h3 class="headline">💸 En Uygun Fiyatlılar</h3>
-      <span class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
+      <span class="body-sm" style="color:var(--purple-text); cursor:pointer;" onclick="switchTab('compare')">Tümünü Gör</span>
     </div>
     <div class="venue-scroll" id="cheap-scroll"></div>
     <div style="height:110px"></div>
@@ -996,7 +1010,7 @@ function renderCityList(){
   document.getElementById('city-list').innerHTML = cities.map(c=>`
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer; ${currentCity && c.id===currentCity.id ? 'border:1.5px solid var(--purple);':''}" onclick="switchCity('${c.id}')">
       <div class="body-lg">${c.name}</div>
-      ${currentCity && c.id===currentCity.id ? '<span style="color:var(--purple);">✓</span>' : ''}
+      ${currentCity && c.id===currentCity.id ? '<span style="color:var(--purple-text);">✓</span>' : ''}
     </div>`).join('');
 }
 async function switchCity(cityId){
@@ -1365,7 +1379,7 @@ async function renderProfileScreen(){
       <div style="margin-top:14px;" id="profile-bio-display">
         ${bio
           ? `<div class="body-md" style="color:var(--text-secondary); cursor:pointer;" onclick="showBioEditForm()">${escapeHTML(bio)}</div>`
-          : `<div class="body-sm" style="color:var(--purple); cursor:pointer;" onclick="showBioEditForm()">+ Biyografi ekle</div>`}
+          : `<div class="body-sm" style="color:var(--purple-text); cursor:pointer;" onclick="showBioEditForm()">+ Biyografi ekle</div>`}
       </div>
       <div id="profile-bio-edit" style="display:none; margin-top:10px;">
         <textarea id="profile-bio-input" maxlength="160" placeholder="Kendinden bahset..." style="width:100%; min-height:60px; padding:10px 12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter'; resize:vertical;">${escapeHTML(bio)}</textarea>
@@ -1523,7 +1537,7 @@ async function renderNotifications(){
     <div class="glass" style="padding:14px 16px; margin-bottom:10px; cursor:pointer; ${n.is_read?'':'border:1.5px solid var(--purple);'}" onclick="openNotification('${n.id}','${n.venue_id||''}')">
       <div class="body-lg" style="font-weight:600;">${escapeHTML(n.title)}</div>
       ${n.body ? `<div class="body-sm" style="margin-top:4px;">${escapeHTML(n.body)}</div>` : ''}
-      ${n.venue_id ? `<div class="caption" style="color:var(--purple); margin-top:4px;">Mekana git ›</div>` : ''}
+      ${n.venue_id ? `<div class="caption" style="color:var(--purple-text); margin-top:4px;">Mekana git ›</div>` : ''}
     </div>`).join('');
   const { error: markError } = await sb.from('notifications').update({ is_read: true }).eq('user_id', currentUser.id).eq('is_read', false);
   if(markError) console.error(markError);
@@ -1640,7 +1654,7 @@ function renderPriceFinder(){
         </div>
       </div>
       <div class="row gap-8">
-        ${i===0 ? `<span class="caption" style="color:var(--success); font-weight:600;">En Ucuz</span>` : ''}
+        ${i===0 ? `<span class="caption" style="color:var(--success-text); font-weight:600;">En Ucuz</span>` : ''}
         <span class="price">₺${r.price.price}</span>
       </div>
     </div>`).join('');
@@ -1691,7 +1705,7 @@ function renderCatChips(){
 }
 function renderSortChips(){
   document.getElementById('sort-chips').innerHTML = sortOptions.map(s=>
-    `<div class="chip" style="font-size:12px; padding:6px 12px; ${s.k===compareState.sort?'background:rgba(59,130,246,.15); border-color:var(--blue); color:var(--blue-light);':''}" onclick="setSort('${s.k}')">${s.label}</div>`
+    `<div class="chip" style="font-size:12px; padding:6px 12px; ${s.k===compareState.sort?'background:rgba(59,130,246,.15); border-color:var(--blue); color:var(--blue-text);':''}" onclick="setSort('${s.k}')">${s.label}</div>`
   ).join('');
 }
 function toggleCategory(c){
@@ -1753,8 +1767,8 @@ function renderCompare(){
         <div class="body-sm">${escapeHTML(r.venue.district)}</div>
       </div>
       <div style="text-align:right;">
-        <div class="price" style="color:${isCheapest?'var(--success)':'var(--text-primary)'}">₺${r.price.price}</div>
-        ${diff ? `<div class="caption" style="color:${diff>0?'var(--error)':'var(--success)'}">${diff>0?'↑':'↓'} ₺${Math.abs(diff)}</div>` : ''}
+        <div class="price" style="color:${isCheapest?'var(--success-text)':'var(--text-primary)'}">₺${r.price.price}</div>
+        ${diff ? `<div class="caption" style="color:${diff>0?'var(--error-text)':'var(--success-text)'}">${diff>0?'↑':'↓'} ₺${Math.abs(diff)}</div>` : ''}
       </div>
       <div class="row-fav-btn ${favoriteIds.has(r.venue.id)?'is-fav':''}" onclick="event.stopPropagation(); toggleFavoriteVenue('${r.venue.id}')">${favoriteIds.has(r.venue.id)?'♥':'♡'}</div>
     </div>`;
@@ -1780,7 +1794,7 @@ function renderFavorites(){
   el.innerHTML = favs.map(v=>`
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${v.id}')">
       <div><div class="body-lg" style="font-weight:600;">${escapeHTML(v.name)}</div><div class="body-sm">${escapeHTML(v.district)}</div></div>
-      <span style="color:var(--purple); font-size:18px;">♥</span>
+      <span style="color:var(--purple-text); font-size:18px;">♥</span>
     </div>`).join('');
 }
 
@@ -1906,7 +1920,7 @@ async function renderDetailReviews(){
     <div class="glass" style="padding:16px; margin-bottom:16px;">
       <div class="body-md" style="margin-bottom:8px;">Puanın</div>
       <div class="row gap-4" id="review-stars" style="margin-bottom:12px;">
-        ${[1,2,3,4,5].map(n=>`<span onclick="setReviewRating(${n})" style="font-size:22px; cursor:pointer; color:${n<=selectedReviewRating?'var(--gold)':'var(--text-tertiary)'};" id="star-${n}">★</span>`).join('')}
+        ${[1,2,3,4,5].map(n=>`<span onclick="setReviewRating(${n})" style="font-size:22px; cursor:pointer; color:${n<=selectedReviewRating?'var(--gold-text)':'var(--text-tertiary)'};" id="star-${n}">★</span>`).join('')}
       </div>
       <textarea id="review-comment" maxlength="500" placeholder="Yorumun (opsiyonel)" style="width:100%; min-height:60px; padding:12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter'; resize:vertical;"></textarea>
       <div style="height:10px"></div>
@@ -1921,7 +1935,7 @@ async function renderDetailReviews(){
       <div class="row-between">
         <span class="body-lg" style="font-weight:600; cursor:pointer;" onclick="viewPublicProfile('${r.user_id}')">${escapeHTML(r.profiles?.handle || 'Barmender')}</span>
         <div class="row gap-8" style="align-items:center;">
-          <span id="review-rating-display-${r.id}" style="color:var(--gold);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+          <span id="review-rating-display-${r.id}" style="color:var(--gold-text);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
           ${isOwn ? `<span style="cursor:pointer; font-size:13px; color:var(--text-tertiary);" onclick="showReviewEditForm('${r.id}')">✏️</span>` : ''}
           ${(isOwn || isAdmin) ? `<span style="cursor:pointer; font-size:13px; color:var(--text-tertiary);" onclick="deleteReview('${r.id}')">🗑️</span>` : ''}
         </div>
@@ -1930,7 +1944,7 @@ async function renderDetailReviews(){
       ${isOwn ? `
       <div id="review-edit-form-${r.id}" style="display:none; margin-top:8px;">
         <div class="row gap-4" id="edit-review-stars-${r.id}" style="margin-bottom:8px;">
-          ${[1,2,3,4,5].map(n=>`<span onclick="setEditReviewRating('${r.id}',${n})" style="font-size:20px; cursor:pointer; color:${n<=r.rating?'var(--gold)':'var(--text-tertiary)'};" id="edit-star-${r.id}-${n}">★</span>`).join('')}
+          ${[1,2,3,4,5].map(n=>`<span onclick="setEditReviewRating('${r.id}',${n})" style="font-size:20px; cursor:pointer; color:${n<=r.rating?'var(--gold-text)':'var(--text-tertiary)'};" id="edit-star-${r.id}-${n}">★</span>`).join('')}
         </div>
         <textarea id="edit-review-comment-${r.id}" style="width:100%; min-height:50px; padding:10px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter'; resize:vertical;">${escapeHTML(r.comment||'')}</textarea>
         <div class="row gap-8" style="margin-top:8px;">
@@ -1953,7 +1967,7 @@ function showReviewEditForm(reviewId){
 function setEditReviewRating(reviewId, n){
   editReviewRatings[reviewId] = n;
   [1,2,3,4,5].forEach(i=>{
-    document.getElementById(`edit-star-${reviewId}-${i}`).style.color = i<=n ? 'var(--gold)' : 'var(--text-tertiary)';
+    document.getElementById(`edit-star-${reviewId}-${i}`).style.color = i<=n ? 'var(--gold-text)' : 'var(--text-tertiary)';
   });
 }
 async function submitReviewEdit(reviewId){
@@ -1975,7 +1989,7 @@ async function deleteReview(reviewId){
 function setReviewRating(n){
   selectedReviewRating = n;
   [1,2,3,4,5].forEach(i=>{
-    document.getElementById('star-'+i).style.color = i<=n ? 'var(--gold)' : 'var(--text-tertiary)';
+    document.getElementById('star-'+i).style.color = i<=n ? 'var(--gold-text)' : 'var(--text-tertiary)';
   });
 }
 
@@ -2139,7 +2153,7 @@ async function renderVerificationSection(v){
     return;
   }
   if(existing?.status==='rejected'){
-    el.innerHTML = `<div class="body-sm" style="text-align:center; color:var(--error);">Başvurun reddedildi</div>`;
+    el.innerHTML = `<div class="body-sm" style="text-align:center; color:var(--error-text);">Başvurun reddedildi</div>`;
     return;
   }
   el.innerHTML = `
@@ -2169,7 +2183,7 @@ function resetContribute(){
   goContributeStep(preselected ? 'drink' : 'venue');
   document.getElementById('contribute-venue-list').innerHTML =
     `<div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer; border:1px dashed var(--glass-border);" onclick="goContributeStep('newvenue')">
-      <div class="body-lg" style="color:var(--purple); font-weight:600;">+ Yeni mekan ekle</div>
+      <div class="body-lg" style="color:var(--purple-text); font-weight:600;">+ Yeni mekan ekle</div>
     </div>` +
     venues.map(v=>`
     <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="selectContributeVenue('${v.id}')">
@@ -2338,7 +2352,7 @@ function renderBudgetResults(){
       <div>
         <div class="body-lg">${escapeHTML(r.venue.name)}</div>
         <div class="body-sm">${escapeHTML(r.venue.district)} · ${r.venue.distance} km</div>
-        <div class="body-sm" style="color:var(--blue-light); margin-top:4px;">Kişi başı ${r.perPerson} ${escapeHTML(r.drink)} içebilirsin</div>
+        <div class="body-sm" style="color:var(--blue-text); margin-top:4px;">Kişi başı ${r.perPerson} ${escapeHTML(r.drink)} içebilirsin</div>
         <div class="caption" style="margin-top:2px;">Ortalama ${budgetState.pref} fiyatı: ₺${r.avgPrice}</div>
       </div>
       <div class="price">₺${r.total}</div>
@@ -2866,7 +2880,7 @@ function validateImageFile(file){
 function chatMessageHTML(msg, chatType){
   const isOwn = !!(currentUser && msg.user_id === currentUser.id);
   const time = new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
-  const textColor = msg.is_admin ? 'var(--error)' : 'inherit';
+  const textColor = msg.is_admin ? 'var(--error-text)' : 'inherit';
   const bubbleInner = `
     ${msg.content ? `<div class="body-md" style="color:${textColor};">${escapeHTML(msg.content)}</div>` : ''}
     ${msg.image_url ? `<img src="${escapeHTML(msg.image_url)}" loading="lazy" style="max-width:200px; max-height:200px; border-radius:12px; ${msg.content?'margin-top:6px;':''} display:block; object-fit:cover;">` : ''}
