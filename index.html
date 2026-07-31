@@ -928,8 +928,9 @@ async function setThemePreference(pref){
   applyTheme();
   localStorage.setItem('nc_theme', pref);
   if(currentUser){
-    await sb.from('profiles').update({ theme_preference: pref }).eq('id', currentUser.id);
-    if(currentProfile) currentProfile.theme_preference = pref;
+    const { error } = await sb.from('profiles').update({ theme_preference: pref }).eq('id', currentUser.id);
+    if(error) console.error(error);
+    else if(currentProfile) currentProfile.theme_preference = pref;
   }
   renderProfileScreen();
 }
@@ -1184,13 +1185,14 @@ async function submitAuth(){
         showToast(profileError.message.includes('unique') ? 'Bu kullanıcı adı zaten alınmış' : (profileError.message || 'Profil güncellenemedi'));
         return;
       }
-      if(avatarFile){
+      if(avatarFile && validateImageFile(avatarFile)){
         const ext = avatarFile.name.split('.').pop();
         const path = `${data.user.id}/avatar.${ext}`;
         const { error: uploadError } = await sb.storage.from('avatars').upload(path, avatarFile, { upsert: true });
         if(!uploadError){
           const publicUrl = sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
-          await sb.from('profiles').update({ avatar_url: publicUrl }).eq('id', data.user.id);
+          const { error: avatarUpdateError } = await sb.from('profiles').update({ avatar_url: publicUrl }).eq('id', data.user.id);
+          if(avatarUpdateError) console.error(avatarUpdateError);
         }
       }
     }
@@ -1223,6 +1225,7 @@ async function loadProfile(){
 }
 async function uploadAvatar(file){
   if(!file || !currentUser) return;
+  if(!validateImageFile(file)) return;
   const ext = file.name.split('.').pop();
   const path = `${currentUser.id}/avatar.${ext}`;
   const { error: uploadError } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
@@ -1461,11 +1464,13 @@ async function renderNotifications(){
       ${n.body ? `<div class="body-sm" style="margin-top:4px;">${escapeHTML(n.body)}</div>` : ''}
       ${n.venue_id ? `<div class="caption" style="color:var(--purple); margin-top:4px;">Mekana git ›</div>` : ''}
     </div>`).join('');
-  await sb.from('notifications').update({ is_read: true }).eq('user_id', currentUser.id).eq('is_read', false);
+  const { error: markError } = await sb.from('notifications').update({ is_read: true }).eq('user_id', currentUser.id).eq('is_read', false);
+  if(markError) console.error(markError);
   loadUnreadNotificationCount();
 }
 async function markNotificationRead(id){
-  await sb.from('notifications').update({ is_read: true }).eq('id', id);
+  const { error } = await sb.from('notifications').update({ is_read: true }).eq('id', id);
+  if(error) console.error(error);
   loadUnreadNotificationCount();
 }
 function openNotification(id, venueId){
@@ -1663,13 +1668,13 @@ function renderCompare(){
     const diff = r.price.prev ? r.price.price - r.price.prev : null;
     return `
     <div class="price-row glass ${isCheapest?'cheapest':''}" onclick="openDetail('${r.venue.id}')">
-      <img src="${r.venue.img}" alt="${r.venue.name}" loading="lazy">
+      <img src="${escapeHTML(r.venue.img)}" alt="${escapeHTML(r.venue.name)}" loading="lazy">
       <div style="flex:1;">
         <div class="row gap-4">
-          <span class="body-lg" style="font-weight:600;">${r.venue.name}</span>
+          <span class="body-lg" style="font-weight:600;">${escapeHTML(r.venue.name)}</span>
           ${r.venue.verified ? '<span style="color:var(--verified); font-size:12px;">✓</span>' : ''}
         </div>
-        <div class="body-sm">${r.venue.district}</div>
+        <div class="body-sm">${escapeHTML(r.venue.district)}</div>
       </div>
       <div style="text-align:right;">
         <div class="price" style="color:${isCheapest?'var(--success)':'var(--text-primary)'}">₺${r.price.price}</div>
@@ -1981,7 +1986,7 @@ async function submitEditVenue(){
   if(!name || !district || !distance || distance<=0){ showToast('Lütfen mekan adı, semt ve uzaklığı gir'); return; }
   const { error } = await sb.from('venues').update({ name, district, distance, img, working_hours, music_genre, amenities }).eq('id', v.id);
   if(error){ console.error(error); showToast(error.message || 'Güncellenemedi'); return; }
-  if(galleryFile){
+  if(galleryFile && validateImageFile(galleryFile)){
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'') || 'venue';
     const ext = galleryFile.name.split('.').pop();
     const path = `${slug}-gallery-${Date.now()}.${ext}`;
@@ -2080,6 +2085,7 @@ async function submitNewVenue(){
   }
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'') || 'venue';
   if(photoFile){
+    if(!validateImageFile(photoFile)) return;
     const ext = photoFile.name.split('.').pop();
     const path = `${slug}-${Date.now()}.${ext}`;
     const { error: uploadError } = await sb.storage.from('venue-photos').upload(path, photoFile);
@@ -2424,7 +2430,7 @@ async function renderLeaderboard(){
     <div class="glass row-between" style="padding:14px 16px; margin-bottom:8px; cursor:pointer; ${currentUser && row.user_id===currentUser.id ? 'border:1.5px solid var(--purple);':''}" onclick="viewPublicProfile('${row.user_id}')">
       <div class="row gap-12" style="flex-wrap:wrap; align-items:center;">
         <div class="body-lg" style="font-weight:700; width:24px;">${i+1}</div>
-        <div class="body-lg">${row.username || 'Barmender'}</div>
+        <div class="body-lg">${escapeHTML(row.username || 'Barmender')}</div>
         <span class="title-badge">${tier.emoji} ${tier.title}</span>
       </div>
       <div class="price">${row[col]}</div>
@@ -2590,7 +2596,7 @@ async function renderAdminCities(){
       <button class="btn-primary" onclick="addCity()">Şehir Ekle</button>
     </div>
     <div class="body-md" style="margin-bottom:8px;">Mevcut Şehirler</div>
-    <div id="admin-city-list">${cities.map(c=>`<div class="glass row-between" style="padding:14px 16px; margin-bottom:8px;"><span class="body-lg">${c.name}</span></div>`).join('')}</div>`;
+    <div id="admin-city-list">${cities.map(c=>`<div class="glass row-between" style="padding:14px 16px; margin-bottom:8px;"><span class="body-lg">${escapeHTML(c.name)}</span></div>`).join('')}</div>`;
 }
 async function addCity(){
   const name = document.getElementById('admin-city-name').value.trim();
@@ -2656,6 +2662,12 @@ function escapeHTML(str){
   const div = document.createElement('div');
   div.textContent = str == null ? '' : String(str);
   return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function validateImageFile(file){
+  const allowed = ['image/jpeg','image/png','image/webp','image/gif'];
+  if(!allowed.includes(file.type)){ showToast('Sadece JPG, PNG, WEBP veya GIF yükleyebilirsin'); return false; }
+  if(file.size > 5*1024*1024){ showToast('Fotoğraf en fazla 5MB olabilir'); return false; }
+  return true;
 }
 function chatMessageHTML(msg, chatType){
   const isOwn = !!(currentUser && msg.user_id === currentUser.id);
