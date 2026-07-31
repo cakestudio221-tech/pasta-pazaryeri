@@ -135,6 +135,23 @@
 
   /* Alan bazlı form hatası: input altında kırmızı metin + kenarlık vurgusu.
      Inline style'ları ezmesi için !important gerekiyor. */
+  /* Dokunma hedefi ≥44px: görsel boyut korunur, sadece isabet alanı büyür.
+     badge-fav kart içinde olduğu için 36px'te tutuldu — 44px kartın kendi
+     tıklamasını çalardı. */
+  .close-btn, .icon-btn, .row-fav-btn, .badge-fav{ position:relative; }
+  .close-btn::after, .icon-btn::after, .row-fav-btn::after{
+    content:''; position:absolute; top:50%; left:50%;
+    width:44px; height:44px; min-width:100%; min-height:100%;
+    transform:translate(-50%,-50%);
+  }
+  .badge-fav::after{
+    content:''; position:absolute; top:50%; left:50%;
+    width:36px; height:36px; transform:translate(-50%,-50%);
+  }
+  .navitem{ min-height:48px; }
+  /* "Tümünü Gör" gibi metin bağlantıları: görsel konum aynı, isabet alanı yüksek */
+  .section-header [onclick]{ padding:10px 0; margin:-10px 0; }
+
   /* Konfeti: sadece transform+opacity animasyonu — layout/paint tetiklemez, 60fps kalır */
   .confetti-wrap{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:5; }
   .confetti-wrap i{
@@ -478,11 +495,11 @@
         <input id="auth-username" placeholder="ornek_kullanici" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
         <div style="height:12px"></div>
         <div class="body-md" style="margin-bottom:6px;">Doğum Tarihi</div>
-        <input id="auth-dob" type="date" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
+        <input id="auth-dob" type="date" aria-label="Doğum tarihi" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
         <div style="height:12px"></div>
         <div style="text-align:center; margin:4px 0 2px;">
           <div id="auth-avatar-preview" onclick="document.getElementById('auth-avatar').click()" style="width:76px; height:76px; border-radius:50%; background:var(--glass-fill); border:1.5px dashed var(--glass-border); display:flex; align-items:center; justify-content:center; font-size:26px; overflow:hidden; cursor:pointer; margin:0 auto;">📷</div>
-          <input type="file" id="auth-avatar" accept="image/*" style="display:none;" onchange="previewAuthAvatar(this.files[0])">
+          <input type="file" id="auth-avatar" accept="image/*" aria-label="Profil fotoğrafı seç" style="display:none;" onchange="previewAuthAvatar(this.files[0])">
           <div class="body-sm" style="margin-top:8px; cursor:pointer; color:var(--purple-text);" onclick="document.getElementById('auth-avatar').click()">Profil fotoğrafı ekle (opsiyonel)</div>
         </div>
       </div>
@@ -686,7 +703,7 @@
       <div class="row gap-8">
         <div class="stepper-btn" onclick="toggleEmojiPicker('detail-chat-input')">😀</div>
         <input id="detail-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:10px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendVenueChatMessage()" onfocus="setChatFocused('detail-chat-online', true)" onblur="setChatFocused('detail-chat-online', false)">
-        <input type="file" id="detail-chat-photo" accept="image/*" style="display:none;" onchange="sendVenueChatPhoto(this.files[0])">
+        <input type="file" id="detail-chat-photo" aria-label="Sohbete fotoğraf gönder" accept="image/*" style="display:none;" onchange="sendVenueChatPhoto(this.files[0])">
         <div class="stepper-btn" onclick="document.getElementById('detail-chat-photo').click()">📷</div>
         <div class="stepper-btn" style="background:linear-gradient(135deg,var(--purple),var(--blue));" onclick="sendVenueChatMessage()">➤</div>
       </div>
@@ -727,7 +744,7 @@
       <input id="nv-img" placeholder="https://..." style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
       <div style="height:12px"></div>
       <div class="body-md" style="margin-bottom:6px;">veya bir fotoğraf yükle</div>
-      <input type="file" id="nv-photo" accept="image/*" style="width:100%; color:var(--text-secondary); font-size:13px;">
+      <input type="file" id="nv-photo" aria-label="Mekan fotoğrafı yükle" accept="image/*" style="width:100%; color:var(--text-secondary); font-size:13px;">
       <div style="height:12px"></div>
       <div class="body-md" style="margin-bottom:6px;">Çalışma Saatleri (opsiyonel)</div>
       <input id="nv-hours" placeholder="Örn. 18:00-02:00" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
@@ -786,7 +803,7 @@
     <div class="px">
       <div class="glass" style="padding:16px;">
         <div class="row-between"><span class="body-md">Toplam Bütçe</span><span class="headline" id="budget-value">₺1000</span></div>
-        <input type="range" id="budget-slider" min="100" max="5000" step="50" value="1000" style="margin-top:10px;" oninput="onBudgetChange()">
+        <input type="range" id="budget-slider" aria-label="Bütçe tutarı" min="100" max="5000" step="50" value="1000" style="margin-top:10px;" oninput="onBudgetChange()">
         <div class="row-between"><span class="body-sm">₺100</span><span class="body-sm">₺5000</span></div>
       </div>
 
@@ -883,7 +900,7 @@
       <div class="row gap-8">
         <div class="stepper-btn" onclick="toggleEmojiPicker('general-chat-input')">😀</div>
         <input id="general-chat-input" placeholder="Mesaj yaz..." maxlength="500" style="flex:1; padding:10px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';" onkeydown="if(event.key==='Enter') sendGeneralChatMessage()" onfocus="setChatFocused('general-chat-online', true)" onblur="setChatFocused('general-chat-online', false)">
-        <input type="file" id="general-chat-photo" accept="image/*" style="display:none;" onchange="sendGeneralChatPhoto(this.files[0])">
+        <input type="file" id="general-chat-photo" aria-label="Sohbete fotoğraf gönder" accept="image/*" style="display:none;" onchange="sendGeneralChatPhoto(this.files[0])">
         <div class="stepper-btn" onclick="document.getElementById('general-chat-photo').click()">📷</div>
         <div class="stepper-btn" style="background:linear-gradient(135deg,var(--purple),var(--blue));" onclick="sendGeneralChatMessage()">➤</div>
       </div>
