@@ -676,7 +676,7 @@
         ${Object.entries({live_music:'🎵 Canlı Müzik', happy_hour:'🍹 Happy Hour', rooftop:'🏙️ Rooftop', valet:'🚗 Vale'}).map(([k,label])=>`<div class="chip" id="nv-am-${k}" onclick="toggleAmenityChip('nv-am-${k}')">${label}</div>`).join('')}
       </div>
       <div style="height:20px"></div>
-      <button class="btn-primary" onclick="submitNewVenue()">Mekanı Oluştur ve Devam Et</button>
+      <button class="btn-primary" id="nv-submit-btn" onclick="submitNewVenue()">Mekanı Oluştur ve Devam Et</button>
     </div>
 
     <div class="px" id="contribute-step-drink" style="display:none;">
@@ -1825,7 +1825,7 @@ async function renderDetailReviews(){
       <div class="row gap-4" id="review-stars" style="margin-bottom:12px;">
         ${[1,2,3,4,5].map(n=>`<span onclick="setReviewRating(${n})" style="font-size:22px; cursor:pointer; color:${n<=selectedReviewRating?'var(--gold)':'var(--text-tertiary)'};" id="star-${n}">★</span>`).join('')}
       </div>
-      <textarea id="review-comment" placeholder="Yorumun (opsiyonel)" style="width:100%; min-height:60px; padding:12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter'; resize:vertical;"></textarea>
+      <textarea id="review-comment" maxlength="500" placeholder="Yorumun (opsiyonel)" style="width:100%; min-height:60px; padding:12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter'; resize:vertical;"></textarea>
       <div style="height:10px"></div>
       <button class="btn-primary" onclick="submitReview()">Yorum Ekle</button>
     </div>` : '';
@@ -1836,7 +1836,7 @@ async function renderDetailReviews(){
     return `
     <div class="glass" style="padding:14px 16px; margin-bottom:10px;">
       <div class="row-between">
-        <span class="body-lg" style="font-weight:600; cursor:pointer;" onclick="viewPublicProfile('${r.user_id}')">${r.profiles?.handle || 'Barmender'}</span>
+        <span class="body-lg" style="font-weight:600; cursor:pointer;" onclick="viewPublicProfile('${r.user_id}')">${escapeHTML(r.profiles?.handle || 'Barmender')}</span>
         <div class="row gap-8" style="align-items:center;">
           <span id="review-rating-display-${r.id}" style="color:var(--gold);">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
           ${isOwn ? `<span style="cursor:pointer; font-size:13px; color:var(--text-tertiary);" onclick="showReviewEditForm('${r.id}')">✏️</span>` : ''}
@@ -1896,17 +1896,24 @@ function setReviewRating(n){
   });
 }
 
+let submitReviewInFlight = false;
 async function submitReview(){
   if(!requireAuth()) return;
-  const v = contributeState.venue;
-  const comment = document.getElementById('review-comment').value.trim();
-  const { error } = await sb.from('reviews').insert({
-    venue_id: v.id, user_id: currentUser.id, rating: selectedReviewRating, comment: comment || null,
-  });
-  if(error){ console.error(error); showToast(error.message || 'Yorum kaydedilemedi'); return; }
-  selectedReviewRating = 5;
-  showToast('Yorumun eklendi 🎉');
-  renderDetailReviews();
+  if(submitReviewInFlight) return;
+  submitReviewInFlight = true;
+  try{
+    const v = contributeState.venue;
+    const comment = document.getElementById('review-comment').value.trim();
+    const { error } = await sb.from('reviews').insert({
+      venue_id: v.id, user_id: currentUser.id, rating: selectedReviewRating, comment: comment || null,
+    });
+    if(error){ console.error(error); showToast(error.message || 'Yorum kaydedilemedi'); return; }
+    selectedReviewRating = 5;
+    showToast('Yorumun eklendi 🎉');
+    renderDetailReviews();
+  } finally {
+    submitReviewInFlight = false;
+  }
 }
 
 async function renderDetailAbout(){
@@ -2071,7 +2078,9 @@ function readAmenityChips(prefix){
   return Object.keys(amenityLabels).filter(k=>document.getElementById(`${prefix}-${k}`)?.classList.contains('selected'));
 }
 
+let submitNewVenueInFlight = false;
 async function submitNewVenue(){
+  if(submitNewVenueInFlight) return;
   const name = document.getElementById('nv-name').value.trim();
   const district = document.getElementById('nv-district').value.trim();
   const distance = Number(document.getElementById('nv-distance').value);
@@ -2083,31 +2092,39 @@ async function submitNewVenue(){
   if(!name || !district || !distance || distance<=0){
     showToast('Lütfen mekan adı, semt ve uzaklığı gir'); return;
   }
-  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'') || 'venue';
-  if(photoFile){
-    if(!validateImageFile(photoFile)) return;
-    const ext = photoFile.name.split('.').pop();
-    const path = `${slug}-${Date.now()}.${ext}`;
-    const { error: uploadError } = await sb.storage.from('venue-photos').upload(path, photoFile);
-    if(uploadError){ console.error(uploadError); showToast('Fotoğraf yüklenemedi'); return; }
-    img = sb.storage.from('venue-photos').getPublicUrl(path).data.publicUrl;
+  submitNewVenueInFlight = true;
+  const btn = document.getElementById('nv-submit-btn');
+  if(btn) btn.disabled = true;
+  try{
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'') || 'venue';
+    if(photoFile){
+      if(!validateImageFile(photoFile)) return;
+      const ext = photoFile.name.split('.').pop();
+      const path = `${slug}-${Date.now()}.${ext}`;
+      const { error: uploadError } = await sb.storage.from('venue-photos').upload(path, photoFile);
+      if(uploadError){ console.error(uploadError); showToast('Fotoğraf yüklenemedi'); return; }
+      img = sb.storage.from('venue-photos').getPublicUrl(path).data.publicUrl;
+    }
+    const { data, error } = await sb.from('venues').insert({
+      name, district, city: currentCity.name, city_id: currentCity.id, distance,
+      img: img || `https://picsum.photos/seed/${slug}/400/300`,
+      rating: 0, reviews: 0, verified: false, created_by: currentUser.id,
+      working_hours, music_genre, amenities,
+    }).select().single();
+    if(error){ console.error(error); showToast(error.message || 'Mekan eklenemedi'); return; }
+    const newVenue = { id: data.id, name: data.name, district: data.district, city: data.city,
+      img: data.img, rating: Number(data.rating), reviews: data.reviews, verified: data.verified,
+      distance: Number(data.distance), lat: null, lng: null,
+      working_hours: data.working_hours, music_genre: data.music_genre, amenities: data.amenities || [],
+      prices: [], lastPriceUpdate: data.created_at };
+    venues.unshift(newVenue);
+    contributeState.venue = newVenue;
+    showToast('Mekan eklendi! Onaylandıktan sonra herkese görünür olacak — şimdi bir fiyat gir');
+    goContributeStep('drink');
+  } finally {
+    submitNewVenueInFlight = false;
+    if(btn) btn.disabled = false;
   }
-  const { data, error } = await sb.from('venues').insert({
-    name, district, city: currentCity.name, city_id: currentCity.id, distance,
-    img: img || `https://picsum.photos/seed/${slug}/400/300`,
-    rating: 0, reviews: 0, verified: false, created_by: currentUser.id,
-    working_hours, music_genre, amenities,
-  }).select().single();
-  if(error){ console.error(error); showToast(error.message || 'Mekan eklenemedi'); return; }
-  const newVenue = { id: data.id, name: data.name, district: data.district, city: data.city,
-    img: data.img, rating: Number(data.rating), reviews: data.reviews, verified: data.verified,
-    distance: Number(data.distance), lat: null, lng: null,
-    working_hours: data.working_hours, music_genre: data.music_genre, amenities: data.amenities || [],
-    prices: [], lastPriceUpdate: data.created_at };
-  venues.unshift(newVenue);
-  contributeState.venue = newVenue;
-  showToast('Mekan eklendi! Onaylandıktan sonra herkese görünür olacak — şimdi bir fiyat gir');
-  goContributeStep('drink');
 }
 function selectContributeCategory(c){
   contributeState.category = c;
@@ -2126,27 +2143,34 @@ function goContributeStep(step){
     document.getElementById('c-summary').innerText = `${contributeState.venue.name} · ${document.getElementById('c-drink-name').value}`;
   }
 }
+let contributePriceInFlight = false;
 async function contributeNext(step){
   if(step==='price' && (!contributeState.category || !document.getElementById('c-drink-name').value.trim())){
     showToast('Lütfen kategori seç ve içki adı yaz'); return;
   }
   if(step==='done'){
+    if(contributePriceInFlight) return;
     const priceVal = Number(document.getElementById('c-price-input').value);
     if(!priceVal || priceVal <= 0){ showToast('Lütfen geçerli bir fiyat gir'); return; }
     if(!requireAuth()) return;
-    const { error } = await sb.from('prices').insert({
-      venue_id: contributeState.venue.id,
-      category: contributeState.category,
-      drink_name: document.getElementById('c-drink-name').value.trim(),
-      price: priceVal,
-      reported_by: currentUser.id,
-    });
-    if(error){ console.error(error); showToast(error.message || 'Fiyat kaydedilemedi'); return; }
-    await loadProfile();
-    await loadVenues();
-    renderHome();
-    renderCompare();
-    renderProfileScreen();
+    contributePriceInFlight = true;
+    try{
+      const { error } = await sb.from('prices').insert({
+        venue_id: contributeState.venue.id,
+        category: contributeState.category,
+        drink_name: document.getElementById('c-drink-name').value.trim(),
+        price: priceVal,
+        reported_by: currentUser.id,
+      });
+      if(error){ console.error(error); showToast(error.message || 'Fiyat kaydedilemedi'); return; }
+      await loadProfile();
+      await loadVenues();
+      renderHome();
+      renderCompare();
+      renderProfileScreen();
+    } finally {
+      contributePriceInFlight = false;
+    }
   }
   goContributeStep(step);
 }
