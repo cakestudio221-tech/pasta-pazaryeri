@@ -147,6 +147,14 @@
   .venue-scroll::-webkit-scrollbar{display:none;}
   @keyframes cardIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
   @keyframes pulseDot{ 0%{ box-shadow:0 0 0 0 rgba(34,197,94,.6); } 70%{ box-shadow:0 0 0 8px rgba(34,197,94,0); } 100%{ box-shadow:0 0 0 0 rgba(34,197,94,0); } }
+  @keyframes shimmer{ 0%{ background-position:-200px 0; } 100%{ background-position:calc(200px + 100%) 0; } }
+  .skeleton-row{
+    height:56px; border-radius:var(--radius-md); margin-bottom:10px;
+    background:linear-gradient(90deg, var(--glass-fill) 0%, var(--glass-border) 50%, var(--glass-fill) 100%);
+    background-size:200px 100%; animation:shimmer 1.2s ease-in-out infinite;
+  }
+  @keyframes heartPop{ 0%{ transform:scale(1); } 40%{ transform:scale(1.35); } 100%{ transform:scale(1); } }
+  .badge-fav.pop{ animation:heartPop .3s ease; }
   #community-banner:active{ transform:scale(.98); }
   .chat-bubble{ padding:10px 14px; border-radius:16px; word-break:break-word; display:inline-block; max-width:100%; }
   .chat-bubble.own{ background:linear-gradient(135deg,var(--purple),var(--blue)); color:#fff; border-bottom-right-radius:4px; }
@@ -543,6 +551,10 @@
     </div>
     <div class="quick-row" style="padding-bottom:0; overflow-x:auto; flex-wrap:nowrap;" id="cat-chips"></div>
     <div class="quick-row" style="padding-top:10px; overflow-x:auto; flex-wrap:nowrap;" id="sort-chips"></div>
+    <div class="row gap-8 px" style="padding-top:10px;">
+      <input id="price-min" type="number" placeholder="Min ₺" style="width:100%; padding:10px 12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:13px; outline:none; box-sizing:border-box; font-family:'Inter';" oninput="setPriceRange()">
+      <input id="price-max" type="number" placeholder="Maks ₺" style="width:100%; padding:10px 12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:13px; outline:none; box-sizing:border-box; font-family:'Inter';" oninput="setPriceRange()">
+    </div>
     <div id="compare-list" style="padding:16px 0 100px;"></div>
   </div>
 
@@ -1271,6 +1283,18 @@ async function renderProfileScreen(){
   const progressPct = nextTier ? Math.round(((xp - tier.min) / (nextTier.min - tier.min)) * 100) : 100;
   const { count: contribCount } = await sb.from('prices').select('id', { count:'exact', head:true }).eq('reported_by', currentUser.id);
   const c = contribCount || 0;
+  const { data: history } = await sb.from('prices').select('*, venues(name)').eq('reported_by', currentUser.id).order('created_at', { ascending:false }).limit(20);
+  const historyHTML = (history && history.length)
+    ? history.map(p=>`
+      <div class="row-between" style="padding:12px 16px;">
+        <div style="min-width:0;">
+          <div class="body-md" style="font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(p.venues?.name || 'Mekan')}</div>
+          <div class="caption">${escapeHTML(p.drink_name)} · ${new Date(p.created_at).toLocaleDateString('tr-TR')}</div>
+        </div>
+        <div class="price" style="flex-shrink:0;">₺${p.price}</div>
+      </div>
+      <div class="divider-line"></div>`).join('')
+    : `<div class="body-sm" style="padding:14px 16px; color:var(--text-tertiary);">Henüz fiyat bildirmedin</div>`;
   const badges = [
     { emoji:'🍺', label:'Explorer', earned: c>=1 },
     { emoji:'⭐', label:'Güvenilir', earned: c>=10 },
@@ -1327,6 +1351,10 @@ async function renderProfileScreen(){
     <h3 class="headline" style="margin-top:20px;">Rozetlerim</h3>
     <div class="row gap-12" style="margin-top:10px; overflow-x:auto;">
       ${badges.map(b=>`<div style="text-align:center; ${b.earned?'':'opacity:.35;'}"><div class="badge-circle">${b.emoji}</div><div class="caption" style="margin-top:4px;">${b.label}</div></div>`).join('')}
+    </div>
+    <h3 class="headline" style="margin-top:20px;">Katkı Geçmişim</h3>
+    <div class="glass" style="margin-top:10px; padding:4px 0;">
+      ${historyHTML}
     </div>
     <div class="glass" style="margin-top:20px; padding:4px 0;">
       <div class="row-between" style="padding:14px 16px; cursor:pointer;" onclick="openOverlay('budget')">💰 Bütçe Planlayıcı <span style="color:var(--text-tertiary);">›</span></div>
@@ -1389,7 +1417,7 @@ async function viewPublicProfile(userId){
 }
 async function renderPublicProfile(userId){
   const el = document.getElementById('public-profile-content');
-  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  el.innerHTML = skeletonRows(3);
   const { data: p, error } = await sb.from('profiles').select('handle, avatar_url, bio, xp, created_at').eq('id', userId).single();
   if(error || !p){ el.innerHTML = `<div class="body-md">Profil bulunamadı</div>`; return; }
   const { count } = await sb.from('prices').select('id', { count:'exact', head:true }).eq('reported_by', userId);
@@ -1454,7 +1482,7 @@ async function renderNotifications(){
     el.innerHTML = `<div style="text-align:center; padding-top:60px;"><div class="body-md">Bildirimlerini görmek için giriş yap</div><div style="height:16px"></div><button class="btn-primary" onclick="openAuth('login')">Giriş Yap</button></div>`;
     return;
   }
-  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  el.innerHTML = skeletonRows(3);
   const { data, error } = await sb.from('notifications').select('*').eq('user_id', currentUser.id).order('created_at', { ascending:false }).limit(30);
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Henüz bildirimin yok</div>`; return; }
@@ -1512,7 +1540,7 @@ async function initAuth(){
   });
 }
 
-let compareState = { category:'Bira', sort:'cheapest' };
+let compareState = { categories: new Set(['Bira']), sort:'cheapest', minPrice:null, maxPrice:null };
 let contributeState = { venue:null, category:null };
 let routeState = { selected:[] };
 let routeAutoState = { category:null, count:4 };
@@ -1528,7 +1556,7 @@ function venueCardHTML(v){
       <img src="${escapeHTML(v.img)}" alt="${escapeHTML(v.name)}" loading="lazy">
       ${v.verified ? '<div class="badge-verified">✓</div>' : ''}
       ${computePriceTier(v) ? `<div class="badge-price">${computePriceTier(v)}</div>` : ''}
-      <div class="badge-fav ${favoriteIds.has(v.id)?'is-fav':''}" onclick="event.stopPropagation(); toggleFavoriteVenue('${v.id}')">${favoriteIds.has(v.id)?'♥':'♡'}</div>
+      <div class="badge-fav ${favoriteIds.has(v.id)?'is-fav':''}" onclick="event.stopPropagation(); this.classList.add('pop'); toggleFavoriteVenue('${v.id}')">${favoriteIds.has(v.id)?'♥':'♡'}</div>
     </div>
     <div class="name">${escapeHTML(v.name)}</div>
     <div class="meta">${ratingLabel(v)} · ${escapeHTML(v.district)}</div>
@@ -1624,7 +1652,7 @@ function unsubscribeHomePresence(){
 
 function renderCatChips(){
   document.getElementById('cat-chips').innerHTML = categories.map(c=>
-    `<div class="chip ${c===compareState.category?'selected':''}" onclick="setCategory('${c}')">${c}</div>`
+    `<div class="chip ${compareState.categories.has(c)?'selected':''}" onclick="toggleCategory('${c}')">${c}</div>`
   ).join('');
 }
 function renderSortChips(){
@@ -1632,7 +1660,18 @@ function renderSortChips(){
     `<div class="chip" style="font-size:12px; padding:6px 12px; ${s.k===compareState.sort?'background:rgba(59,130,246,.15); border-color:var(--blue); color:var(--blue-light);':''}" onclick="setSort('${s.k}')">${s.label}</div>`
   ).join('');
 }
-function setCategory(c){ compareState.category=c; renderCatChips(); renderCompare(); }
+function toggleCategory(c){
+  if(compareState.categories.has(c)) compareState.categories.delete(c);
+  else compareState.categories.add(c);
+  renderCatChips(); renderCompare();
+}
+function setPriceRange(){
+  const min = document.getElementById('price-min').value;
+  const max = document.getElementById('price-max').value;
+  compareState.minPrice = min==='' ? null : Number(min);
+  compareState.maxPrice = max==='' ? null : Number(max);
+  renderCompare();
+}
 function setSort(s){ compareState.sort=s; renderSortChips(); renderCompare(); }
 
 function renderCompare(){
@@ -1641,7 +1680,10 @@ function renderCompare(){
   venues.forEach(v=>{
     const venueMatches = v.name.toLowerCase().includes(q) || (v.district||'').toLowerCase().includes(q);
     v.prices.forEach(p=>{
-      if(p.cat===compareState.category && (q==='' || venueMatches || p.name.toLowerCase().includes(q))){
+      const catMatches = compareState.categories.size===0 || compareState.categories.has(p.cat);
+      const minOk = compareState.minPrice==null || p.price >= compareState.minPrice;
+      const maxOk = compareState.maxPrice==null || p.price <= compareState.maxPrice;
+      if(catMatches && minOk && maxOk && (q==='' || venueMatches || p.name.toLowerCase().includes(q))){
         results.push({venue:v, price:p});
       }
     });
@@ -1812,7 +1854,7 @@ function setDetailTab(tab){
 async function renderDetailReviews(){
   const v = contributeState.venue;
   const el = document.getElementById('detail-reviews');
-  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  el.innerHTML = skeletonRows(3);
   const { data, error } = await sb.from('reviews')
     .select('*, profiles(handle)')
     .eq('venue_id', v.id)
@@ -2341,7 +2383,7 @@ function openOverlay(name){
 }
 async function loadAndRenderStats(){
   const el = document.getElementById('stats-content');
-  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  el.innerHTML = skeletonRows(3);
   const { data, error } = await sb.from('category_price_stats').select('*').eq('city_id', currentCity.id);
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">İstatistikler yüklenemedi</div>`; return; }
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md">Henüz veri yok</div>`; return; }
@@ -2443,7 +2485,7 @@ function setLeaderboardPeriod(period){
 
 async function renderLeaderboard(){
   const el = document.getElementById('leaderboard-content');
-  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  el.innerHTML = skeletonRows(3);
   const col = leaderboardPeriod==='7d' ? 'contributions_7d' : leaderboardPeriod==='30d' ? 'contributions_30d' : 'contributions_all';
   const { data, error } = await sb.from('user_contribution_stats').select('*').gt(col, 0).order(col, { ascending:false }).limit(20);
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Liderlik tablosu yüklenemedi</div>`; return; }
@@ -2475,7 +2517,7 @@ function setAdminTab(tab){
 }
 async function renderAdminReports(){
   const el = document.getElementById('admin-reports');
-  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  el.innerHTML = skeletonRows(3);
   const { data, error } = await sb.from('message_reports').select('*').order('created_at', { ascending:false });
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Şikayet yok</div>`; return; }
@@ -2511,7 +2553,7 @@ async function dismissReportGroup(messageId){
 }
 async function renderAdminUsers(){
   const el = document.getElementById('admin-users');
-  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  el.innerHTML = skeletonRows(3);
   const { data, error } = await sb.rpc('admin_list_users');
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Kullanıcı yok</div>`; return; }
@@ -2557,7 +2599,7 @@ async function adminResetHandle(userId){
 
 async function renderAdminVenues(){
   const el = document.getElementById('admin-venues');
-  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  el.innerHTML = skeletonRows(3);
   const { data, error } = await sb.from('venues').select('*').eq('is_approved', false).order('created_at', { ascending:false });
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Bekleyen mekan yok</div>`; return; }
@@ -2589,7 +2631,7 @@ async function rejectVenue(id){
 
 async function renderAdminVerifications(){
   const el = document.getElementById('admin-verifications');
-  el.innerHTML = `<div class="body-md">Yükleniyor...</div>`;
+  el.innerHTML = skeletonRows(3);
   const { data, error } = await sb.from('venue_verification_requests').select('*, venues(name)').eq('status', 'pending').order('created_at', { ascending:false });
   if(error){ console.error(error); el.innerHTML = `<div class="body-md">Yüklenemedi</div>`; return; }
   if(!data || data.length===0){ el.innerHTML = `<div class="body-md" style="text-align:center; padding:40px 0;">Bekleyen başvuru yok</div>`; return; }
@@ -2686,6 +2728,9 @@ function escapeHTML(str){
   const div = document.createElement('div');
   div.textContent = str == null ? '' : String(str);
   return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function skeletonRows(n){
+  return `<div>${Array(n).fill('<div class="skeleton-row"></div>').join('')}</div>`;
 }
 function validateImageFile(file){
   const allowed = ['image/jpeg','image/png','image/webp','image/gif'];
