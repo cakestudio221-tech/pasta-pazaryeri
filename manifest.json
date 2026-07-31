@@ -1,0 +1,20 @@
+{
+  "name": "NightCompare — Gece Hayatı Fiyat Karşılaştırma",
+  "short_name": "NightCompare",
+  "description": "Şehrindeki mekanların içki fiyatlarını karşılaştır, gece rotanı planla.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0D0817",
+  "theme_color": "#0D0817",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

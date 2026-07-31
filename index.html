@@ -9,6 +9,9 @@
 <meta name="apple-mobile-web-app-title" content="NightCompare">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
 <title>NightCompare</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -135,6 +138,16 @@
 
   /* Alan bazlı form hatası: input altında kırmızı metin + kenarlık vurgusu.
      Inline style'ları ezmesi için !important gerekiyor. */
+  /* Çevrimdışı bandı — üstte sabit, safe-area'ya saygılı */
+  #offline-bar{
+    position:fixed; left:0; right:0; top:0; z-index:200;
+    padding:calc(8px + var(--safe-top)) 16px 8px;
+    background:var(--error); color:#fff; font-size:13px; font-weight:600;
+    display:none; align-items:center; justify-content:center; gap:8px;
+    transform:translateY(-100%); transition:transform .25s ease;
+  }
+  #offline-bar.show{ display:flex; transform:translateY(0); }
+
   /* Dokunma hedefi ≥44px: görsel boyut korunur, sadece isabet alanı büyür.
      badge-fav kart içinde olduğu için 36px'te tutuldu — 44px kartın kendi
      tıklamasını çalardı. */
@@ -986,6 +999,10 @@
 
 </div>
 
+<div id="offline-bar" role="status" aria-live="polite">
+  <span data-icon="wifiOff" data-icon-size="15"></span>
+  <span>İnternet bağlantısı yok — son yüklenen veriler gösteriliyor</span>
+</div>
 <div class="toast" id="toast"></div>
 <div id="emoji-picker" class="glass" style="display:none; position:fixed; z-index:200; padding:8px; max-width:260px; max-height:180px; overflow-y:auto;"></div>
 
@@ -2943,6 +2960,30 @@ function errorStateHTML(baslik, tekrarDeneCagrisi){
 function icon(name, size, filled){
   const s = size || 22;
   return `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="${filled?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;">${ICONS[name]||''}</svg>`;
+}
+
+// --- Çevrimdışı durumu + PWA kaydı ---
+function updateOnlineStatus(){
+  const bar = document.getElementById('offline-bar');
+  if(!bar) return;
+  bar.classList.toggle('show', !navigator.onLine);
+}
+window.addEventListener('online', ()=>{
+  updateOnlineStatus();
+  showToast('Bağlantı geri geldi 🎉');
+  // Bağlantı dönünce taze veriyi çek
+  if(typeof loadVenues === 'function' && currentCity){
+    loadVenues().then(()=>{ renderHome(); renderCompare(); }).catch(e=>console.error(e));
+  }
+});
+window.addEventListener('offline', updateOnlineStatus);
+document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+
+// Service worker sadece güvenli origin'de çalışır (file:// üzerinde sessizce atlanır).
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(err=>console.error('SW kaydı başarısız:', err));
+  });
 }
 
 // --- Kutlama efektleri ---
