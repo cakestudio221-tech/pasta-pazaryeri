@@ -420,8 +420,11 @@
         <div class="body-md" style="margin-bottom:6px;">Doğum Tarihi</div>
         <input id="auth-dob" type="date" style="width:100%; padding:14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:#fff; border-radius:var(--radius-md); font-size:15px; outline:none; box-sizing:border-box; font-family:'Inter';">
         <div style="height:12px"></div>
-        <div class="body-md" style="margin-bottom:6px;">Profil Fotoğrafı (opsiyonel)</div>
-        <input type="file" id="auth-avatar" accept="image/*" style="width:100%; color:var(--text-secondary); font-size:13px;">
+        <div style="text-align:center; margin:4px 0 2px;">
+          <div id="auth-avatar-preview" onclick="document.getElementById('auth-avatar').click()" style="width:76px; height:76px; border-radius:50%; background:var(--glass-fill); border:1.5px dashed var(--glass-border); display:flex; align-items:center; justify-content:center; font-size:26px; overflow:hidden; cursor:pointer; margin:0 auto;">📷</div>
+          <input type="file" id="auth-avatar" accept="image/*" style="display:none;" onchange="previewAuthAvatar(this.files[0])">
+          <div class="body-sm" style="margin-top:8px; cursor:pointer; color:var(--purple);" onclick="document.getElementById('auth-avatar').click()">Profil fotoğrafı ekle (opsiyonel)</div>
+        </div>
       </div>
     </div>
     <div id="auth-forgot-link" style="text-align:right; margin-top:8px;">
@@ -1108,6 +1111,13 @@ function setAuthMode(mode){
   toggleBtn.onclick = toggleAuthMode;
 }
 function toggleAuthMode(){ setAuthMode(authMode==='login' ? 'signup' : 'login'); }
+function previewAuthAvatar(file){
+  if(!file) return;
+  const preview = document.getElementById('auth-avatar-preview');
+  const url = URL.createObjectURL(file);
+  preview.style.border = 'none';
+  preview.innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+}
 function openAuth(mode){
   setAuthMode(mode || 'login');
   document.getElementById('auth-email').value='';
@@ -1116,6 +1126,7 @@ function openAuth(mode){
   document.getElementById('auth-username').value='';
   document.getElementById('auth-dob').value='';
   document.getElementById('auth-avatar').value='';
+  document.getElementById('auth-avatar-preview').innerHTML = '📷';
   document.getElementById('auth-dob').max = new Date().toISOString().split('T')[0];
   document.getElementById('auth-password-confirm').value='';
   openOverlay('auth');
