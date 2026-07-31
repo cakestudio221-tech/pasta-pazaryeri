@@ -138,6 +138,25 @@
 
   /* Alan bazlı form hatası: input altında kırmızı metin + kenarlık vurgusu.
      Inline style'ları ezmesi için !important gerekiyor. */
+  /* Fiyat Bildir adım geçişleri — yöne duyarlı slide (transform+opacity) */
+  @keyframes stepInFwd{ from{ opacity:0; transform:translate3d(26px,0,0); } to{ opacity:1; transform:translate3d(0,0,0); } }
+  @keyframes stepInBack{ from{ opacity:0; transform:translate3d(-26px,0,0); } to{ opacity:1; transform:translate3d(0,0,0); } }
+  .step-in-fwd{ animation:stepInFwd .28s cubic-bezier(.2,.7,.3,1) both; }
+  .step-in-back{ animation:stepInBack .28s cubic-bezier(.2,.7,.3,1) both; }
+
+  /* Aşağı çekip yenile göstergesi */
+  #ptr{
+    position:absolute; top:calc(6px + var(--safe-top)); left:50%; margin-left:-16px;
+    width:32px; height:32px; border-radius:50%;
+    background:var(--bg-elevated); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; color:var(--purple-text);
+    opacity:0; transform:translate3d(0,-46px,0); pointer-events:none; z-index:40;
+    will-change:transform, opacity;
+  }
+  #ptr.snap{ transition:transform .25s ease, opacity .25s ease; }
+  #ptr.spin svg{ animation:ptrSpin .7s linear infinite; }
+  @keyframes ptrSpin{ to{ transform:rotate(360deg); } }
+
   /* Çevrimdışı bandı — üstte sabit, safe-area'ya saygılı */
   #offline-bar{
     position:fixed; left:0; right:0; top:0; z-index:200;
@@ -531,6 +550,7 @@
 
   <!-- HOME -->
   <div class="screen active" id="screen-home">
+    <div id="ptr" aria-hidden="true"><span data-icon="compass" data-icon-size="18"></span></div>
     <div class="topbar row-between">
       <div class="row gap-4">
         <h1 class="display-md">Keşfet</h1>
@@ -2321,10 +2341,26 @@ function selectContributeCategory(c){
   contributeState.category = c;
   categories.forEach(cat=>document.getElementById('c-cat-'+cat).classList.toggle('selected', cat===c));
 }
+const ADIM_SIRASI = ['venue','newvenue','drink','price','done'];
+let mevcutContributeAdim = null;
 function goContributeStep(step){
-  ['venue','newvenue','drink','price','done'].forEach(s=>{
-    document.getElementById('contribute-step-'+s).style.display = s===step ? 'block' : 'none';
+  // Yön: ileri mi geri mi gidiliyor — slide animasyonu buna göre seçilir
+  const oncekiIdx = ADIM_SIRASI.indexOf(mevcutContributeAdim);
+  const yeniIdx = ADIM_SIRASI.indexOf(step);
+  const geriGidiyor = oncekiIdx > -1 && yeniIdx < oncekiIdx;
+  ADIM_SIRASI.forEach(s=>{
+    const el = document.getElementById('contribute-step-'+s);
+    el.style.display = s===step ? 'block' : 'none';
+    el.classList.remove('step-in-fwd','step-in-back');
   });
+  if(mevcutContributeAdim !== step && !REDUCED_MOTION){
+    const aktif = document.getElementById('contribute-step-'+step);
+    if(aktif){
+      void aktif.offsetWidth; // animasyonu yeniden tetikle
+      aktif.classList.add(geriGidiyor ? 'step-in-back' : 'step-in-fwd');
+    }
+  }
+  mevcutContributeAdim = step;
   const stepIndex = {venue:1, newvenue:1, drink:1, price:2, done:3}[step];
   [1,2,3].forEach(n=>document.getElementById('step-bar-'+n).classList.toggle('active', n<=stepIndex));
   if(step==='newvenue'){
@@ -2333,7 +2369,7 @@ function goContributeStep(step){
   if(step==='drink' && contributeState.venue){
     document.getElementById('c-venue-name').innerText = contributeState.venue.name;
   }
-  if(step==='price'){
+  if(step==='price' && contributeState.venue){
     document.getElementById('c-summary').innerText = `${contributeState.venue.name} · ${document.getElementById('c-drink-name').value}`;
   }
 }
@@ -2961,6 +2997,58 @@ function icon(name, size, filled){
   const s = size || 22;
   return `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="${filled?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;">${ICONS[name]||''}</svg>`;
 }
+
+// --- Aşağı çekip yenile (Keşfet) ---
+// Yalnızca sayfa en tepedeyken devreye girer; transform/opacity ile çalışır.
+function setupPullToRefresh(){
+  const ekran = document.getElementById('screen-home');
+  const ptr = document.getElementById('ptr');
+  if(!ekran || !ptr) return;
+  const ESIK = 68, MAKS = 96;
+  let baslangicY = 0, cekiyor = false, mesafe = 0, yenileniyor = false;
+
+  ekran.addEventListener('touchstart', (e)=>{
+    if(yenileniyor || ekran.scrollTop > 0 || e.touches.length !== 1) return;
+    baslangicY = e.touches[0].clientY; cekiyor = true; mesafe = 0;
+    ptr.classList.remove('snap');
+  }, { passive:true });
+
+  ekran.addEventListener('touchmove', (e)=>{
+    if(!cekiyor) return;
+    mesafe = e.touches[0].clientY - baslangicY;
+    // Yukarı kaydırma veya sayfa aşağı inmişse bırak — normal scroll'a karışma
+    if(mesafe <= 0 || ekran.scrollTop > 0){ cekiyor = false; ptr.style.opacity = ''; ptr.style.transform = ''; return; }
+    const y = Math.min(mesafe * 0.45, MAKS);
+    ptr.style.transform = `translate3d(0, ${y - 46}px, 0)`;
+    ptr.style.opacity = Math.min(y / ESIK, 1);
+  }, { passive:true });
+
+  ekran.addEventListener('touchend', async ()=>{
+    if(!cekiyor) return;
+    cekiyor = false;
+    const yeterli = mesafe * 0.45 >= ESIK;
+    ptr.classList.add('snap');
+    if(!yeterli || yenileniyor){ ptr.style.transform = ''; ptr.style.opacity = ''; return; }
+    yenileniyor = true;
+    ptr.style.transform = 'translate3d(0, 8px, 0)';
+    ptr.style.opacity = '1';
+    ptr.classList.add('spin');
+    try{
+      await loadVenues();
+      renderHome();
+      if(typeof loadUnreadNotificationCount === 'function') await loadUnreadNotificationCount();
+    } catch(err){
+      console.error(err);
+      showToast('Yenilenemedi, bağlantını kontrol et');
+    } finally {
+      ptr.classList.remove('spin');
+      ptr.style.transform = '';
+      ptr.style.opacity = '';
+      yenileniyor = false;
+    }
+  });
+}
+document.addEventListener('DOMContentLoaded', setupPullToRefresh);
 
 // --- Çevrimdışı durumu + PWA kaydı ---
 function updateOnlineStatus(){
