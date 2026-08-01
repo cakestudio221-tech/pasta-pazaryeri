@@ -19,7 +19,11 @@
 <link rel="apple-touch-icon" href="icon.svg">
 <title>NightCompare</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- defer: indirme ayrıştırmayla paralel başlar ama çalışması ayrıştırma bitene
+     kadar bekler, böylece <head>'de HTML render'ını bloklamaz. İstemci init()
+     içinde kurulur (aşağıda), çünkü window.supabase ancak bu script çalıştıktan
+     sonra var olur. -->
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --bg-primary:#0D0817;
@@ -1034,7 +1038,9 @@
 <script>
 const SUPABASE_URL = 'https://qalpqlsvuvwrzzyqfuen.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_d5uDYbbPvU9q5wEzUcsQqw_MNd_Da4C';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Supabase CDN script'i defer ile yüklendiği için window.supabase burada henüz
+// yok; istemci init() içinde, DOMContentLoaded anında kurulur.
+let sb = null;
 
 let themePreference = 'system';
 
@@ -3626,7 +3632,18 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 1800);
 }
 
-(async function init(){
+async function init(){
+  // defer'li CDN script'i bu noktada çalışmış olur (defer, DOMContentLoaded'dan
+  // hemen önce ve belge sırasına göre çalışır).
+  if(!window.supabase){
+    document.getElementById('landing-screen').innerHTML =
+      `<div style="padding:60px 24px; text-align:center; color:#fff;">
+         <div class="body-lg" style="font-weight:600;">Uygulama yüklenemedi</div>
+         <div class="body-sm" style="margin-top:8px; color:#bbb;">Bağlantını kontrol edip sayfayı yenile</div>
+       </div>`;
+    return;
+  }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   // loadCategories, cities'e bağlı değil — seri beklemek yerine paralel.
   await Promise.all([loadCities(), loadCategories()]);
   // İkisi de yalnızca currentCity'ye bağlı, birbirine değil.
@@ -3637,7 +3654,9 @@ function showToast(msg){
   renderCompare();
   subscribeHomePresence();
   initAuth();
-})();
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
 
 let lastTouchEnd = 0;
 document.addEventListener('touchend', function (event) {
