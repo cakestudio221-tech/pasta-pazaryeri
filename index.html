@@ -1518,7 +1518,11 @@ async function renderProfileScreen(){
       <div class="chip ${themePreference==='light'?'selected':''}" onclick="setThemePreference('light')">Açık</div>
       <div class="chip ${themePreference==='dark'?'selected':''}" onclick="setThemePreference('dark')">Koyu</div>
     </div>
-    <button class="btn-outline" style="margin-top:20px;" onclick="signOutUser()">Çıkış Yap</button>`;
+    <button class="btn-outline" style="margin-top:20px;" onclick="signOutUser()">Çıkış Yap</button>
+    <!-- ODbL lisansı mekan verisi için atıf zorunlu kılıyor -->
+    <div class="caption" style="margin-top:24px; text-align:center; line-height:1.5;">
+      Mekan konum verisi © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" style="color:var(--text-secondary);">OpenStreetMap</a> katkıcıları
+    </div>`;
 }
 function showHandleEditForm(){
   document.getElementById('profile-handle-display-row').style.display = 'none';
