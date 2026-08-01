@@ -884,10 +884,13 @@
       <div class="px" id="detail-chat-messages" style="padding-bottom:90px;"></div>
     </div>
     <div style="height:90px"></div>
-    <div id="detail-price-cta" class="fixed-footer" style="position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); z-index:10;">
+    <div id="detail-price-cta" class="fixed-footer" style="position:fixed; bottom:0; left:0; right:0; padding:14px 16px; padding-bottom: calc(14px + var(--safe-bottom)); background:rgba(10,10,15,.82); backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%); border-top:1px solid var(--divider); z-index:10;">
       <div class="row gap-8">
         <button class="btn-primary" style="flex:1;" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}">Fiyat Bildir</button>
-        <button class="btn-outline" id="detail-directions-btn" style="flex:0 0 auto; padding:0 16px;" onclick="openDirections()">📍 Yol Tarifi Al</button>
+        <!-- Yol tarifi ikon butona indirildi: uzun metin asıl eylemi eziyordu -->
+        <button class="btn-outline" id="detail-directions-btn" aria-label="Yol tarifi al"
+                style="flex:0 0 auto; width:52px; padding:0; align-self:stretch; display:flex; align-items:center; justify-content:center;"
+                onclick="openDirections()"><span data-icon="pin" data-icon-size="19"></span></button>
       </div>
     </div>
     <div id="detail-chat-locked-banner" class="fixed-footer" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:16px; padding-bottom: calc(16px + var(--safe-bottom)); background:var(--bg-primary); border-top:1px solid var(--divider); z-index:10; text-align:center; color:var(--text-tertiary); font-size:13px;">
