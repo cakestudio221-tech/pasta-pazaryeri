@@ -480,6 +480,10 @@
   }
   .detail-gallery::-webkit-scrollbar{display:none;}
   .detail-gallery img{ width:100%; height:260px; object-fit:cover; flex:0 0 100%; scroll-snap-align:start; pointer-events:none; }
+  .gallery-fallback{
+    width:100%; height:260px; flex:0 0 100%; display:flex; align-items:center; justify-content:center;
+    font-family:'Sora',sans-serif; font-size:74px; font-weight:800; color:rgba(255,255,255,.20);
+  }
   .detail-gallery-counter{
     position:absolute; bottom:16px; right:16px; background:rgba(0,0,0,.55); color:#fff;
     font-size:11px; font-weight:600; padding:3px 10px; border-radius:var(--radius-full);
@@ -496,16 +500,50 @@
     color:var(--verified); font-size:12px; font-weight:600; padding:4px 10px; border-radius:var(--radius-full);
   }
   .tab-row{ display:flex; gap:8px; padding:16px; }
-  .tab-chip{ padding:8px 16px; border-radius:var(--radius-full); font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--glass-border); color:var(--text-secondary); -webkit-user-select:none; user-select:none;}
+  .tab-chip{
+    padding:8px 16px; border-radius:var(--radius-full); font-size:13.5px; font-weight:600; cursor:pointer;
+    border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-secondary);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    transition:transform .16s ease, color .16s ease; -webkit-user-select:none; user-select:none;
+  }
   .tab-chip:active{ transform:scale(.95); }
-  .tab-chip.selected{ background:var(--purple); border-color:var(--purple-text); color:#fff;}
+  .tab-chip.selected{
+    background:linear-gradient(120deg,var(--neon-1),var(--neon-2));
+    border-color:transparent; color:#fff;
+    box-shadow:0 5px 18px rgba(168,85,247,.4);
+  }
+
+  /* Detay istatistik şeridi — 3 anlamlı sayı */
+  .dstats{ display:flex; gap:8px; padding:0 16px; margin-top:14px; }
+  .dstat{ flex:1; padding:12px 8px; text-align:center; border-radius:var(--radius-md); }
+  .dstat b{ font-family:'Sora',sans-serif; font-size:16px; font-weight:700; display:block; letter-spacing:-.3px; }
+  .dstat span{ font-size:9.5px; color:var(--text-tertiary); letter-spacing:.4px; }
+
+  /* Fiyat satırı — cam kart, en ucuz vurgulu */
+  .prow{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:13px 14px; border-radius:var(--radius-md); margin-bottom:8px;
+  }
+  .prow .pv{ font-family:'Sora',sans-serif; font-size:16px; font-weight:700; letter-spacing:-.3px; }
+  .prow.best{ border-color:rgba(34,197,94,.42); }
+  .prow.best .pv{ color:var(--success-text); }
+  .pcat-label{ font-size:10px; font-weight:700; letter-spacing:1.2px; color:var(--text-tertiary); margin:20px 0 8px; }
 
   .price-list-item{ display:flex; justify-content:space-between; padding:10px 0; }
   .divider-line{ height:1px; background:var(--divider); margin:0 16px; }
 
   .step-track{ display:flex; gap:6px; padding:0 16px; }
-  .step-bar{ flex:1; height:4px; border-radius:99px; background:var(--divider); }
-  .step-bar.active{ background:var(--purple); }
+  .step-bar{ flex:1; height:3px; border-radius:99px; background:rgba(255,255,255,.09); transition:background .3s ease, box-shadow .3s ease; }
+  .step-bar.active{ background:linear-gradient(90deg,var(--neon-1),var(--neon-2)); box-shadow:0 0 12px var(--neon-1); }
+  .step-labels{ display:flex; justify-content:space-between; margin-top:9px; }
+  .step-labels span{ font-size:9.5px; font-weight:600; letter-spacing:.4px; color:var(--text-tertiary); transition:color .25s ease; }
+  .step-labels span.done{ color:var(--blue-text); }
+  .step-labels span.now{ color:var(--text-primary); }
+  /* Tamamlanan adım özeti */
+  .sdone{ display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:var(--radius-md); margin-top:10px; }
+  .sdone .tick{ width:22px; height:22px; border-radius:50%; background:rgba(34,197,94,.16); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--success-text); }
+  .sdone .sinfo{ flex:1; min-width:0; }
+  .sdone .schange{ font-size:11px; font-weight:600; color:var(--blue-text); cursor:pointer; flex-shrink:0; }
 
   input[type=range]{
     -webkit-appearance:none; width:100%; height:4px; border-radius:99px;
@@ -872,10 +910,18 @@
       <h3 class="headline">Fiyat Bildir</h3>
       <div class="close-btn" onclick="closeOverlay('contribute')" data-icon="close" aria-label="Kapat" role="button" tabindex="0"></div>
     </div>
-    <div class="step-track" style="margin:16px 0;">
-      <div class="step-bar active" id="step-bar-1"></div>
-      <div class="step-bar" id="step-bar-2"></div>
-      <div class="step-bar" id="step-bar-3"></div>
+    <div class="px" style="padding-top:0;">
+      <div class="step-track" style="margin:14px 0 0;">
+        <div class="step-bar active" id="step-bar-1"></div>
+        <div class="step-bar" id="step-bar-2"></div>
+        <div class="step-bar" id="step-bar-3"></div>
+      </div>
+      <div class="step-labels" id="step-labels">
+        <span data-step="1">MEKAN</span><span data-step="1">İÇKİ</span><span data-step="2">FİYAT</span><span data-step="3">BİTTİ</span>
+      </div>
+      <!-- Tamamlanan adımlar özet satırı olarak kalır: akış tek ekranda aksın,
+           kullanıcı nerede olduğunu ve ne seçtiğini görsün. -->
+      <div id="step-summary"></div>
     </div>
 
     <div class="px" id="contribute-step-venue">
@@ -925,7 +971,6 @@
     </div>
 
     <div class="px" id="contribute-step-price" style="display:none;">
-      <div class="body-md" id="c-summary"></div>
       <h1 class="display-md" style="margin-top:4px;">Fiyat ne kadar?</h1>
       <div class="glass row" style="padding:14px 16px; margin:16px 0;">
         <span class="display-md">₺</span>
@@ -2123,8 +2168,14 @@ function computePriceTier(v){
 function renderDetailGallery(v, photos){
   const el = document.getElementById('detail-gallery');
   const counter = document.getElementById('detail-gallery-counter');
-  const urls = (photos && photos.length) ? photos.map(p=>p.url) : [v.img];
-  el.innerHTML = urls.map(u=>`<img src="${u}" alt="">`).join('');
+  const gecerli = (u)=> typeof u === 'string' && /^https?:\/\//.test(u) && !/^https?:\/\/picsum\.photos/.test(u);
+  const urls = (photos && photos.length) ? photos.map(p=>p.url).filter(gecerli) : [v.img].filter(gecerli);
+  // Geçerli görsel yoksa (ya da bozuk yüklenirse) mekan adından türeyen degrade göster —
+  // kırık görsel ikonu uygulamayı bitmemiş gösteriyor.
+  const yedek = `<div class="gallery-fallback" style="background:${venueGradient(v)}">${escapeHTML((v.name||'?').charAt(0).toUpperCase())}</div>`;
+  el.innerHTML = urls.length
+    ? urls.map(u=>`<img src="${escapeHTML(u)}" alt="" onerror="this.outerHTML=${JSON.stringify(yedek).replace(/"/g,'&quot;')}">`).join('')
+    : yedek;
   counter.style.display = urls.length > 1 ? 'block' : 'none';
   counter.innerText = `1/${urls.length}`;
 }
@@ -2154,18 +2205,27 @@ async function openDetail(id){
   const amenitiesEl = document.getElementById('detail-amenities');
   amenitiesEl.innerHTML = (v.amenities||[]).map(a=>`<div class="amenity-chip">${amenityLabels[a] || a}</div>`).join('');
 
-  const tier = computePriceTier(v);
-  const infoItems = [];
-  if(v.working_hours) infoItems.push(['Çalışma Saatleri', v.working_hours]);
-  if(tier) infoItems.push(['Ortalama Fiyat', tier]);
-  if(v.music_genre) infoItems.push(['Müzik', v.music_genre]);
+  // İstatistik şeridi: kullanıcının gerçekten baktığı üç sayı.
+  // Veri yoksa "—" gösterilir; uydurma değer üretilmez.
+  const ucuz = cheapestPrice(v);
   const infoRowEl = document.getElementById('detail-info-row');
-  if(infoItems.length){
-    infoRowEl.style.display = 'block';
-    infoRowEl.innerHTML = `<div class="detail-info-row">${infoItems.map(([label,value])=>`<div><div class="value">${value}</div><div class="label">${label}</div></div>`).join('')}</div>`;
-  } else {
-    infoRowEl.style.display = 'none';
-  }
+  infoRowEl.className = '';
+  infoRowEl.style.cssText = '';
+  infoRowEl.innerHTML = `
+    <div class="dstats">
+      <div class="dstat glass">
+        <b style="${ucuz?'color:var(--success-text);':''}">${ucuz ? '₺'+ucuz.price : '—'}</b>
+        <span>EN UCUZ</span>
+      </div>
+      <div class="dstat glass">
+        <b>${v.reviews>0 ? v.rating : '—'}</b>
+        <span>PUAN${v.reviews>0 ? ` (${v.reviews})` : ''}</span>
+      </div>
+      <div class="dstat glass">
+        <b style="${v.activeCheckins>0?'color:var(--neon-1);':''}">${v.activeCheckins||0}</b>
+        <span>ŞU AN BURADA</span>
+      </div>
+    </div>`;
 
   renderDetailGallery(v, null);
   sb.from('venue_photos').select('*').eq('venue_id', id).order('sort_order').then(({data, error})=>{
@@ -2175,12 +2235,16 @@ async function openDetail(id){
   const byCategory = {};
   v.prices.forEach(p=>{ (byCategory[p.cat] ||= []).push(p); });
   let html = '';
+  const enUcuz = cheapestPrice(v);
   for(const cat in byCategory){
-    html += `<div class="body-md" style="margin:12px 0 6px; color:var(--text-primary); font-weight:600;">${cat}</div><div class="glass" style="padding:0 16px;">`;
+    html += `<div class="pcat-label">${escapeHTML(cat).toUpperCase()}</div>`;
     byCategory[cat].forEach(p=>{
-      html += `<div class="price-list-item"><span class="body-lg">${escapeHTML(p.name)}</span><span class="price">₺${p.price}</span></div>`;
+      const best = enUcuz && p.name===enUcuz.name && p.price===enUcuz.price;
+      html += `<div class="prow glass${best?' best':''}">
+        <span class="body-lg">${escapeHTML(p.name)}</span>
+        <span class="pv">₺${p.price}</span>
+      </div>`;
     });
-    html += `</div>`;
   }
   // Fiyatı olmayan mekan: boşluğu gizlemek yerine davete çevir (ilk katkı 50 XP).
   if(v.prices.length === 0){
@@ -2342,6 +2406,10 @@ async function renderDetailAbout(){
       <div class="price-list-item"><span class="body-md">Puan</span><span class="body-lg">${ratingLabel(v)}${v.reviews>0?` (${v.reviews})`:''}</span></div>
       <div class="divider-line"></div>
       <div class="price-list-item"><span class="body-md">Durum</span><span class="body-lg">${v.verified ? '✓ Doğrulanmış' : 'Doğrulanmamış'}</span></div>
+      ${v.working_hours ? `<div class="divider-line"></div>
+      <div class="price-list-item"><span class="body-md">Çalışma Saatleri</span><span class="body-lg">${escapeHTML(v.working_hours)}</span></div>` : ''}
+      ${v.music_genre ? `<div class="divider-line"></div>
+      <div class="price-list-item"><span class="body-md">Müzik</span><span class="body-lg">${escapeHTML(v.music_genre)}</span></div>` : ''}
     </div>
     <div class="body-md" style="margin:16px 0 8px;">Sunulan Kategoriler</div>
     <div class="row gap-8" style="flex-wrap:wrap;">
@@ -2581,6 +2649,46 @@ function selectContributeCategory(c){
   contributeState.category = c;
   categories.forEach(cat=>document.getElementById('c-cat-'+cat).classList.toggle('selected', cat===c));
 }
+// Adım etiketleri: hangisi bitti, hangisindeyiz
+function renderStepLabels(step, stepIndex){
+  const el = document.getElementById('step-labels');
+  if(!el) return;
+  const sira = { venue:0, newvenue:0, drink:1, price:2, done:3 }[step] ?? 0;
+  [...el.children].forEach((s,i)=>{
+    s.classList.toggle('done', i < sira);
+    s.classList.toggle('now', i === sira);
+  });
+}
+// Tamamlanan adımların özeti — akış tek ekranda aksın, geri dönülebilsin.
+function renderStepSummary(step){
+  const el = document.getElementById('step-summary');
+  if(!el) return;
+  const v = contributeState.venue;
+  const icki = document.getElementById('c-drink-name')?.value.trim();
+  const tik = `<span class="tick">${icon('check', 13)}</span>`;
+  let html = '';
+  // Mekan seçildiyse ve mekan adımını geçtiysek göster
+  if(v && (step==='drink' || step==='price' || step==='done')){
+    html += `<div class="sdone glass">
+      ${tik}
+      <div class="sinfo">
+        <div class="body-lg" style="font-weight:600;">${escapeHTML(v.name)}</div>
+        <div class="caption">${escapeHTML(v.district)} · ${v.distance} km</div>
+      </div>
+      ${step!=='done' ? `<span class="schange" onclick="goContributeStep('venue')">Değiştir</span>` : ''}
+    </div>`;
+  }
+  // İçki seçildiyse ve fiyat adımındaysak göster
+  if(icki && contributeState.category && (step==='price' || step==='done')){
+    html += `<div class="sdone glass">
+      ${tik}
+      <div class="sinfo"><div class="body-lg" style="font-weight:600;">${escapeHTML(icki)} · ${escapeHTML(contributeState.category)}</div></div>
+      ${step!=='done' ? `<span class="schange" onclick="goContributeStep('drink')">Değiştir</span>` : ''}
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
 const ADIM_SIRASI = ['venue','newvenue','drink','price','done'];
 let mevcutContributeAdim = null;
 function goContributeStep(step){
@@ -2603,15 +2711,15 @@ function goContributeStep(step){
   mevcutContributeAdim = step;
   const stepIndex = {venue:1, newvenue:1, drink:1, price:2, done:3}[step];
   [1,2,3].forEach(n=>document.getElementById('step-bar-'+n).classList.toggle('active', n<=stepIndex));
+  renderStepLabels(step, stepIndex);
+  renderStepSummary(step);
   if(step==='newvenue'){
     document.getElementById('nv-amenities').innerHTML = amenityChipsHTML('nv-am');
   }
   if(step==='drink' && contributeState.venue){
     document.getElementById('c-venue-name').innerText = contributeState.venue.name;
   }
-  if(step==='price' && contributeState.venue){
-    document.getElementById('c-summary').innerText = `${contributeState.venue.name} · ${document.getElementById('c-drink-name').value}`;
-  }
+  // Fiyat adımının özeti artık #step-summary satırlarında gösteriliyor.
 }
 let contributePriceInFlight = false;
 async function contributeNext(step){
@@ -3212,6 +3320,7 @@ const ICONS = {
   plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
   search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
   alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
   inbox:'<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
   trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
   chart:'<line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/>',
