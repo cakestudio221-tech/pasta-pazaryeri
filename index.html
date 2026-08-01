@@ -9,6 +9,11 @@
 <meta name="apple-mobile-web-app-title" content="NightCompare">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="format-detection" content="telephone=no">
+<!-- Dış origin'lere bağlantıyı erkenden kur (DNS+TLS el sıkışması ilk isteği beklemesin) -->
+<link rel="preconnect" href="https://qalpqlsvuvwrzzyqfuen.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -1101,8 +1106,7 @@ async function switchCity(cityId){
   if(landingLabel) landingLabel.innerText = currentCity.name;
   routeState.selected = [];
   closeOverlay('city');
-  await loadVenues();
-  await loadTrendScores();
+  await Promise.all([loadVenues(), loadTrendScores()]);
   renderHome();
   renderCatChips();
   renderCompare();
@@ -1113,16 +1117,25 @@ async function loadVenues(){
   if(!currentCity){ return; }
   const { data: venueRows, error: venueErr } = await sb.from('venues').select('*').eq('city_id', currentCity.id).eq('is_approved', true).order('created_at', { ascending:false });
   if(venueErr){ console.error(venueErr); showToast('Mekanlar yüklenemedi'); return; }
-  const { data: priceRows, error: priceErr } = await sb.from('prices').select('*').order('created_at', { ascending:false });
-  if(priceErr){ console.error(priceErr); showToast('Fiyatlar yüklenemedi'); return; }
   const venueIds = (venueRows || []).map(v=>v.id);
+
+  // Fiyatlar ve check-in'ler birbirinden bağımsız — seri beklemek yerine paralel çekiliyor.
+  // Fiyatlar artık mekan kimliğiyle sınırlı: önceden tüm şehirlerin bütün fiyatları
+  // iniyordu ve PostgREST'in 1000 satır varsayılan sınırı aşılınca eski mekanların
+  // fiyatları sessizce düşecekti.
+  const dortSaatOnce = new Date(Date.now() - 4*3600*1000).toISOString();
+  const [fiyatSonuc, checkinSonuc] = venueIds.length
+    ? await Promise.all([
+        sb.from('prices').select('*').in('venue_id', venueIds).order('created_at', { ascending:false }),
+        sb.from('venue_checkins').select('venue_id').in('venue_id', venueIds).gt('created_at', dortSaatOnce),
+      ])
+    : [{ data: [] }, { data: [] }];
+
+  if(fiyatSonuc.error){ console.error(fiyatSonuc.error); showToast('Fiyatlar yüklenemedi'); return; }
+  if(checkinSonuc.error) console.error(checkinSonuc.error);
+  const priceRows = fiyatSonuc.data || [];
   const checkinCounts = {};
-  if(venueIds.length){
-    const { data: checkinRows, error: checkinErr } = await sb.from('venue_checkins').select('venue_id')
-      .in('venue_id', venueIds).gt('created_at', new Date(Date.now() - 4*3600*1000).toISOString());
-    if(checkinErr) console.error(checkinErr);
-    (checkinRows || []).forEach(r=>{ checkinCounts[r.venue_id] = (checkinCounts[r.venue_id]||0) + 1; });
-  }
+  (checkinSonuc.data || []).forEach(r=>{ checkinCounts[r.venue_id] = (checkinCounts[r.venue_id]||0) + 1; });
 
   venues = (venueRows || []).map(v=>{
     const rowsForVenue = (priceRows || []).filter(p=>p.venue_id===v.id);
@@ -3614,10 +3627,10 @@ function showToast(msg){
 }
 
 (async function init(){
-  await loadCities();
-  await loadCategories();
-  await loadVenues();
-  await loadTrendScores();
+  // loadCategories, cities'e bağlı değil — seri beklemek yerine paralel.
+  await Promise.all([loadCities(), loadCategories()]);
+  // İkisi de yalnızca currentCity'ye bağlı, birbirine değil.
+  await Promise.all([loadVenues(), loadTrendScores()]);
   renderHome();
   renderCatChips();
   renderSortChips();
