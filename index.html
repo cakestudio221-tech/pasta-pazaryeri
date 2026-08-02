@@ -392,6 +392,8 @@
   .vrow .vp{ font-family:'Sora',sans-serif; font-size:16px; font-weight:700; text-align:right; flex-shrink:0; }
   .vrow .vp small{ display:block; font-family:'Inter',sans-serif; font-size:9.5px; font-weight:500; color:var(--text-tertiary); margin-top:1px; }
   .vrow .vnone{ font-size:11.5px; font-weight:600; color:var(--gold-text); text-align:right; flex-shrink:0; }
+  /* Karşılaştır'da en ucuz sonuç vurgusu */
+  .vrow.best-row{ border-color:rgba(34,197,94,.42); }
 
   /* Editoryal karşılama başlığı */
   .greet{ padding:4px 16px 0; }
@@ -727,47 +729,18 @@
       <input id="home-search" placeholder="Mekan, içki veya semt ara..." oninput="onHomeSearchInput(this.value)">
     </div>
 
-    <div class="px" style="margin-bottom:16px;">
-      <div id="community-banner" onclick="openOverlay('general-chat')" style="position:relative; overflow:hidden; border-radius:var(--radius-lg); padding:16px; cursor:pointer; background:linear-gradient(135deg, rgba(139,92,246,.35), rgba(59,130,246,.35)); border:1px solid rgba(139,92,246,.4); box-shadow:0 8px 24px rgba(139,92,246,.15);">
-        <div class="row-between">
-          <div class="row gap-8" style="align-items:center;">
-            <span class="headline">🟢 Topluluk</span>
-            <span class="caption" id="community-active-count" style="background:rgba(0,0,0,.25); padding:2px 8px; border-radius:var(--radius-full);"></span>
-          </div>
-          <span class="body-sm" style="color:var(--purple-dark); font-weight:600;">Tümünü Gör</span>
-        </div>
-        <div id="community-banner-preview" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
-          <div class="body-sm" style="color:var(--text-secondary);">Sohbete katıl, mekanlar hakkında konuş</div>
-        </div>
-      </div>
-    </div>
-
+    <!-- Topluluk banner'ı kaldırıldı: sohbet artık kendi sekmesinde.
+         "Fiyat Karşılaştır" kartı ve "En Uygun Fiyatı Bul" widget'ı da kaldırıldı —
+         ikisi de Karşılaştır sekmesinin işini yapıyordu, üç ayrı yol tek varışa gidiyordu. -->
     <div class="quick-row">
-      <div class="quick-card glass" onclick="switchTab('compare')">
-        <div class="emoji">⚖️</div><div class="label">Fiyat Karşılaştır</div>
-      </div>
       <div class="quick-card glass" onclick="openOverlay('recommend')">
         <div class="emoji">📍</div><div class="label">Yakındaki Mekanlar</div>
       </div>
       <div class="quick-card glass" onclick="openOverlay('route')">
         <div class="emoji">🧭</div><div class="label">Gece Rotası</div>
       </div>
-      <div class="quick-card glass" onclick="scrollToTrend()">
-        <div class="emoji">🔥</div><div class="label">Trend Mekanlar</div>
-      </div>
-    </div>
-
-    <div class="px" style="margin-bottom:8px;">
-      <div class="glass" style="padding:16px;">
-        <div class="row-between">
-          <h3 class="headline">En Uygun Fiyatı Bul</h3>
-          <span class="body-sm" style="color:var(--purple-text); cursor:pointer;" onclick="switchTab('compare')">Tümü</span>
-        </div>
-        <div class="row gap-8" style="margin-top:10px;">
-          <input id="price-finder-input" placeholder="Örn. Efes Pilsen" oninput="renderPriceFinder()" style="flex:1; padding:12px 14px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-full); font-size:14px; outline:none; box-sizing:border-box; font-family:'Inter';">
-          <button class="btn-primary" style="width:auto; padding:12px 18px;" onclick="onHomeSearchInput(document.getElementById('price-finder-input').value)">Karşılaştır ›</button>
-        </div>
-        <div id="price-finder-results" style="margin-top:12px;"></div>
+      <div class="quick-card glass" onclick="openOverlay('budget')">
+        <div class="emoji">💰</div><div class="label">Bütçe Planla</div>
       </div>
     </div>
 
@@ -818,16 +791,15 @@
       <input id="price-min" type="number" placeholder="Min ₺" style="width:100%; padding:10px 12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:13px; outline:none; box-sizing:border-box; font-family:'Inter';" oninput="setPriceRange()">
       <input id="price-max" type="number" placeholder="Maks ₺" style="width:100%; padding:10px 12px; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-primary); border-radius:var(--radius-md); font-size:13px; outline:none; box-sizing:border-box; font-family:'Inter';" oninput="setPriceRange()">
     </div>
-    <div id="compare-list" style="padding:16px 0 100px;"></div>
+    <div class="vfeed" id="compare-list" style="padding:16px 0 100px;"></div>
   </div>
 
   <!-- FAVORITES -->
   <div class="screen" id="screen-favorites">
-    <div class="topbar"><h1 class="display-md">Favoriler</h1></div>
-    <div class="quick-row" style="padding-bottom:16px;">
-      <div class="chip selected">Mekanlar</div>
-      <div class="chip">İçkiler</div>
-      <div class="chip">Şehirler</div>
+    <!-- Alt navigasyonda olmadığı için geri dönüş yolu şart -->
+    <div class="topbar row gap-12" style="align-items:center;">
+      <div class="close-btn" onclick="switchTab('profile')" data-icon="back" aria-label="Profile dön" role="button" tabindex="0"></div>
+      <h1 class="display-md" style="font-size:22px;">Favorilerim</h1>
     </div>
     <div class="px" id="fav-list" style="padding-bottom:100px;"></div>
   </div>
@@ -843,7 +815,9 @@
     <div class="navitem active" data-tab="home" onclick="switchTab('home')"><div data-icon="compass" data-icon-size="21"></div><span>Keşfet</span></div>
     <div class="navitem" data-tab="compare" onclick="switchTab('compare')"><div data-icon="compare" data-icon-size="21"></div><span>Karşılaştır</span></div>
     <div style="width:56px;"></div>
-    <div class="navitem" data-tab="favorites" onclick="switchTab('favorites')"><div data-icon="heart" data-icon-size="21"></div><span>Favoriler</span></div>
+    <!-- Sohbet bir varış noktası, akış içeriği değil: ana ekrandaki banner yerine kendi sekmesinde.
+         Favoriler kişisel bir liste olduğu için Profil'e taşındı. -->
+    <div class="navitem" data-tab="community" onclick="openOverlay('general-chat')"><div data-icon="chat" data-icon-size="21"></div><span>Topluluk</span></div>
     <div class="navitem" data-tab="profile" onclick="switchTab('profile')"><div data-icon="user" data-icon-size="21"></div><span>Profil</span></div>
   </div>
   <div class="fab" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}"><span data-icon="plus" data-icon-size="26" style="color:#fff;"></span></div>
@@ -1676,6 +1650,11 @@ async function renderProfileScreen(){
       ${historyHTML}
     </div>
     <div class="glass" style="margin-top:20px; padding:4px 0;">
+      <!-- Favoriler alt navigasyondan buraya taşındı: kişisel bir liste, keşif değil -->
+      <div class="row-between" style="padding:14px 16px; cursor:pointer;" onclick="switchTab('favorites')">❤️ Favorilerim <span style="color:var(--text-tertiary);">${favoriteIds.size} ›</span></div>
+      <div class="divider-line"></div>
+      <div class="row-between" style="padding:14px 16px; cursor:pointer;" onclick="openOverlay('route')">🌃 Gece Rotası <span style="color:var(--text-tertiary);">›</span></div>
+      <div class="divider-line"></div>
       <div class="row-between" style="padding:14px 16px; cursor:pointer;" onclick="openOverlay('budget')">💰 Bütçe Planlayıcı <span style="color:var(--text-tertiary);">›</span></div>
       <div class="divider-line"></div>
       <div class="row-between" style="padding:14px 16px; cursor:pointer;" onclick="openOverlay('stats')">📊 İstatistikler <span style="color:var(--text-tertiary);">›</span></div>
@@ -1970,8 +1949,7 @@ function renderHome(){
     const fiyatli = venues.filter(v=>v.prices.length>0).length;
     ozet.innerText = `${venues.length} mekan · ${fiyatli} tanesinde güncel fiyat var`;
   }
-  loadCommunityBannerPreview();
-  renderPriceFinder();
+  // Topluluk banner'ı ve fiyat widget'ı Keşfet'ten kaldırıldı; boş yere veri çekilmesin.
   renderPersonalizedSection();
 }
 function renderPriceFinder(){
@@ -2104,21 +2082,22 @@ function renderCompare(){
   listEl.innerHTML = results.map((r,i)=>{
     const isCheapest = compareState.sort==='cheapest' && i===0;
     const diff = r.price.prev ? r.price.price - r.price.prev : null;
+    const v = r.venue;
+    const gorselVar = v.img && !/^https?:\/\/picsum\.photos/.test(v.img);
+    const gorsel = gorselVar
+      ? `<img class="vthumb" src="${escapeHTML(v.img)}" alt="" loading="lazy"
+           onerror="this.outerHTML='<div class=\\'vtfb\\' style=\\'background:${venueGradient(v)}\\'>${escapeHTML((v.name||'?').charAt(0).toUpperCase())}</div>'">`
+      : `<div class="vtfb" style="background:${venueGradient(v)}">${escapeHTML((v.name||'?').charAt(0).toUpperCase())}</div>`;
     return `
-    <div class="price-row glass ${isCheapest?'cheapest':''}" onclick="openDetail('${r.venue.id}')">
-      <img src="${escapeHTML(r.venue.img)}" alt="${escapeHTML(r.venue.name)}" loading="lazy">
-      <div style="flex:1;">
-        <div class="row gap-4">
-          <span class="body-lg" style="font-weight:600;">${escapeHTML(r.venue.name)}</span>
-          ${r.venue.verified ? '<span style="color:var(--verified); font-size:12px;">✓</span>' : ''}
-        </div>
-        <div class="body-sm">${escapeHTML(r.venue.district)}</div>
+    <div class="vrow glass${isCheapest?' best-row':''}" onclick="openDetail('${v.id}')">
+      ${gorsel}
+      <div class="vinfo">
+        <div class="vn">${escapeHTML(v.name)}${v.verified ? ' <span style="color:var(--verified);">✓</span>' : ''}</div>
+        <div class="vm">${escapeHTML(v.district)} · ${v.distance} km${isCheapest ? ' · <span style="color:var(--success-text); font-weight:600;">EN UCUZ</span>' : ''}</div>
       </div>
-      <div style="text-align:right;">
-        <div class="price" style="color:${isCheapest?'var(--success-text)':'var(--text-primary)'}">₺${r.price.price}</div>
-        ${diff ? `<div class="caption" style="color:${diff>0?'var(--error-text)':'var(--success-text)'}">${diff>0?'↑':'↓'} ₺${Math.abs(diff)}</div>` : ''}
+      <div class="vp" style="${isCheapest?'color:var(--success-text);':''}">₺${r.price.price}
+        <small>${escapeHTML(r.price.name)}${diff ? ` · <span style="color:${diff>0?'var(--error-text)':'var(--success-text)'}">${diff>0?'↑':'↓'}${Math.abs(diff)}</span>` : ''}</small>
       </div>
-      <div class="row-fav-btn ${favoriteIds.has(r.venue.id)?'is-fav':''}" onclick="event.stopPropagation(); toggleFavoriteVenue('${r.venue.id}')">${icon('heart', 16, favoriteIds.has(r.venue.id))}</div>
     </div>`;
   }).join('');
 }
@@ -2923,8 +2902,10 @@ function switchTab(tab){
   ['home','compare','favorites','profile'].forEach(t=>{
     document.getElementById('screen-'+t).classList.toggle('active', t===tab);
   });
+  // Favoriler artık navigasyonda yok; oradayken Profil sekmesi vurgulu kalsın.
+  const vurgulanan = tab==='favorites' ? 'profile' : tab;
   document.querySelectorAll('.navitem').forEach(el=>{
-    el.classList.toggle('active', el.dataset.tab===tab);
+    el.classList.toggle('active', el.dataset.tab===vurgulanan);
   });
   if(tab==='compare') renderCompare();
   if(tab==='favorites') renderFavorites();
@@ -3324,6 +3305,7 @@ const ICONS = {
   search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
   alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
   check:'<path d="M20 6 9 17l-5-5"/>',
+  chat:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
   inbox:'<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
   trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
   chart:'<line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/>',
