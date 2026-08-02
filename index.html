@@ -400,6 +400,30 @@
   /* Editoryal karşılama başlığı */
   .greet{ padding:4px 16px 0; }
   .greet .sub{ margin:8px 0 16px; }
+
+  /* "Şu an en ucuz" — uygulamanın cevabı, aramadan görünsün */
+  .hero{
+    margin:0 16px 20px; padding:18px; border-radius:var(--radius-lg); cursor:pointer;
+    position:relative; overflow:hidden;
+    background:linear-gradient(150deg, rgba(168,85,247,.22), rgba(59,130,246,.12) 60%, transparent);
+    border:1px solid rgba(168,85,247,.32);
+    -webkit-user-select:none; user-select:none; transition:transform .18s ease;
+  }
+  .hero:active{ transform:scale(.985); }
+  .hero::after{
+    content:''; position:absolute; top:-50px; right:-50px; width:170px; height:170px;
+    background:radial-gradient(circle, rgba(168,85,247,.30), transparent 70%); pointer-events:none;
+  }
+  .hero .tag{
+    display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:700; letter-spacing:.6px;
+    color:var(--gold-text); background:rgba(251,191,36,.13); padding:4px 10px;
+    border-radius:var(--radius-full); margin-bottom:12px;
+  }
+  .hero .amount{ font-family:'Sora',sans-serif; font-size:42px; font-weight:800; letter-spacing:-1.6px; line-height:1; }
+  .hero .drink{ font-size:13px; color:var(--text-secondary); margin-top:5px; }
+  .hero .venue{ font-size:16px; font-weight:700; margin-top:14px; letter-spacing:-.3px; }
+  .hero .meta{ font-size:12px; color:var(--text-tertiary); margin-top:3px; }
+  .hero .go{ position:absolute; right:16px; bottom:16px; color:var(--text-tertiary); font-size:20px; }
   .badge-fav{
     position:absolute; bottom:6px; right:6px; width:22px; height:22px; border-radius:50%;
     background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center;
@@ -531,6 +555,9 @@
   .prow .pv{ font-family:'Sora',sans-serif; font-size:16px; font-weight:700; letter-spacing:-.3px; }
   .prow.best{ border-color:rgba(34,197,94,.42); }
   .prow.best .pv{ color:var(--success-text); }
+  /* Bayat fiyat: silinmez ama güvenilmez olduğu belli olsun */
+  .prow.stale{ border-color:rgba(251,191,36,.35); }
+  .prow.stale .pv{ color:var(--text-secondary); }
   .pcat-label{ font-size:10px; font-weight:700; letter-spacing:1.2px; color:var(--text-tertiary); margin:20px 0 8px; }
 
   .price-list-item{ display:flex; justify-content:space-between; padding:10px 0; }
@@ -730,6 +757,9 @@
       <span data-icon="search" data-icon-size="17" style="color:var(--text-tertiary);"></span>
       <input id="home-search" placeholder="Mekan, içki veya semt ara..." oninput="onHomeSearchInput(this.value)">
     </div>
+
+    <!-- Uygulamanın cevabı: aramadan, dokunmadan görünen en ucuz fiyat -->
+    <div id="hero-cheapest"></div>
 
     <!-- Topluluk banner'ı kaldırıldı: sohbet artık kendi sekmesinde.
          "Fiyat Karşılaştır" kartı ve "En Uygun Fiyatı Bul" widget'ı da kaldırıldı —
@@ -1855,6 +1885,31 @@ let budgetState = { people:4, pref:'Bira' };
 function ratingLabel(v){
   return v.reviews>0 ? `★ ${v.rating}` : 'Henüz puan yok';
 }
+// --- Fiyat tazeliği ---
+// Bir fiyat uygulamasında "ne zaman girildi" bilgisi fiyatın kendisi kadar önemli:
+// 3 ay önceki fiyat bugün yanlış bilgidir. 30 günden eskisini bayat sayıyoruz.
+const BAYAT_GUN = 30;
+function gunFarki(iso){
+  if(!iso) return null;
+  return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+}
+function zamanEtiketi(iso){
+  if(!iso) return '';
+  const dk = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if(dk < 1) return 'az önce';
+  if(dk < 60) return `${dk} dk önce`;
+  const sa = Math.floor(dk/60);
+  if(sa < 24) return `${sa} saat önce`;
+  const g = Math.floor(sa/24);
+  if(g < 30) return `${g} gün önce`;
+  const ay = Math.floor(g/30);
+  return ay < 12 ? `${ay} ay önce` : `${Math.floor(ay/12)} yıl önce`;
+}
+function fiyatBayatMi(p){
+  const g = gunFarki(p && p.updatedAt);
+  return g != null && g > BAYAT_GUN;
+}
+
 // Mekanın en ucuz fiyatı — kartın kahraman öğesi.
 function cheapestPrice(v){
   if(!v.prices || !v.prices.length) return null;
@@ -1887,7 +1942,7 @@ function venueRowHTML(v){
       <div class="vm">${escapeHTML(v.district)} · ${v.distance} km</div>
     </div>
     ${ucuz
-      ? `<div class="vp">₺${ucuz.price}<small>${escapeHTML(ucuz.name)}</small></div>`
+      ? `<div class="vp"${fiyatBayatMi(ucuz)?' style="opacity:.6;"':''}>₺${ucuz.price}<small>${escapeHTML(ucuz.name)} · ${fiyatBayatMi(ucuz)?'⚠ ':''}${zamanEtiketi(ucuz.updatedAt)}</small></div>`
       : `<div class="vnone">İlk fiyatı gir →</div>`}
   </div>`;
 }
@@ -1903,7 +1958,7 @@ function venueCardHTML(v){
     ${gorsel}
     <div class="vscrim"></div>
     ${ucuz
-      ? `<div class="vprice">₺${ucuz.price}<small>${escapeHTML(ucuz.name)}</small></div>`
+      ? `<div class="vprice">₺${ucuz.price}<small>${escapeHTML(ucuz.name)} · ${zamanEtiketi(ucuz.updatedAt)}</small></div>`
       : `<div class="vempty">🏆 İLK FİYATI SEN GİR · +50 XP</div>`}
     ${v.activeCheckins>0
       ? `<div class="vtop"><span class="livedot"></span>${v.activeCheckins} KİŞİ BURADA</div>`
@@ -1942,6 +1997,7 @@ function renderHome(){
     : `<div class="body-sm" style="padding:0 4px 4px;">Tüm mekanların fiyatı var 🎉</div>`;
   const bosBaslik = document.getElementById('empty-venues-title');
   if(bosBaslik) bosBaslik.innerText = bos.length ? `Fiyat bekleyen ${bos.length} mekan` : 'Fiyat bekleyen mekan yok';
+  renderHeroCheapest();
   // Karşılama başlığı — saate göre
   const saat = new Date().getHours();
   const selam = document.getElementById('greet-line');
@@ -1954,6 +2010,37 @@ function renderHome(){
   // Topluluk banner'ı ve fiyat widget'ı Keşfet'ten kaldırıldı; boş yere veri çekilmesin.
   renderPersonalizedSection();
 }
+// Uygulamanın cevabı: şehirdeki en ucuz fiyat, hangi mekanda, ne zaman girildi.
+// Bayat fiyatlar cevap olarak sunulmaz — yanlış bilgi vermektense taze olanı gösteririz.
+function renderHeroCheapest(){
+  const el = document.getElementById('hero-cheapest');
+  if(!el) return;
+  const adaylar = [];
+  venues.forEach(v=>v.prices.forEach(p=>{ if(!fiyatBayatMi(p)) adaylar.push({ v, p }); }));
+  if(!adaylar.length){
+    // Hiç taze fiyat yoksa boşluğu gizlemek yerine katkıya davet et
+    el.innerHTML = `
+      <div class="hero" onclick="if(requireAuth()){openOverlay('contribute'); resetContribute();}" role="button" tabindex="0">
+        <div class="tag">🏆 İLK SEN OL</div>
+        <div class="body-lg" style="font-weight:700; font-size:17px;">Bu şehirde henüz güncel fiyat yok</div>
+        <div class="body-sm" style="margin-top:6px;">İlk fiyatı sen gir, 50 XP kazan ve mekanın öncüsü ol</div>
+      </div>`;
+    return;
+  }
+  adaylar.sort((a,b)=> a.p.price - b.p.price);
+  const { v, p } = adaylar[0];
+  el.innerHTML = `
+    <div class="hero" onclick="openDetail('${v.id}')" role="button" tabindex="0"
+         aria-label="En ucuz: ${escapeHTML(p.name)} ${p.price} lira, ${escapeHTML(v.name)}">
+      <div class="tag">⚡ ŞU AN EN UCUZ</div>
+      <div class="amount">₺${p.price}</div>
+      <div class="drink">${escapeHTML(p.name)} · ${escapeHTML(p.cat)}</div>
+      <div class="venue">${escapeHTML(v.name)}</div>
+      <div class="meta">${escapeHTML(v.district)} · ${v.distance} km · ${zamanEtiketi(p.updatedAt)}${v.activeCheckins>0 ? ` · 🔥 ${v.activeCheckins} kişi burada` : ''}</div>
+      <div class="go">›</div>
+    </div>`;
+}
+
 function renderPriceFinder(){
   const el = document.getElementById('price-finder-results');
   if(!el) return;
@@ -2224,8 +2311,14 @@ async function openDetail(id){
     html += `<div class="pcat-label">${escapeHTML(cat).toUpperCase()}</div>`;
     byCategory[cat].forEach(p=>{
       const best = enUcuz && p.name===enUcuz.name && p.price===enUcuz.price;
-      html += `<div class="prow glass${best?' best':''}">
-        <span class="body-lg">${escapeHTML(p.name)}</span>
+      const bayat = fiyatBayatMi(p);
+      html += `<div class="prow glass${best?' best':''}${bayat?' stale':''}">
+        <div style="min-width:0;">
+          <div class="body-lg">${escapeHTML(p.name)}</div>
+          <div class="caption" style="margin-top:2px; ${bayat?'color:var(--gold-text);':''}">
+            ${bayat ? '⚠ ' : ''}${zamanEtiketi(p.updatedAt)}${bayat ? ' — doğrulanmalı' : ''}
+          </div>
+        </div>
         <span class="pv">₺${p.price}</span>
       </div>`;
     });
