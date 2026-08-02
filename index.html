@@ -394,6 +394,8 @@
   .vrow .vnone{ font-size:11.5px; font-weight:600; color:var(--gold-text); text-align:right; flex-shrink:0; }
   /* Karşılaştır'da en ucuz sonuç vurgusu */
   .vrow.best-row{ border-color:rgba(34,197,94,.42); }
+  /* Gece Rotası'nda seçili mekan */
+  .vrow.route-on{ border-color:var(--neon-1); box-shadow:0 0 0 1px var(--neon-1) inset; }
 
   /* Editoryal karşılama başlığı */
   .greet{ padding:4px 16px 0; }
@@ -2851,12 +2853,17 @@ function renderRouteVenueList(){
   document.getElementById('route-venue-list').innerHTML = venues.map(v=>{
     const idx = routeState.selected.findIndex(x=>x.id===v.id);
     const selected = idx>-1;
+    const ucuz = cheapestPrice(v);
     return `
-    <div class="glass row" style="padding:16px; margin-bottom:10px; cursor:pointer; gap:12px; ${selected?'border:1.5px solid var(--purple);':''}" onclick="toggleRouteVenue('${v.id}')">
+    <div class="vrow glass${selected?' route-on':''}" onclick="toggleRouteVenue('${v.id}')">
       ${selected
-        ? `<div class="route-dot first">${idx+1}</div>`
-        : `<div style="width:24px;height:24px;border-radius:50%;border:1px solid var(--glass-border);"></div>`}
-      <div><div class="body-lg">${escapeHTML(v.name)}</div><div class="body-sm">${escapeHTML(v.district)} · ${v.distance} km</div></div>
+        ? `<div class="route-dot first" style="flex-shrink:0;">${idx+1}</div>`
+        : `<div class="vtfb" style="width:24px;height:24px;border-radius:50%;border:1px solid var(--glass-border);background:none;flex-shrink:0;"></div>`}
+      <div class="vinfo">
+        <div class="vn">${escapeHTML(v.name)}</div>
+        <div class="vm">${escapeHTML(v.district)} · ${v.distance} km</div>
+      </div>
+      ${ucuz ? `<div class="vp">₺${ucuz.price}<small>${escapeHTML(ucuz.name)}</small></div>` : ''}
     </div>`;
   }).join('');
   updateRouteSummary();
@@ -3019,15 +3026,9 @@ async function renderRecommendations(){
   const locNote = userGeo ? '📍 Konumuna göre' : '📍 Konum izni verilmedi, tahmini mesafe kullanıldı';
   const catNote = favCategory ? `favori kategorin (${favCategory})` : 'genel popülerlik';
   if(scored.length===0){ el.innerHTML = emptyStateHTML('compass','Henüz öneri yok','Biraz daha mekan eklendiğinde sana özel öneriler burada olacak'); return; }
-  el.innerHTML = `<div class="body-sm" style="margin-bottom:12px; color:var(--text-tertiary);">${locNote} ve ${catNote} baz alındı</div>` +
-    scored.map(({v,dist})=>`
-    <div class="glass row-between" style="padding:16px; margin-bottom:10px; cursor:pointer;" onclick="openDetail('${v.id}')">
-      <div>
-        <div class="body-lg" style="font-weight:600;">${escapeHTML(v.name)}</div>
-        <div class="body-sm">${escapeHTML(v.district)} · ${dist.toFixed(1)} km</div>
-      </div>
-      <div class="price">${ratingLabel(v)}</div>
-    </div>`).join('');
+  // Ortak satır bileşeni: mekan uygulamanın her yerinde aynı görünsün.
+  el.innerHTML = `<div class="body-sm" style="margin-bottom:12px; color:var(--text-tertiary);">${locNote} ve ${catNote} baz alındı</div>`
+    + `<div class="vfeed" style="padding:0;">${scored.map(({v})=>venueRowHTML(v)).join('')}</div>`;
 }
 
 let leaderboardPeriod = '7d';
